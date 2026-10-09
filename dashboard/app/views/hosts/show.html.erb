@@ -1,0 +1,73 @@
+<div class="max-w-6xl mx-auto p-6 space-y-8">
+  <!-- Breadcrumb & Header -->
+  <div class="space-y-2">
+    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
+      <%= link_to "Dashboard", root_path, class: "hover:text-indigo-600 transition" %>
+      <span>/</span>
+      <span class="text-slate-700">Host Detail</span>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight"><%= @host[:name] %></h1>
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold <%= @host[:status] == 'UP' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200' %>">
+          ● <%= @host[:status] %>
+        </span>
+      </div>
+
+      <%= button_to recheck_host_path(@host[:name]), method: :post, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg transition cursor-pointer" do %>
+        Force Re-check Host
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Host Overview Card -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Plugin Output</p>
+      <p class="text-sm font-semibold text-slate-800 mt-1 font-mono"><%= @host[:plugin_output].presence || "-" %></p>
+    </div>
+
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Terakhir Dicek</p>
+      <p class="text-sm font-semibold text-slate-800 mt-1"><%= @host[:last_check] ? @host[:last_check].strftime("%H:%M:%S (%d %b %Y)") : "-" %></p>
+    </div>
+
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Check Attempt</p>
+      <p class="text-sm font-semibold text-slate-800 mt-1"><%= @host[:current_attempt] %> / <%= @host[:max_attempts] %></p>
+    </div>
+  </div>
+
+  <!-- Monitored Services List -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold text-slate-800">Layanan Monitored (<%= @services.size %>)</h2>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <th class="py-3.5 px-6">Service Description</th>
+            <th class="py-3.5 px-6">Status</th>
+            <th class="py-3.5 px-6">Plugin Output</th>
+            <th class="py-3.5 px-6">Terakhir Dicek</th>
+            <th class="py-3.5 px-6 text-right">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% if @services.empty? %>
+            <tr>
+              <td colspan="5" class="py-8 px-6 text-center text-slate-400">
+                Tidak ada service terdaftar pada host ini.
+              </td>
+            </tr>
+          <% else %>
+            <% @services.each do |service| %>
+              <%= render "hosts/service_row", service: service %>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

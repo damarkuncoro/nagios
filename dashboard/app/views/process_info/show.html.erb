@@ -1,0 +1,116 @@
+<div class="max-w-6xl mx-auto p-6 space-y-8">
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Nagios Core Process Info</h1>
+      <p class="text-slate-500 text-sm mt-1">Status internal daemon, kontrol fitur, dan tes notifikasi Nagios Engine</p>
+    </div>
+  </div>
+
+  <% if notice.present? %>
+    <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-sm font-medium">
+      <%= notice %>
+    </div>
+  <% end %>
+
+  <% if alert.present? %>
+    <div class="p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm font-medium">
+      <%= alert %>
+    </div>
+  <% end %>
+
+  <% if @program_status %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Engine Version</p>
+        <p class="text-3xl font-extrabold text-indigo-600 mt-2">v<%= @program_status[:version] %></p>
+        <p class="text-xs text-slate-400 mt-1">Nagios Core C Engine</p>
+      </div>
+
+      <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Process PID</p>
+        <p class="text-3xl font-extrabold text-slate-900 mt-2">PID <%= @program_status[:pid] %></p>
+        <p class="text-xs text-slate-400 mt-1">Running in Docker Container</p>
+      </div>
+
+      <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Start Time</p>
+        <p class="text-2xl font-bold text-slate-800 mt-2"><%= @program_status[:program_start]&.strftime("%H:%M:%S") %></p>
+        <p class="text-xs text-slate-400 mt-1"><%= @program_status[:program_start]&.strftime("%d %b %Y") %></p>
+      </div>
+    </div>
+
+    <!-- Feature Matrix & Commands Panel -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+        <h3 class="font-bold text-slate-800 text-lg">Engine Features & Control Panel</h3>
+      </div>
+
+      <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+          <div>
+            <p class="font-bold text-slate-800 text-base">Notifications System</p>
+            <p class="text-xs text-slate-500 mt-0.5">Pengiriman alert via Email / Webhook</p>
+          </div>
+          <%= button_to toggle_process_info_feature_path(feature: "notifications", enable: !@program_status[:notifications_enabled]),
+                        method: :post,
+                        class: "px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer #{@program_status[:notifications_enabled] ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}" do %>
+            <%= @program_status[:notifications_enabled] ? 'ENABLED' : 'DISABLED' %>
+          <% end %>
+        </div>
+
+        <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+          <div>
+            <p class="font-bold text-slate-800 text-base">Active Service Checks</p>
+            <p class="text-xs text-slate-500 mt-0.5">Penjadwalan eksekusi check otomatis</p>
+          </div>
+          <%= button_to toggle_process_info_feature_path(feature: "service_checks", enable: !@program_status[:service_checks_enabled]),
+                        method: :post,
+                        class: "px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer #{@program_status[:service_checks_enabled] ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}" do %>
+            <%= @program_status[:service_checks_enabled] ? 'ENABLED' : 'DISABLED' %>
+          <% end %>
+        </div>
+
+        <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+          <div>
+            <p class="font-bold text-slate-800 text-base">Flap Detection Engine</p>
+            <p class="text-xs text-slate-500 mt-0.5">Deteksi fluktuasi status berulang</p>
+          </div>
+          <%= button_to toggle_process_info_feature_path(feature: "flap_detection", enable: !@program_status[:flap_detection_enabled]),
+                        method: :post,
+                        class: "px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer #{@program_status[:flap_detection_enabled] ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}" do %>
+            <%= @program_status[:flap_detection_enabled] ? 'ENABLED' : 'DISABLED' %>
+          <% end %>
+        </div>
+
+        <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
+          <div>
+            <p class="font-bold text-slate-800 text-base">Event Handlers</p>
+            <p class="text-xs text-slate-500 mt-0.5">Eksekusi skrip pemulihan otomatis</p>
+          </div>
+          <%= button_to toggle_process_info_feature_path(feature: "event_handlers", enable: !@program_status[:event_handlers_enabled]),
+                        method: :post,
+                        class: "px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer #{@program_status[:event_handlers_enabled] ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'}" do %>
+            <%= @program_status[:event_handlers_enabled] ? 'ENABLED' : 'DISABLED' %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Webhook Integration Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+      <div>
+        <h3 class="font-bold text-slate-800 text-lg">Test Multi-Channel Webhook Alerts</h3>
+        <p class="text-slate-500 text-xs mt-0.5">Kirimkan notifikasi tes ke Slack, Discord, atau Telegram Incoming Webhook</p>
+      </div>
+
+      <%= form_with url: test_process_info_webhook_path, method: :post, class: "flex flex-col sm:flex-row gap-3" do |f| %>
+        <%= f.text_field :webhook_url, placeholder: "https://hooks.slack.com/services/... atau Discord Webhook URL", class: "flex-1 text-xs p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono" %>
+        <%= f.submit "Kirim Test Alert Notification", class: "py-3 px-5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg transition cursor-pointer shrink-0" %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="p-8 bg-white rounded-xl border border-slate-200 text-center text-slate-400">
+      Gagal mengambil status proses dari Nagios Core daemon.
+    </div>
+  <% end %>
+</div>

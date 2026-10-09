@@ -1,0 +1,42 @@
+name: CI Test Suite
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      nagios:
+        image: jasonrivers/nagios:latest
+        ports:
+          - 8080:80
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v4
+        with:
+          ruby-version: '3.3.0'
+
+      - name: Install dependencies
+        working-directory: ./dashboard
+        run: |
+          gem install bundler
+          bundle config set --local path 'vendor/bundle'
+          bundle install --jobs 4 --retry 3
+
+      - name: Run RSpec Tests
+        working-directory: ./dashboard
+        env:
+          RAILS_ENV: test
+          NAGIOS_URL: http://localhost:8080/nagios/cgi-bin/statusjson.cgi
+          NAGIOS_AUTH_USER: nagiosadmin
+          NAGIOS_AUTH_PASS: nagiosadmin
+        run: bundle exec rspec --format documentation

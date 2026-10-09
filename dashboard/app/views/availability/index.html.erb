@@ -1,0 +1,125 @@
+<div class="max-w-6xl mx-auto p-6 space-y-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Availability & SLA Reports</h1>
+      <p class="text-slate-500 text-sm mt-1">Laporan pencapaian SLA dan ketersediaan layanan (*Uptime Percentage*)</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 px-3.5 py-2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold">
+        <span>Target SLA 99.0%:</span>
+        <span class="text-emerald-700 font-extrabold"><%= @report[:overall_sla_pct] %>% Met</span>
+      </div>
+
+      <%= link_to availability_path(format: :csv), class: "flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg transition" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        Export CSV
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Overall SLA Gauge Card -->
+  <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Overall Infrastructure Availability</p>
+      <p class="text-4xl font-extrabold text-slate-900 mt-2"><%= @report[:overall_sla_pct] %>%</p>
+      <p class="text-xs text-slate-500 mt-1">Persentase ketersediaan seluruh host dan service dalam 24 jam terakhir</p>
+    </div>
+
+    <div class="w-20 h-20 rounded-full border-8 <%= @report[:overall_sla_pct] >= 99.0 ? 'border-emerald-500 text-emerald-600' : 'border-amber-500 text-amber-600' %> flex items-center justify-center font-black text-lg">
+      <%= @report[:overall_sla_pct] %>%
+    </div>
+  </div>
+
+  <!-- Hosts Availability Table -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold text-slate-800">Hosts Availability (SLA)</h2>
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <th class="py-3.5 px-6">Host Name</th>
+            <th class="py-3.5 px-6">Status Saat Ini</th>
+            <th class="py-3.5 px-6">24h Availability</th>
+            <th class="py-3.5 px-6 text-right">SLA Compliance</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @report[:host_reports].each do |hr| %>
+            <tr class="hover:bg-slate-50 transition">
+              <td class="py-4 px-6 font-semibold text-slate-800 text-sm">
+                <%= hr[:name] %>
+              </td>
+              <td class="py-4 px-6">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold <%= hr[:status] == 'UP' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800' %>">
+                  ● <%= hr[:status] %>
+                </span>
+              </td>
+              <td class="py-4 px-6">
+                <div class="w-48 space-y-1">
+                  <p class="text-xs font-semibold text-slate-700"><%= hr[:availability_pct] %>% Uptime</p>
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                    <div class="h-full <%= hr[:availability_pct] >= 99.0 ? 'bg-emerald-500' : 'bg-red-500' %>" style="width: <%= hr[:availability_pct] %>%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-md text-xs font-bold <%= hr[:sla_met] ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-red-50 text-red-800 border border-red-200' %>">
+                  <%= hr[:sla_met] ? 'SLA PASSED' : 'SLA BREACHED' %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Services Availability Table -->
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold text-slate-800">Services Availability (SLA)</h2>
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <th class="py-3.5 px-6">Host</th>
+            <th class="py-3.5 px-6">Service</th>
+            <th class="py-3.5 px-6">Status Saat Ini</th>
+            <th class="py-3.5 px-6">24h Availability</th>
+            <th class="py-3.5 px-6 text-right">SLA Compliance</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @report[:service_reports].each do |sr| %>
+            <tr class="hover:bg-slate-50 transition">
+              <td class="py-4 px-6 text-sm text-slate-500 font-medium">
+                <%= sr[:host_name] %>
+              </td>
+              <td class="py-4 px-6 font-semibold text-slate-800 text-sm">
+                <%= sr[:description] %>
+              </td>
+              <td class="py-4 px-6">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold <%= sr[:status] == 'OK' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' %>">
+                  ● <%= sr[:status] %>
+                </span>
+              </td>
+              <td class="py-4 px-6">
+                <div class="w-48 space-y-1">
+                  <p class="text-xs font-semibold text-slate-700"><%= sr[:availability_pct] %>% Uptime</p>
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                    <div class="h-full <%= sr[:availability_pct] >= 99.0 ? 'bg-emerald-500' : 'bg-amber-500' %>" style="width: <%= sr[:availability_pct] %>%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-right">
+                <span class="px-2.5 py-1 rounded-md text-xs font-bold <%= sr[:sla_met] ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200' %>">
+                  <%= sr[:sla_met] ? 'SLA PASSED' : 'SLA WARNING' %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

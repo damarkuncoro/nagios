@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nagios Core Modern Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex">
+    <!-- Sidebar Navigation (Matching Nagios side.php) -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 min-h-screen">
+      <!-- Logo Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <%= link_to root_path, class: "flex items-center gap-3 font-extrabold text-white tracking-tight" do %>
+          <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-base shadow-sm">N</div>
+          <div>
+            <span class="text-base leading-none block">Nagios Core</span>
+            <span class="text-[10px] text-slate-400 font-normal">Modern Rails Dashboard</span>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Nav Links -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-6 text-xs">
+        <!-- Section: General -->
+        <div>
+          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">General</p>
+          <ul class="space-y-1">
+            <li>
+              <%= link_to root_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(root_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"></path></svg>
+                Home / Dashboard
+              <% end %>
+            </li>
+            <li>
+              <a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/" target="_blank" class="flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                Documentation
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: Current Status -->
+        <div>
+          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">Current Status</p>
+          <ul class="space-y-1">
+            <li>
+              <%= link_to tactical_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(tactical_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Tactical Overview
+              <% end %>
+            </li>
+            <li>
+              <%= link_to statusmap_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(statusmap_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                Network Map
+              <% end %>
+            </li>
+            <li>
+              <%= link_to problems_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(problems_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                Unhandled Problems
+              <% end %>
+            </li>
+            <li>
+              <%= link_to hostgroups_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(hostgroups_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                Host Groups
+              <% end %>
+            </li>
+            <li>
+              <%= link_to servicegroups_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(servicegroups_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                Service Groups
+              <% end %>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: Reports -->
+        <div>
+          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">Reports & History</p>
+          <ul class="space-y-1">
+            <li>
+              <%= link_to availability_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(availability_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Availability SLA
+              <% end %>
+            </li>
+            <li>
+              <%= link_to trends_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(trends_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                Trends & Daily Health
+              <% end %>
+            </li>
+            <li>
+              <%= link_to summary_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(summary_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Alert Totals Summary
+              <% end %>
+            </li>
+            <li>
+              <%= link_to alerts_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(alerts_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Alert History
+              <% end %>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Section: System -->
+        <div>
+          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">System Admin</p>
+          <ul class="space-y-1">
+            <li>
+              <%= link_to queue_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(queue_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Scheduling Queue
+              <% end %>
+            </li>
+            <li>
+              <%= link_to comments_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(comments_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                Comments Manager
+              <% end %>
+            </li>
+            <li>
+              <%= link_to downtimes_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(downtimes_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Downtimes Manager
+              <% end %>
+            </li>
+            <li>
+              <%= link_to process_info_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(process_info_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                Process Info
+              <% end %>
+            </li>
+            <li>
+              <%= link_to perf_info_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(perf_info_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Performance Info
+              <% end %>
+            </li>
+            <li>
+              <%= link_to configuration_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(configuration_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                Configuration Viewer
+              <% end %>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500">
+        <a href="http://localhost:8080" target="_blank" class="flex items-center justify-between hover:text-slate-300 transition">
+          <span>CGI Web Interface</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Body -->
+    <div class="flex-1 min-w-0 flex flex-col justify-between overflow-y-auto min-h-screen">
+      <div>
+        <%= yield %>
+      </div>
+
+      <!-- Footer matching main.php -->
+      <footer class="mt-12 p-6 bg-slate-100 border-t border-slate-200 text-xs text-slate-500 space-y-2 text-center">
+        <p>Copyright &copy; 2010-2026 Nagios Core Development Team and Community Contributors. Copyright &copy; 1999-2009 Ethan Galstad.</p>
+        <p class="max-w-4xl mx-auto text-[11px] text-slate-400 leading-relaxed">Nagios Core is licensed under the GNU General Public License and is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE. Nagios, Nagios Core and the Nagios logo are trademarks owned by Nagios Enterprises, LLC.</p>
+      </footer>
+    </div>
+  </body>
+</html>

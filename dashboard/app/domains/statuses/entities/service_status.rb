@@ -1,0 +1,78 @@
+module Statuses
+  module Entities
+    class ServiceStatus
+      attr_reader :host_name, :description, :status_code, :plugin_output, :performance_data, :last_check, :next_check, :state_type, :attempts, :latency, :execution_time, :acknowledged
+
+      def initialize(host_name:, description:, status:, plugin_output: '', perf_data: '', last_check: nil, next_check: nil, state_type: 'HARD', attempts: '1/1', latency: 0.0, execution_time: 0.0, acknowledged: false)
+        @host_name = host_name
+        @description = description
+        @status_code = ValueObjects::StatusCode.new(status, type: :service)
+        @plugin_output = plugin_output.to_s
+        @performance_data = ValueObjects::PerformanceData.new(perf_data, description: description, plugin_output: plugin_output)
+        @last_check = parse_time(last_check)
+        @next_check = parse_time(next_check)
+        @state_type = state_type.to_s
+        @attempts = attempts.to_s
+        @latency = latency.to_f
+        @execution_time = execution_time.to_f
+        @acknowledged = !!acknowledged
+      end
+
+      def status
+        status_code.value
+      end
+
+      def ok?
+        status_code.ok?
+      end
+
+      def warning?
+        status_code.warning?
+      end
+
+      def critical?
+        status_code.critical?
+      end
+
+      def pending?
+        status_code.pending?
+      end
+
+      def acknowledged?
+        @acknowledged
+      end
+
+      def perf_data
+        performance_data.raw
+      end
+
+      def dom_id
+        "service_#{host_name.parameterize}_#{description.parameterize}"
+      end
+
+      def to_h
+        {
+          host_name: host_name,
+          description: description,
+          status: status,
+          plugin_output: plugin_output,
+          perf_data: perf_data,
+          last_check: last_check,
+          next_check: next_check,
+          state_type: state_type,
+          attempts: attempts,
+          latency: latency,
+          execution_time: execution_time,
+          acknowledged: acknowledged
+        }
+      end
+
+      private
+
+      def parse_time(value)
+        return nil if value.nil? || value.to_i <= 0
+        value.is_a?(Time) ? value : Time.at(value.to_i > 1_000_000_000_000 ? value.to_i / 1000 : value.to_i)
+      end
+    end
+  end
+end

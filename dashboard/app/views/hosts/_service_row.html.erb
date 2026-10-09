@@ -1,0 +1,81 @@
+<% dom_id = "service_#{service[:host_name].parameterize}_#{service[:description].parameterize}" %>
+<% perf_widget = render_perf_data_widget(service) %>
+
+<tr id="<%= dom_id %>" data-filter-target="row" data-status="<%= service[:status] %>" class="hover:bg-slate-50 transition">
+  <td class="py-4 px-6 text-sm text-slate-500 font-medium">
+    <%= service[:host_name] %>
+  </td>
+  <td class="py-4 px-6 font-semibold text-slate-800">
+    <div class="flex items-center gap-2">
+      <span><%= service[:description] %></span>
+      <% if service[:acknowledged] %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-sky-100 text-sky-800 border border-sky-200">
+          ACK
+        </span>
+      <% end %>
+    </div>
+  </td>
+  <td class="py-4 px-6">
+    <div class="space-y-1">
+      <% case service[:status] %>
+      <% when 'OK' %>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> OK
+        </span>
+      <% when 'WARNING' %>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> WARNING
+        </span>
+      <% when 'CRITICAL' %>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> CRITICAL
+        </span>
+      <% else %>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> <%= service[:status] %>
+        </span>
+      <% end %>
+
+      <p class="text-[11px] text-slate-400 font-mono">
+        Attempt <%= service[:attempts] %> (<%= service[:state_type] %>)
+      </p>
+    </div>
+  </td>
+  <td class="py-4 px-6 text-sm text-slate-600 max-w-md">
+    <div class="space-y-1">
+      <p class="truncate"><%= service[:plugin_output].presence || "-" %></p>
+      <% if perf_widget %>
+        <div class="pt-0.5"><%= perf_widget %></div>
+      <% end %>
+    </div>
+  </td>
+  <td class="py-4 px-6 text-sm text-slate-500">
+    <p><%= service[:last_check] ? service[:last_check].strftime("%H:%M:%S (%d %b)") : "-" %></p>
+    <% if service[:next_check] %>
+      <p class="text-[11px] text-slate-400">Next: <%= service[:next_check].strftime("%H:%M:%S") %></p>
+    <% end %>
+  </td>
+  <td class="py-4 px-6 text-right">
+    <div class="flex items-center justify-end gap-2">
+      <% if %w[WARNING CRITICAL UNKNOWN].include?(service[:status]) && !service[:acknowledged] %>
+        <%= button_to acknowledge_service_host_path(service[:host_name], service_desc: service[:description]),
+                      method: :post,
+                      class: "text-xs px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold border border-amber-200 rounded-md transition cursor-pointer" do %>
+          Acknowledge
+        <% end %>
+      <% end %>
+
+      <%= button_to schedule_service_downtime_host_path(service[:host_name], service_desc: service[:description], duration_hours: 1),
+                    method: :post,
+                    class: "text-xs px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium border border-indigo-200 rounded-md transition cursor-pointer" do %>
+        + Downtime
+      <% end %>
+
+      <%= button_to recheck_service_host_path(service[:host_name], service_desc: service[:description]),
+                    method: :post,
+                    class: "text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-md transition cursor-pointer" do %>
+        Re-check
+      <% end %>
+    </div>
+  </td>
+</tr>

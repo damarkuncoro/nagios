@@ -1,0 +1,34 @@
+<tr id="host_<%= host[:name].parameterize %>" class="hover:bg-slate-50 transition">
+  <td class="py-4 px-6 font-semibold text-slate-800">
+    <%= link_to host[:name], host_path(host[:name]), class: "text-indigo-600 hover:text-indigo-800 hover:underline transition" %>
+  </td>
+  <td class="py-4 px-6">
+    <% case host[:status] %>
+    <% when 'UP' %>
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> UP
+      </span>
+    <% when 'DOWN' %>
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> DOWN
+      </span>
+    <% else %>
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> <%= host[:status] %>
+      </span>
+    <% end %>
+  </td>
+  <td class="py-4 px-6 text-sm text-slate-600 max-w-xs truncate">
+    <%= host[:plugin_output].presence || "-" %>
+  </td>
+  <td class="py-4 px-6 text-sm text-slate-500">
+    <%= host[:last_check] ? host[:last_check].strftime("%H:%M:%S (%d %b)") : "-" %>
+  </td>
+  <td class="py-4 px-6 text-right">
+    <%= button_to recheck_host_path(host[:name]),
+                  method: :post,
+                  class: "text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-md transition cursor-pointer" do %>
+      Re-check
+    <% end %>
+  </td>
+</tr>

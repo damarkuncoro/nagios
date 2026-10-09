@@ -1,0 +1,48 @@
+<div class="max-w-6xl mx-auto p-6 space-y-8">
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Trends & Historical Health</h1>
+      <p class="text-slate-500 text-sm mt-1">Grafik tren riwayat insiden dan kesehatan infrastruktur 7 hari terakhir (*trends.cgi*)</p>
+    </div>
+
+    <span class="px-3.5 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-100">
+      7 Days Metrics Window
+    </span>
+  </div>
+
+  <!-- Daily Trends Bars Grid -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-6">
+    <h3 class="font-bold text-slate-800 text-lg">Distribution of State Transition Events (Daily)</h3>
+
+    <div class="space-y-5">
+      <% @trends[:daily_stats].each do |stat| %>
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-xs font-semibold">
+            <span class="text-slate-800 font-bold"><%= stat[:date_str] %></span>
+            <div class="flex gap-3">
+              <span class="text-emerald-600"><%= stat[:ok_count] %> Recovery / OK</span>
+              <span class="text-amber-600"><%= stat[:warning_count] %> Warnings</span>
+              <span class="text-red-600"><%= stat[:critical_count] %> Criticals</span>
+              <span class="text-slate-400 font-mono">Total: <%= stat[:total_alerts] %></span>
+            </div>
+          </div>
+
+          <!-- Stacked Bar -->
+          <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200 flex">
+            <% if stat[:total_alerts] > 0 %>
+              <% ok_pct = (stat[:ok_count].to_f / stat[:total_alerts] * 100).round(1) %>
+              <% warn_pct = (stat[:warning_count].to_f / stat[:total_alerts] * 100).round(1) %>
+              <% crit_pct = (stat[:critical_count].to_f / stat[:total_alerts] * 100).round(1) %>
+
+              <div class="bg-emerald-500 h-full" style="width: <%= ok_pct %>%" title="OK: <%= ok_pct %>%"></div>
+              <div class="bg-amber-500 h-full" style="width: <%= warn_pct %>%" title="Warning: <%= warn_pct %>%"></div>
+              <div class="bg-red-500 h-full" style="width: <%= crit_pct %>%" title="Critical: <%= crit_pct %>%"></div>
+            <% else %>
+              <div class="bg-emerald-500 h-full w-full" title="100% Operational (No Incidents)"></div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

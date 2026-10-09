@@ -1,0 +1,33 @@
+services:
+  web:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    command: bin/rails server -b 0.0.0.0 -p 3000
+    ports:
+      - "3000:3000"
+    environment:
+      - RAILS_ENV=development
+      - NAGIOS_URL=http://nagios/nagios/cgi-bin/statusjson.cgi
+      - NAGIOS_CMD_PIPE=/nagios_var/rw/nagios.cmd
+      - NAGIOS_AUTH_USER=nagiosadmin
+      - NAGIOS_AUTH_PASS=nagiosadmin
+      - SECRET_KEY_BASE=development_secret_key_base_for_nagios_dashboard
+    volumes:
+      - ./dashboard:/app
+      - nagios-var:/nagios_var
+    depends_on:
+      - nagios
+
+  nagios:
+    image: jasonrivers/nagios:latest
+    ports:
+      - "8080:80"
+    environment:
+      - NAGIOSADMIN_USER=nagiosadmin
+      - NAGIOSADMIN_PASS=nagiosadmin
+    volumes:
+      - nagios-var:/opt/nagios/var
+
+volumes:
+  nagios-var:
