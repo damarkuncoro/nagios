@@ -57,6 +57,7 @@ Berjalan berdampingan (*side-by-side*) dengan Nagios Core Engine klasik melalui 
 | **Tactical Overview & Health** | **Tactical Overview Aggregator (`TacticalOverviewAggregator`)** bird's-eye unhandled vs acknowledged problems, downtime suppression, & gauge health scores | `cgi/tac.c` |
 | **Network Outages & RCA** | **Blocking Outage Analyzer (`BlockingOutageAnalyzer`)** penelusuran graf dependensi hierarkis, pemisahan root blocker vs kegagalan turunan, & skor keparahan | `cgi/outages.c` |
 | **Historical State Trends** | **State Trends Calculator (`TrendsCalculator`)** kalkulasi durasi kumulatif status (OK/WARN/CRIT), MTTR, bucket harian & availability % | `cgi/trends.c` |
+| **Check Scheduling Queue** | **Check Scheduling Queue (`CheckSchedulingQueue`)** antrean eksekusi host/service check, sorting multi-kriteria, metrik sebaran waktu & deteksi check storm | `cgi/extinfo.c` & `base/events.c` |
 | **Integrasi 2 Arah** | **Bidirectional Bridge Navigation** (Akses cepat antar Dashboard & Classic UI) | Sidebar link di `side.php` & Navbar |
 
 ---
