@@ -63,6 +63,7 @@ Berjalan berdampingan (*side-by-side*) dengan Nagios Core Engine klasik melalui 
 | **Status Query & Filter Engine** | **Status Query Engine (`StatusQueryEngine`)** multi-flag property filtering, supresi ACK & downtime pada unhandled problem, sorting & paginasi | `cgi/status.c` |
 | **CGI Configuration & Utils** | **CGI Config Parser (`CgiConfigParser`)** parser `cgi.cfg`, mapping izin otorisasi, serialisasi & utilitas formatting interval waktu/sanitasi | `cgi/cgiutils.c` |
 | **Notification Audit & History** | **Notification History Manager (`NotificationHistoryManager`)** audit log notifikasi, filter kontak/host/service, analitik pengiriman & ekspor CSV | `cgi/notifications.c` & `cgi/history.c` |
+| **JSON API Specification** | **Status JSON Serializer (`StatusJsonSerializer`)** spesifikasi statusjson.cgi (hostcount, hostlist, servicelist, programstatus), envelope resmi & kode status Nagios | `cgi/statusjson.c` & `cgi/jsonutils.c` |
 | **Integrasi 2 Arah** | **Bidirectional Bridge Navigation** (Akses cepat antar Dashboard & Classic UI) | Sidebar link di `side.php` & Navbar |
 
 ---
