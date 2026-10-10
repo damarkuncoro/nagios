@@ -62,6 +62,7 @@ Berjalan berdampingan (*side-by-side*) dengan Nagios Core Engine klasik melalui 
 | **Telemetry & Metrics Export** | **Performance Data Processor (`PerformanceDataProcessor`)** serialisasi template perfdata, ekspor Carbon/Graphite & OpenMetrics/Prometheus, serta rotasi spool | `xdata/xpddefault.c` |
 | **Status Query & Filter Engine** | **Status Query Engine (`StatusQueryEngine`)** multi-flag property filtering, supresi ACK & downtime pada unhandled problem, sorting & paginasi | `cgi/status.c` |
 | **CGI Configuration & Utils** | **CGI Config Parser (`CgiConfigParser`)** parser `cgi.cfg`, mapping izin otorisasi, serialisasi & utilitas formatting interval waktu/sanitasi | `cgi/cgiutils.c` |
+| **Notification Audit & History** | **Notification History Manager (`NotificationHistoryManager`)** audit log notifikasi, filter kontak/host/service, analitik pengiriman & ekspor CSV | `cgi/notifications.c` & `cgi/history.c` |
 | **Integrasi 2 Arah** | **Bidirectional Bridge Navigation** (Akses cepat antar Dashboard & Classic UI) | Sidebar link di `side.php` & Navbar |
 
 ---
