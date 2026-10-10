@@ -23,5 +23,11 @@ RSpec.describe "Queue", type: :request do
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Service Checks")
     end
+
+    it "supports sorting parameters" do
+      get queue_path(sort_by: 'hostname', sort_order: 'desc'), headers: { "Host" => "localhost" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Scheduling Queue & Distribution")
+    end
   end
 end

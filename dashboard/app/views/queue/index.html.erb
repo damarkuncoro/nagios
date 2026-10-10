@@ -66,10 +66,25 @@
       <table class="w-full text-left border-collapse min-w-[700px]">
         <thead>
           <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            <th class="py-3.5 px-6">Waktu Check Mendatang</th>
+            <th class="py-3.5 px-6">
+              <%= link_to queue_path(filter: @filter, sort_by: 'next_check', sort_order: (@sort_by == 'next_check' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1" do %>
+                <span>Waktu Check Mendatang</span>
+                <span class="text-[10px]"><%= (@sort_by == 'next_check' && @sort_order.to_s == 'desc') ? '▼' : '▲' %></span>
+              <% end %>
+            </th>
             <th class="py-3.5 px-6">Event Type</th>
-            <th class="py-3.5 px-6">Target</th>
-            <th class="py-3.5 px-6">Status Terakhir</th>
+            <th class="py-3.5 px-6">
+              <%= link_to queue_path(filter: @filter, sort_by: 'hostname', sort_order: (@sort_by == 'hostname' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1" do %>
+                <span>Target</span>
+                <span class="text-[10px]"><%= (@sort_by == 'hostname' && @sort_order.to_s == 'desc') ? '▼' : '▲' if @sort_by == 'hostname' %></span>
+              <% end %>
+            </th>
+            <th class="py-3.5 px-6">
+              <%= link_to queue_path(filter: @filter, sort_by: 'status', sort_order: (@sort_by == 'status' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1" do %>
+                <span>Status Terakhir</span>
+                <span class="text-[10px]"><%= (@sort_by == 'status' && @sort_order.to_s == 'desc') ? '▼' : '▲' if @sort_by == 'status' %></span>
+              <% end %>
+            </th>
             <th class="py-3.5 px-6">Attempts</th>
             <th class="py-3.5 px-6 text-right">Aksi</th>
           </tr>
@@ -83,10 +98,10 @@
             </tr>
           <% else %>
             <% @queue.each do |item| %>
-              <% is_due_soon = (item[:next_check] - Time.current) <= 60 %>
+              <% is_due_soon = item.respond_to?(:due_soon?) ? item.due_soon? : (item[:next_check] && (item[:next_check].to_time - Time.now) <= 60) %>
               <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition <%= 'bg-amber-50/20 dark:bg-amber-950/10' if is_due_soon %>">
                 <td class="py-4 px-6 text-sm font-mono text-indigo-600 dark:text-indigo-400 font-bold whitespace-nowrap">
-                  <%= item[:next_check].strftime("%H:%M:%S (%d %b)") %>
+                  <%= item[:next_check]&.strftime("%H:%M:%S (%d %b)") %>
                   <% if is_due_soon %>
                     <span class="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">⚡ DUE SOON</span>
                   <% end %>
