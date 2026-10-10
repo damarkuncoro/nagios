@@ -91,6 +91,24 @@ dashboard/app/
 
 ---
 
+## 📡 REST API & Telemetry Endpoints
+
+Dashboard menyediakan antarmuka REST API lengkap dan telemetri OpenMetrics/Prometheus:
+
+| Endpoint | Format / CGI | Keterangan |
+|---|---|---|
+| `GET /metrics` | **OpenMetrics / Prometheus** | Scrape endpoint metrik performa plugin dan status host (`nagios_service_metric`, `nagios_host_up`) |
+| `GET /perf_info.text` | **OpenMetrics Plaintext** | Telemetri plaintext untuk scraping langsung dari monitoring pipeline |
+| `GET /api/v1/status` | `statusjson.cgi` | Runtime host & service status, programstatus, downtimelist, commentlist |
+| `GET /api/v1/objects` | `objectjson.cgi` | Definisi konfigurasi host, service, command, contact, & timeperiod |
+| `GET /api/v1/archives` | `archivejson.cgi` | Event audit log, alertcount, notificationlist, statechangelist, & SLA availability |
+| `GET /api/v1/tactical` | Tactical Overview | Ringkasan kesehatan kluster, persentase kesehatan host & service |
+| `GET /api/v1/problems` | Unhandled Problems | Filter insiden belum di-acknowledge (`?filter=critical`, `hard`, `flapping`) |
+| `GET /api/v1/queue` | Scheduling Queue | Antrean eksekusi check, sebaran waktu, & deteksi check storm |
+| `GET /api/v1/availability` | Availability SLA | Laporan SLA ketersediaan host & service (`?duration=86400`) |
+
+---
+
 ## 🐳 Menjalankan dengan Docker Compose
 
 Pastikan Docker & Docker Compose aktif di komputer Anda:
@@ -105,6 +123,7 @@ docker compose ps
 
 ### Akses Antarmuka:
 - **Modern Rails Dashboard**: [http://localhost:3000](http://localhost:3000)
+- **Prometheus Scrape Endpoint**: [http://localhost:3000/metrics](http://localhost:3000/metrics)
 - **Classic Nagios Core UI**: [http://localhost:8080/nagios/](http://localhost:8080/nagios/) (Login: `nagiosadmin` / `nagiosadmin`)
 
 ---
@@ -117,8 +136,9 @@ Seluruh pengujian unit dan request spec dapat dijalankan di dalam container:
 docker compose exec web bundle exec rspec
 ```
 
-Semua 95 test cases mencakup:
-- Status API & Endpoints
+Seluruh test cases mencakup:
+- Status API & Endpoints (`/api/v1/status`, `/objects`, `/archives`, `/problems`, `/queue`, `/availability`)
+- Prometheus Scraping Endpoint Specs (`/metrics` & `/perf_info.text`)
 - Request Specs untuk seluruh controller & view formats
 - Remove Acknowledgment (Disack) & Cascade Cluster Downtime specs
 - Freshness & Stale Check Detector specs (`Statuses::Services::FreshnessDetector`)
