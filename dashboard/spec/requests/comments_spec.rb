@@ -18,6 +18,11 @@ RSpec.describe "Comments", type: :request do
       post comments_path, params: { host_name: "localhost", service_desc: "HTTP", comment: "Test comment" }, headers: { "Host" => "localhost" }
       expect(response).to have_http_status(:redirect)
     end
+
+    it "adds host-only comment and redirects" do
+      post comments_path, params: { host_name: "localhost", service_desc: "", comment: "Host maintenance comment" }, headers: { "Host" => "localhost" }
+      expect(response).to have_http_status(:redirect)
+    end
   end
 
   describe "DELETE /comments/:id" do

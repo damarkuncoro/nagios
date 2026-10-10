@@ -1,12 +1,12 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
+<div class="max-w-6xl mx-auto space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
   <!-- Header -->
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Tactical Status Overview</h1>
-      <p class="text-slate-500 text-sm mt-1">Ringkasan kesehatan infrastruktur jaringan dan server secara menyeluruh</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tactical Status Overview</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ringkasan kesehatan infrastruktur jaringan dan server secara menyeluruh (*tac.cgi*)</p>
     </div>
 
-    <%= link_to tactical_path, class: "flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-sm rounded-lg shadow-sm transition" do %>
+    <%= link_to tactical_path, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-xs rounded-lg shadow-xs transition" do %>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
       Refresh
     <% end %>
@@ -14,26 +14,26 @@
 
   <!-- Health Gauges -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Host Health</p>
-        <p class="text-4xl font-extrabold text-slate-900 mt-2"><%= @tac[:host_health_pct] %>%</p>
-        <p class="text-xs text-slate-500 mt-1"><%= @tac[:hosts][:up] %> dari <%= @tac[:hosts][:total] %> Host berstatus UP</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Host Health</p>
+        <p class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2"><%= @tac[:host_health_pct] %>%</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1"><%= @tac[:hosts][:up] %> dari <%= @tac[:hosts][:total] %> Host berstatus UP</p>
       </div>
 
-      <div class="w-24 h-24 rounded-full border-8 border-emerald-500 flex items-center justify-center text-emerald-600 font-black text-xl">
+      <div class="w-24 h-24 rounded-full border-8 border-emerald-500 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-xl">
         <%= @tac[:host_health_pct] %>%
       </div>
     </div>
 
-    <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Service Health</p>
-        <p class="text-4xl font-extrabold text-slate-900 mt-2"><%= @tac[:service_health_pct] %>%</p>
-        <p class="text-xs text-slate-500 mt-1"><%= @tac[:services][:ok] %> dari <%= @tac[:services][:total] %> Service berstatus OK</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Service Health</p>
+        <p class="text-4xl font-extrabold text-slate-900 dark:text-white mt-2"><%= @tac[:service_health_pct] %>%</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1"><%= @tac[:services][:ok] %> dari <%= @tac[:services][:total] %> Service berstatus OK</p>
       </div>
 
-      <div class="w-24 h-24 rounded-full border-8 border-emerald-500 flex items-center justify-center text-emerald-600 font-black text-xl">
+      <div class="w-24 h-24 rounded-full border-8 border-emerald-500 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-black text-xl">
         <%= @tac[:service_health_pct] %>%
       </div>
     </div>
@@ -42,138 +42,138 @@
   <!-- Monitoring Features Panel -->
   <% ps = @tac[:program_status] %>
   <% if ps %>
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800 text-lg">Monitoring Features</h3>
-        <span class="text-xs text-slate-500 font-mono">Nagios Core v<%= ps[:version] %> (PID: <%= ps[:pid] %>)</span>
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Monitoring Features</h3>
+        <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">Nagios Core v<%= ps[:version] %> (PID: <%= ps[:pid] %>)</span>
       </div>
 
       <div class="p-6 grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div class="p-4 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
           <div>
-            <p class="font-bold text-slate-800 text-sm">Flap Detection</p>
-            <p class="text-xs text-slate-500 mt-0.5">Detects flapping hosts/services</p>
+            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm">Flap Detection</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Detects flapping hosts/services</p>
           </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:flap_detection_enabled] ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700' %>">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:flap_detection_enabled] ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' %>">
             <%= ps[:flap_detection_enabled] ? 'ENABLED' : 'DISABLED' %>
           </span>
         </div>
 
-        <div class="p-4 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
           <div>
-            <p class="font-bold text-slate-800 text-sm">Notifications</p>
-            <p class="text-xs text-slate-500 mt-0.5">Email / Webhook alerts</p>
+            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm">Active Checks</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Scheduled active monitoring</p>
           </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:notifications_enabled] ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700' %>">
-            <%= ps[:notifications_enabled] ? 'ENABLED' : 'DISABLED' %>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:checks_enabled] ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' %>">
+            <%= ps[:checks_enabled] ? 'ENABLED' : 'PAUSED' %>
           </span>
         </div>
 
-        <div class="p-4 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
           <div>
-            <p class="font-bold text-slate-800 text-sm">Active Service Checks</p>
-            <p class="text-xs text-slate-500 mt-0.5">Scheduled check execution</p>
+            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm">Notifications</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Alerts dispatching to contacts</p>
           </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:service_checks_enabled] ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700' %>">
-            <%= ps[:service_checks_enabled] ? 'ENABLED' : 'DISABLED' %>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:notifications_enabled] ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' %>">
+            <%= ps[:notifications_enabled] ? 'ENABLED' : 'MUTED' %>
           </span>
         </div>
 
-        <div class="p-4 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
           <div>
-            <p class="font-bold text-slate-800 text-sm">Passive Service Checks</p>
-            <p class="text-xs text-slate-500 mt-0.5">Accept external status</p>
+            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm">Event Handlers</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Automated scripts on state changes</p>
           </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:passive_service_checks_enabled] ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700' %>">
-            <%= ps[:passive_service_checks_enabled] ? 'ENABLED' : 'DISABLED' %>
-          </span>
-        </div>
-
-        <div class="p-4 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50">
-          <div>
-            <p class="font-bold text-slate-800 text-sm">Event Handlers</p>
-            <p class="text-xs text-slate-500 mt-0.5">Automated fix scripts</p>
-          </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:event_handlers_enabled] ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700' %>">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:event_handlers_enabled] ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' %>">
             <%= ps[:event_handlers_enabled] ? 'ENABLED' : 'DISABLED' %>
           </span>
         </div>
 
-        <div class="p-4 rounded-lg border border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
           <div>
-            <p class="font-bold text-slate-800 text-sm">Perf Data Processing</p>
-            <p class="text-xs text-slate-500 mt-0.5">Performance metric logging</p>
+            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm">Performance Data</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Metrics processing pipeline</p>
           </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:perf_data_enabled] ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700' %>">
-            <%= ps[:perf_data_enabled] ? 'ENABLED' : 'DISABLED' %>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:process_performance_data] ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' %>">
+            <%= ps[:process_performance_data] ? 'ACTIVE' : 'INACTIVE' %>
+          </span>
+        </div>
+
+        <div class="p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+          <div>
+            <p class="font-bold text-slate-800 dark:text-slate-200 text-sm">Passive Checks</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Accept external check inputs</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold <%= ps[:passive_checks_enabled] ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' %>">
+            <%= ps[:passive_checks_enabled] ? 'ENABLED' : 'DISABLED' %>
           </span>
         </div>
       </div>
     </div>
   <% end %>
 
-  <!-- Status Grid Breakdown -->
+  <!-- Detailed Overview Grids -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Host Grid -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800 text-lg">Hosts Overview</h3>
-        <span class="px-2.5 py-1 bg-slate-200 text-slate-800 text-xs font-semibold rounded-full">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Hosts Overview</h3>
+        <span class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-300 text-xs font-semibold rounded-full">
           <%= @tac[:hosts][:total] %> Total
         </span>
       </div>
 
       <div class="p-6 grid grid-cols-2 gap-4">
-        <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-emerald-800">UP</p>
-          <p class="text-2xl font-bold text-emerald-900 mt-1"><%= @tac[:hosts][:up] %></p>
+        <div class="p-4 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-900 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-emerald-800 dark:text-emerald-300">UP</p>
+          <p class="text-2xl font-bold text-emerald-900 dark:text-emerald-200 mt-1"><%= @tac[:hosts][:up] %></p>
         </div>
 
-        <div class="p-4 bg-red-50 border border-red-100 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-red-800">DOWN (Unhandled)</p>
-          <p class="text-2xl font-bold text-red-900 mt-1"><%= @tac[:hosts][:down_unhandled] %></p>
+        <div class="p-4 bg-rose-50 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-rose-800 dark:text-rose-300">DOWN (Unhandled)</p>
+          <p class="text-2xl font-bold text-rose-900 dark:text-rose-200 mt-1"><%= @tac[:hosts][:down_unhandled] %></p>
         </div>
 
-        <div class="p-4 bg-amber-50 border border-amber-100 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-amber-800">DOWN (Acknowledged)</p>
-          <p class="text-2xl font-bold text-amber-900 mt-1"><%= @tac[:hosts][:down_ack] %></p>
+        <div class="p-4 bg-amber-50 dark:bg-amber-950/60 border border-amber-100 dark:border-amber-900 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-amber-800 dark:text-amber-300">DOWN (Acknowledged)</p>
+          <p class="text-2xl font-bold text-amber-900 dark:text-amber-200 mt-1"><%= @tac[:hosts][:down_ack] %></p>
         </div>
 
-        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-slate-700">UNREACHABLE</p>
-          <p class="text-2xl font-bold text-slate-800 mt-1"><%= @tac[:hosts][:unreachable] %></p>
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-slate-700 dark:text-slate-400">UNREACHABLE</p>
+          <p class="text-2xl font-bold text-slate-800 dark:text-slate-200 mt-1"><%= @tac[:hosts][:unreachable] %></p>
         </div>
       </div>
     </div>
 
     <!-- Service Grid -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800 text-lg">Services Overview</h3>
-        <span class="px-2.5 py-1 bg-slate-200 text-slate-800 text-xs font-semibold rounded-full">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Services Overview</h3>
+        <span class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-300 text-xs font-semibold rounded-full">
           <%= @tac[:services][:total] %> Total
         </span>
       </div>
 
       <div class="p-6 grid grid-cols-2 gap-4">
-        <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-emerald-800">OK</p>
-          <p class="text-2xl font-bold text-emerald-900 mt-1"><%= @tac[:services][:ok] %></p>
+        <div class="p-4 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-900 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-emerald-800 dark:text-emerald-300">OK</p>
+          <p class="text-2xl font-bold text-emerald-900 dark:text-emerald-200 mt-1"><%= @tac[:services][:ok] %></p>
         </div>
 
-        <div class="p-4 bg-amber-50 border border-amber-100 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-amber-800">WARNING (Unhandled)</p>
-          <p class="text-2xl font-bold text-amber-900 mt-1"><%= @tac[:services][:warning_unhandled] %></p>
+        <div class="p-4 bg-amber-50 dark:bg-amber-950/60 border border-amber-100 dark:border-amber-900 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-amber-800 dark:text-amber-300">WARNING (Unhandled)</p>
+          <p class="text-2xl font-bold text-amber-900 dark:text-amber-200 mt-1"><%= @tac[:services][:warning_unhandled] %></p>
         </div>
 
-        <div class="p-4 bg-red-50 border border-red-100 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-red-800">CRITICAL (Unhandled)</p>
-          <p class="text-2xl font-bold text-red-900 mt-1"><%= @tac[:services][:critical_unhandled] %></p>
+        <div class="p-4 bg-rose-50 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-rose-800 dark:text-rose-300">CRITICAL (Unhandled)</p>
+          <p class="text-2xl font-bold text-rose-900 dark:text-rose-200 mt-1"><%= @tac[:services][:critical_unhandled] %></p>
         </div>
 
-        <div class="p-4 bg-sky-50 border border-sky-100 rounded-lg">
-          <p class="text-xs font-semibold uppercase text-sky-800">Acknowledged</p>
-          <p class="text-2xl font-bold text-sky-900 mt-1"><%= @tac[:services][:warning_ack] + @tac[:services][:critical_ack] %></p>
+        <div class="p-4 bg-sky-50 dark:bg-sky-950/60 border border-sky-100 dark:border-sky-900 rounded-lg">
+          <p class="text-xs font-semibold uppercase text-sky-800 dark:text-sky-300">Acknowledged</p>
+          <p class="text-2xl font-bold text-sky-900 dark:text-sky-200 mt-1"><%= @tac[:services][:warning_ack] + @tac[:services][:critical_ack] %></p>
         </div>
       </div>
     </div>

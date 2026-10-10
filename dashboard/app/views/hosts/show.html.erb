@@ -1,54 +1,82 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="max-w-6xl mx-auto p-6 space-y-8">
+<div class="max-w-6xl mx-auto space-y-8">
   <!-- Breadcrumb & Header -->
   <div class="space-y-2">
-    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
-      <%= link_to "Dashboard", root_path, class: "hover:text-indigo-600 transition" %>
+    <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 dark:text-slate-500">
+      <%= link_to "Dashboard", root_path, class: "hover:text-indigo-600 dark:hover:text-indigo-400 transition" %>
       <span>/</span>
-      <span class="text-slate-700">Host Detail</span>
+      <span class="text-slate-700 dark:text-slate-300">Host Detail</span>
     </div>
 
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div class="flex items-center gap-3">
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight"><%= @host[:name] %></h1>
-        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold <%= @host[:status] == 'UP' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200' %>">
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight"><%= @host[:name] %></h1>
+        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold <%= @host[:status] == 'UP' ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60' : 'bg-rose-100 dark:bg-rose-950/70 text-rose-800 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60' %>">
           ● <%= @host[:status] %>
         </span>
+        <% if @host[:acknowledged] %>
+          <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+            ACK
+          </span>
+        <% end %>
       </div>
 
-      <%= button_to recheck_host_path(@host[:name]), method: :post, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg transition cursor-pointer" do %>
-        Force Re-check Host
-      <% end %>
+      <div class="flex flex-wrap items-center gap-2">
+        <% if %w[DOWN UNREACHABLE].include?(@host[:status]) && !@host[:acknowledged] %>
+          <%= button_to acknowledge_host_path(@host[:name]), method: :post, class: "flex items-center gap-1.5 px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs rounded-lg shadow-xs transition cursor-pointer" do %>
+            Acknowledge Problem
+          <% end %>
+        <% elsif @host[:acknowledged] %>
+          <%= button_to remove_acknowledgment_host_path(@host[:name]), method: :post, class: "flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded-lg border border-slate-200 dark:border-slate-700 transition cursor-pointer", title: "Cabut acknowledgement agar alert kembali aktif (Disack)" do %>
+            Cabut ACK (Disack)
+          <% end %>
+        <% end %>
+
+        <%= button_to schedule_cluster_downtime_host_path(@host[:name], duration_hours: 2), method: :post, class: "flex items-center gap-1.5 px-3 py-2 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-medium text-xs rounded-lg border border-indigo-200 dark:border-indigo-800 transition cursor-pointer", title: "Jadwalkan downtime serentak untuk host dan seluruh services" do %>
+          + Downtime Host & Services
+        <% end %>
+
+        <%= button_to recheck_all_services_host_path(@host[:name]), method: :post, class: "flex items-center gap-1.5 px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded-lg border border-slate-200 dark:border-slate-700 transition cursor-pointer", title: "Paksa re-check serentak seluruh service pada host ini" do %>
+          ⚡ Re-check Semua Services
+        <% end %>
+
+        <%= button_to recheck_host_path(@host[:name]), method: :post, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-xs rounded-lg shadow-xs transition cursor-pointer" do %>
+          Force Re-check Host
+        <% end %>
+      </div>
     </div>
   </div>
 
   <!-- Host Overview Card -->
-  <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
     <div>
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Plugin Output</p>
-      <p class="text-sm font-semibold text-slate-800 mt-1 font-mono"><%= @host[:plugin_output].presence || "-" %></p>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Plugin Output</p>
+      <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1 font-mono text-xs"><%= @host[:plugin_output].presence || "-" %></p>
     </div>
 
     <div>
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Terakhir Dicek</p>
-      <p class="text-sm font-semibold text-slate-800 mt-1"><%= @host[:last_check] ? @host[:last_check].strftime("%H:%M:%S (%d %b %Y)") : "-" %></p>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Terakhir Dicek</p>
+      <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1"><%= @host[:last_check] ? @host[:last_check].strftime("%H:%M:%S (%d %b %Y)") : "-" %></p>
     </div>
 
     <div>
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Check Attempt</p>
-      <p class="text-sm font-semibold text-slate-800 mt-1"><%= @host[:current_attempt] %> / <%= @host[:max_attempts] %></p>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Check Attempt</p>
+      <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1"><%= @host[:current_attempt] %> / <%= @host[:max_attempts] %></p>
     </div>
   </div>
 
+  <!-- Operational Commands Panel (cmd.cgi) -->
+  <%= render "hosts/operational_controls", host: @host %>
+
   <!-- Realtime Performance Graph Chart.js Card -->
-  <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 space-y-4">
     <div class="flex justify-between items-center">
       <div>
-        <h3 class="font-bold text-slate-800 text-lg">Performance Metrics & Latency Trend</h3>
-        <p class="text-xs text-slate-500">Grafik perbandingan latensi PING dan histori eksekusi check</p>
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Performance Metrics & Latency Trend</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Grafik perbandingan latensi PING dan histori eksekusi check</p>
       </div>
-      <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full border border-indigo-100">Chart.js Live</span>
+      <span class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 text-xs font-bold rounded-full border border-indigo-100 dark:border-indigo-900">Chart.js Live</span>
     </div>
 
     <div class="h-64 w-full">
@@ -58,12 +86,12 @@
 
   <!-- Monitored Services List -->
   <div class="space-y-4">
-    <h2 class="text-xl font-bold text-slate-800">Layanan Monitored (<%= @services.size %>)</h2>
+    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">Layanan Monitored (<%= @services.size %>)</h2>
 
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             <th class="py-3.5 px-6">Service Description</th>
             <th class="py-3.5 px-6">Status</th>
             <th class="py-3.5 px-6">Plugin Output</th>
@@ -71,10 +99,10 @@
             <th class="py-3.5 px-6 text-right">Aksi</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
           <% if @services.empty? %>
             <tr>
-              <td colspan="5" class="py-8 px-6 text-center text-slate-400">
+              <td colspan="5" class="py-8 px-6 text-center text-slate-400 dark:text-slate-500">
                 Tidak ada service terdaftar pada host ini.
               </td>
             </tr>
@@ -87,11 +115,19 @@
       </table>
     </div>
   </div>
+
+  <!-- Active Downtimes Panel -->
+  <%= render "hosts/downtimes_panel", downtimes: @downtimes %>
+
+  <!-- Comments & Notes Panel -->
+  <%= render "hosts/comments_panel", host: @host, services: @services, comments: @comments %>
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    var ctx = document.getElementById('perfChart').getContext('2d');
+    var canvas = document.getElementById('perfChart');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
     new Chart(ctx, {
       type: 'line',
       data: {

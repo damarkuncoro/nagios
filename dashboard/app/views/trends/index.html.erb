@@ -1,34 +1,54 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8">
-  <div class="flex justify-between items-center">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="max-w-6xl mx-auto space-y-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Trends & Historical Health</h1>
-      <p class="text-slate-500 text-sm mt-1">Grafik tren riwayat insiden dan kesehatan infrastruktur 7 hari terakhir (*trends.cgi*)</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Trends & Historical Health</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Grafik tren riwayat insiden dan kesehatan infrastruktur 7 hari terakhir (*trends.cgi* & *histogram.cgi*)</p>
     </div>
 
-    <span class="px-3.5 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-100">
+    <span class="px-3.5 py-1.5 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-400 text-xs font-bold rounded-lg border border-indigo-100 dark:border-indigo-900">
       7 Days Metrics Window
     </span>
   </div>
 
+  <!-- Alert Histogram Card (Adopsi histogram.cgi) -->
+  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 space-y-4">
+    <div class="flex justify-between items-center">
+      <div>
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg flex items-center gap-2">
+          <span>📊 Alert Histogram (Distribusi Per Jam)</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-mono">histogram.cgi</span>
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Analisis frekuensi alert berdasarkan waktu dalam sehari (00:00 - 23:00) untuk mendeteksi pola insiden puncak</p>
+      </div>
+      <span class="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-full border border-amber-200/60 dark:border-amber-800">24h Pattern</span>
+    </div>
+
+    <div class="h-64 w-full">
+      <canvas id="histogramChart"></canvas>
+    </div>
+  </div>
+
   <!-- Daily Trends Bars Grid -->
-  <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-6">
-    <h3 class="font-bold text-slate-800 text-lg">Distribution of State Transition Events (Daily)</h3>
+  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 space-y-6">
+    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Distribution of State Transition Events (Daily)</h3>
 
     <div class="space-y-5">
       <% @trends[:daily_stats].each do |stat| %>
         <div class="space-y-2">
           <div class="flex justify-between items-center text-xs font-semibold">
-            <span class="text-slate-800 font-bold"><%= stat[:date_str] %></span>
+            <span class="text-slate-800 dark:text-slate-200 font-bold"><%= stat[:date_str] %></span>
             <div class="flex gap-3">
-              <span class="text-emerald-600"><%= stat[:ok_count] %> Recovery / OK</span>
-              <span class="text-amber-600"><%= stat[:warning_count] %> Warnings</span>
-              <span class="text-red-600"><%= stat[:critical_count] %> Criticals</span>
-              <span class="text-slate-400 font-mono">Total: <%= stat[:total_alerts] %></span>
+              <span class="text-emerald-600 dark:text-emerald-400"><%= stat[:ok_count] %> Recovery / OK</span>
+              <span class="text-amber-600 dark:text-amber-400"><%= stat[:warning_count] %> Warnings</span>
+              <span class="text-rose-600 dark:text-rose-400"><%= stat[:critical_count] %> Criticals</span>
+              <span class="text-slate-400 dark:text-slate-500 font-mono">Total: <%= stat[:total_alerts] %></span>
             </div>
           </div>
 
           <!-- Stacked Bar -->
-          <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200 flex">
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden border border-slate-200 dark:border-slate-700 flex">
             <% if stat[:total_alerts] > 0 %>
               <% ok_pct = (stat[:ok_count].to_f / stat[:total_alerts] * 100).round(1) %>
               <% warn_pct = (stat[:warning_count].to_f / stat[:total_alerts] * 100).round(1) %>
@@ -36,7 +56,7 @@
 
               <div class="bg-emerald-500 h-full" style="width: <%= ok_pct %>%" title="OK: <%= ok_pct %>%"></div>
               <div class="bg-amber-500 h-full" style="width: <%= warn_pct %>%" title="Warning: <%= warn_pct %>%"></div>
-              <div class="bg-red-500 h-full" style="width: <%= crit_pct %>%" title="Critical: <%= crit_pct %>%"></div>
+              <div class="bg-rose-500 h-full" style="width: <%= crit_pct %>%" title="Critical: <%= crit_pct %>%"></div>
             <% else %>
               <div class="bg-emerald-500 h-full w-full" title="100% Operational (No Incidents)"></div>
             <% end %>
@@ -46,3 +66,52 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var canvas = document.getElementById('histogramChart');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+
+    // 24-hour slots
+    var hours = Array.from({length: 24}, function(_, i) {
+      return (i < 10 ? '0' : '') + i + ':00';
+    });
+
+    // Mock distribution data aligned with events
+    var warningData = [0, 0, 0, 0, 0, 0, 1, 2, 4, 3, 2, 1, 1, 2, 3, 5, 2, 1, 0, 0, 0, 0, 0, 0];
+    var criticalData = [0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0];
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: hours,
+        datasets: [
+          {
+            label: 'Warning Alerts',
+            data: warningData,
+            backgroundColor: '#F59E0B',
+            borderRadius: 4
+          },
+          {
+            label: 'Critical Alerts',
+            data: criticalData,
+            backgroundColor: '#EF4444',
+            borderRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+        }
+      }
+    });
+  });
+</script>

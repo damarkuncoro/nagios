@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full">
   <head>
     <title>Nagios Core Modern Dashboard</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <script>
+      // Tailor Tailwind to use class-based dark mode
+      tailwind = { config: { darkMode: 'class' } };
+      // Preload theme to prevent flash of unstyled content
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex">
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col md:flex-row transition-colors duration-150" data-controller="quick-search">
     <!-- Sidebar Navigation (Matching Nagios side.php) -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 min-h-screen">
       <!-- Logo Header -->
@@ -21,6 +31,17 @@
             <span class="text-[10px] text-slate-400 font-normal">Modern Rails Dashboard</span>
           </div>
         <% end %>
+      </div>
+
+      <!-- Quick Search Trigger in Sidebar -->
+      <div class="px-4 pt-4">
+        <button type="button" data-action="click->quick-search#open" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg border border-slate-700/60 transition group">
+          <span class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            Quick Search...
+          </span>
+          <kbd class="px-1.5 py-0.5 text-[10px] bg-slate-900 text-slate-400 rounded border border-slate-700 font-mono">⌘K</kbd>
+        </button>
       </div>
 
       <!-- Nav Links -->
@@ -67,6 +88,12 @@
               <% end %>
             </li>
             <li>
+              <%= link_to outages_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(outages_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 4.243a9 9 0 01-2.829-2.829m0 0l2.829-2.829m-2.829 2.829L3 21"></path></svg>
+                Network Outages
+              <% end %>
+            </li>
+            <li>
               <%= link_to hostgroups_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(hostgroups_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 Host Groups
@@ -107,6 +134,18 @@
               <%= link_to alerts_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(alerts_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Alert History
+              <% end %>
+            </li>
+            <li>
+              <%= link_to notifications_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(notifications_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                Notifications History
+              <% end %>
+            </li>
+            <li>
+              <%= link_to logs_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(logs_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h7"></path></svg>
+                Live Event Log
               <% end %>
             </li>
           </ul>
@@ -159,23 +198,43 @@
       <!-- Footer Info -->
       <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500">
         <a href="http://localhost:8080" target="_blank" class="flex items-center justify-between hover:text-slate-300 transition">
-          <span>CGI Web Interface</span>
+          <span>Legacy CGI Interface</span>
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
       </div>
     </aside>
 
-    <!-- Main Content Body -->
+    <!-- Main Content Container with Top Navbar -->
     <div class="flex-1 min-w-0 flex flex-col justify-between overflow-y-auto min-h-screen">
-      <div>
+      <!-- Top Navigation Bar (Header) -->
+      <header class="h-16 px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between sticky top-0 z-30 transition-colors">
+        <!-- Quick Search Bar Trigger -->
+        <div class="flex-1 max-w-md">
+          <button type="button" data-action="click->quick-search#open" class="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700/60 shadow-xs transition group">
+            <span class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <span>Quick search hosts, services, or pages...</span>
+            </span>
+            <kbd class="px-2 py-0.5 text-[10px] bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded border border-slate-200 dark:border-slate-700 font-mono shadow-2xs">⌘K</kbd>
+          </button>
+        </div>
+
+        <!-- Right Header Items: Auto-Refresh, Engine Status, Theme Switcher, CGI Link -->
+        <%= render "layouts/navbar_actions" %>
+      </header>
+
+      <!-- Main Body Yield -->
+      <main class="p-6">
         <%= yield %>
-      </div>
+      </main>
 
       <!-- Footer matching main.php -->
-      <footer class="mt-12 p-6 bg-slate-100 border-t border-slate-200 text-xs text-slate-500 space-y-2 text-center">
+      <footer class="mt-12 p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 space-y-2 text-center transition-colors">
         <p>Copyright &copy; 2010-2026 Nagios Core Development Team and Community Contributors. Copyright &copy; 1999-2009 Ethan Galstad.</p>
-        <p class="max-w-4xl mx-auto text-[11px] text-slate-400 leading-relaxed">Nagios Core is licensed under the GNU General Public License and is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE. Nagios, Nagios Core and the Nagios logo are trademarks owned by Nagios Enterprises, LLC.</p>
+        <p class="max-w-4xl mx-auto text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">Nagios Core is licensed under the GNU General Public License and is provided AS IS with NO WARRANTY OF ANY KIND. Nagios, Nagios Core and the Nagios logo are trademarks owned by Nagios Enterprises, LLC.</p>
       </footer>
     </div>
+
+    <%= render "layouts/quick_search_modal" %>
   </body>
 </html>

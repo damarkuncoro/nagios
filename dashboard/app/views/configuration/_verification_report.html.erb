@@ -1,0 +1,82 @@
+<div class="rounded-xl border <%= report.valid? ? 'border-emerald-200 dark:border-emerald-900 bg-emerald-50/70 dark:bg-emerald-950/40' : 'border-rose-200 dark:border-rose-900 bg-rose-50/70 dark:bg-rose-950/40' %> p-5 shadow-xs transition-all space-y-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b <%= report.valid? ? 'border-emerald-200/60 dark:border-emerald-900/60' : 'border-rose-200/60 dark:border-rose-900/60' %> pb-4">
+    <div class="flex items-start gap-3">
+      <div class="p-2 rounded-lg <%= report.valid? ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white' %>">
+        <% if report.valid? %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <% else %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        <% end %>
+      </div>
+      <div>
+        <h3 class="text-base font-bold <%= report.valid? ? 'text-emerald-900 dark:text-emerald-100' : 'text-rose-900 dark:text-rose-100' %>">
+          <%= report.valid? ? 'Pre-Flight Verification Succeeded' : 'Pre-Flight Verification Failed' %>
+        </h3>
+        <p class="text-xs <%= report.valid? ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300' %> mt-0.5">
+          <%= report.summary %>
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 self-start sm:self-auto">
+      <span class="font-mono text-[11px] px-2.5 py-1 rounded bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
+        🕒 <%= Time.current.strftime('%H:%M:%S') %>
+      </span>
+    </div>
+  </div>
+
+  <!-- Verification Diagnostic Metrics -->
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+    <div class="p-3 bg-white/80 dark:bg-slate-900/80 rounded-lg border border-slate-200/80 dark:border-slate-800">
+      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Errors</span>
+      <p class="text-xl font-black <%= report.errors.empty? ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
+        <%= report.errors.size %>
+      </p>
+    </div>
+    <div class="p-3 bg-white/80 dark:bg-slate-900/80 rounded-lg border border-slate-200/80 dark:border-slate-800">
+      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Warnings</span>
+      <p class="text-xl font-black <%= report.warnings.empty? ? 'text-slate-600 dark:text-slate-400' : 'text-amber-500' %>">
+        <%= report.warnings.size %>
+      </p>
+    </div>
+    <div class="p-3 bg-white/80 dark:bg-slate-900/80 rounded-lg border border-slate-200/80 dark:border-slate-800">
+      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hosts Checked</span>
+      <p class="text-xl font-black text-indigo-600 dark:text-indigo-400">
+        <%= report.metrics[:hosts_checked] %>
+      </p>
+    </div>
+    <div class="p-3 bg-white/80 dark:bg-slate-900/80 rounded-lg border border-slate-200/80 dark:border-slate-800">
+      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services Checked</span>
+      <p class="text-xl font-black text-indigo-600 dark:text-indigo-400">
+        <%= report.metrics[:services_checked] %>
+      </p>
+    </div>
+    <div class="p-3 bg-white/80 dark:bg-slate-900/80 rounded-lg border border-slate-200/80 dark:border-slate-800 col-span-2 sm:col-span-1">
+      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Circular Loops</span>
+      <p class="text-xl font-black <%= report.metrics[:circular_loops_detected].zero? ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' %>">
+        <%= report.metrics[:circular_loops_detected] %>
+      </p>
+    </div>
+  </div>
+
+  <% if report.errors.any? %>
+    <div class="p-3 rounded-lg bg-rose-100/90 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-900 space-y-1">
+      <p class="text-xs font-bold text-rose-800 dark:text-rose-200 uppercase tracking-wider">Verification Errors:</p>
+      <ul class="text-xs font-mono text-rose-700 dark:text-rose-300 list-disc list-inside space-y-0.5">
+        <% report.errors.each do |err| %>
+          <li><%= err %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if report.warnings.any? %>
+    <div class="p-3 rounded-lg bg-amber-100/90 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-900 space-y-1">
+      <p class="text-xs font-bold text-amber-800 dark:text-amber-200 uppercase tracking-wider">Verification Warnings:</p>
+      <ul class="text-xs font-mono text-amber-700 dark:text-amber-300 list-disc list-inside space-y-0.5">
+        <% report.warnings.each do |wrn| %>
+          <li><%= wrn %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

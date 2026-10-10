@@ -1,29 +1,29 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8">
+<div class="max-w-6xl mx-auto space-y-8">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Top Incidents & Alert Totals</h1>
-      <p class="text-slate-500 text-sm mt-1">Ringkasan statistik host & service dengan frekuensi kegagalan/alert tertinggi (*summary.cgi*)</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Top Incidents & Alert Totals</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ringkasan statistik host & service dengan frekuensi kegagalan/alert tertinggi (*summary.cgi*)</p>
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Top Monitored Services Failures -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800 text-lg">Top Problematic Services</h3>
-        <span class="px-2.5 py-1 bg-amber-50 text-amber-800 text-xs font-semibold rounded-full border border-amber-200">24h History</span>
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Top Problematic Services</h3>
+        <span class="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-400 text-xs font-semibold rounded-full border border-amber-200/60 dark:border-amber-800">24h History</span>
       </div>
 
-      <div class="p-6 divide-y divide-slate-100">
+      <div class="p-6 divide-y divide-slate-100 dark:divide-slate-800">
         <% if @summary[:top_services].empty? %>
-          <div class="py-8 text-center text-slate-400 font-medium">
+          <div class="py-8 text-center text-slate-400 dark:text-slate-500 font-medium">
             ✓ Tidak ada riwayat insiden service dalam 24 jam terakhir.
           </div>
         <% else %>
           <% @summary[:top_services].each do |service_name, count| %>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-semibold text-slate-800 text-sm"><%= service_name %></span>
-              <span class="px-3 py-1 bg-red-100 text-red-800 font-black text-xs rounded-full border border-red-200"><%= count %> Alert</span>
+              <span class="font-semibold text-slate-800 dark:text-slate-200 text-sm"><%= service_name %></span>
+              <span class="px-3 py-1 bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 font-black text-xs rounded-full border border-rose-200 dark:border-rose-800"><%= count %> Alert</span>
             </div>
           <% end %>
         <% end %>
@@ -31,22 +31,24 @@
     </div>
 
     <!-- Top Monitored Hosts Failures -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800 text-lg">Top Problematic Hosts</h3>
-        <span class="px-2.5 py-1 bg-amber-50 text-amber-800 text-xs font-semibold rounded-full border border-amber-200">24h History</span>
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Top Problematic Hosts</h3>
+        <span class="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-400 text-xs font-semibold rounded-full border border-amber-200/60 dark:border-amber-800">24h History</span>
       </div>
 
-      <div class="p-6 divide-y divide-slate-100">
+      <div class="p-6 divide-y divide-slate-100 dark:divide-slate-800">
         <% if @summary[:top_hosts].empty? %>
-          <div class="py-8 text-center text-slate-400 font-medium">
+          <div class="py-8 text-center text-slate-400 dark:text-slate-500 font-medium">
             ✓ Tidak ada riwayat insiden host dalam 24 jam terakhir.
           </div>
         <% else %>
           <% @summary[:top_hosts].each do |host_name, count| %>
             <div class="py-3 flex items-center justify-between">
-              <span class="font-semibold text-slate-800 text-sm"><%= host_name %></span>
-              <span class="px-3 py-1 bg-red-100 text-red-800 font-black text-xs rounded-full border border-red-200"><%= count %> Alert</span>
+              <span class="font-semibold text-slate-800 dark:text-slate-200 text-sm">
+                <%= link_to host_name, host_path(host_name), class: "hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline" %>
+              </span>
+              <span class="px-3 py-1 bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 font-black text-xs rounded-full border border-rose-200 dark:border-rose-800"><%= count %> Alert</span>
             </div>
           <% end %>
         <% end %>

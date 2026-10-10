@@ -1,16 +1,36 @@
 <% dom_id = "service_#{service[:host_name].parameterize}_#{service[:description].parameterize}" %>
 <% perf_widget = render_perf_data_widget(service) %>
 
-<tr id="<%= dom_id %>" data-filter-target="row" data-status="<%= service[:status] %>" class="hover:bg-slate-50 transition">
-  <td class="py-4 px-6 text-sm text-slate-500 font-medium">
+<tr id="<%= dom_id %>" data-filter-target="row" data-status="<%= service[:status] %>" class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+  <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 font-medium">
     <%= service[:host_name] %>
   </td>
-  <td class="py-4 px-6 font-semibold text-slate-800">
+  <td class="py-4 px-6 font-semibold text-slate-800 dark:text-slate-200">
     <div class="flex items-center gap-2">
       <span><%= service[:description] %></span>
       <% if service[:acknowledged] %>
-        <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-sky-100 text-sky-800 border border-sky-200">
+        <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
           ACK
+        </span>
+      <% end %>
+      <% if service[:notifications_enabled] == false %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800" title="Notifikasi dimatikan">
+          🔕 Muted
+        </span>
+      <% end %>
+      <% if service[:checks_enabled] == false %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700" title="Active check dimatikan">
+          ⏸️ Paused
+        </span>
+      <% end %>
+      <% if service[:flapping] %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 animate-pulse" title="Service is flapping (sering berubah status)">
+          🔀 Flapping
+        </span>
+      <% end %>
+      <% if service[:stale] %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800" title="Hasil check service sudah usang / terlambat dieksekusi">
+          ⏱️ Stale
         </span>
       <% end %>
     </div>
@@ -19,40 +39,50 @@
     <div class="space-y-1">
       <% case service[:status] %>
       <% when 'OK' %>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> OK
         </span>
       <% when 'WARNING' %>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/50">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> WARNING
         </span>
       <% when 'CRITICAL' %>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 dark:bg-rose-950/70 text-red-800 dark:text-rose-300 border border-red-200/50 dark:border-rose-800/50">
           <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> CRITICAL
         </span>
       <% else %>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
           <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> <%= service[:status] %>
         </span>
       <% end %>
 
-      <p class="text-[11px] text-slate-400 font-mono">
-        Attempt <%= service[:attempts] %> (<%= service[:state_type] %>)
-      </p>
+      <!-- Context Help Tooltip for HARD vs SOFT State -->
+      <div class="relative group/tooltip inline-block">
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-mono cursor-help border-b border-dotted border-slate-300 dark:border-slate-600 inline-block">
+          Attempt <%= service[:attempts] %> (<%= service[:state_type] %>)
+        </p>
+        <div class="absolute left-0 bottom-full mb-1.5 hidden group-hover/tooltip:block z-20 w-52 p-2 bg-slate-900 text-white text-[11px] rounded-lg shadow-lg border border-slate-700">
+          <% if service[:state_type] == 'HARD' %>
+            <strong class="text-amber-300">HARD State:</strong> Status telah terkonfirmasi setelah batas percobaan maksimal. Notifikasi telah/dapat dikirimkan ke kontak.
+          <% else %>
+            <strong class="text-sky-300">SOFT State:</strong> Status sementara dalam proses retry check. Belum ada notifikasi yang dipicu.
+          <% end %>
+        </div>
+      </div>
     </div>
   </td>
-  <td class="py-4 px-6 text-sm text-slate-600 max-w-md">
+  <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300 max-w-md">
     <div class="space-y-1">
-      <p class="truncate"><%= service[:plugin_output].presence || "-" %></p>
+      <p class="truncate font-mono text-xs"><%= service[:plugin_output].presence || "-" %></p>
       <% if perf_widget %>
         <div class="pt-0.5"><%= perf_widget %></div>
       <% end %>
     </div>
   </td>
-  <td class="py-4 px-6 text-sm text-slate-500">
+  <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">
     <p><%= service[:last_check] ? service[:last_check].strftime("%H:%M:%S (%d %b)") : "-" %></p>
     <% if service[:next_check] %>
-      <p class="text-[11px] text-slate-400">Next: <%= service[:next_check].strftime("%H:%M:%S") %></p>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 font-mono">Next: <%= service[:next_check].strftime("%H:%M:%S") %></p>
     <% end %>
   </td>
   <td class="py-4 px-6 text-right">
@@ -60,20 +90,43 @@
       <% if %w[WARNING CRITICAL UNKNOWN].include?(service[:status]) && !service[:acknowledged] %>
         <%= button_to acknowledge_service_host_path(service[:host_name], service_desc: service[:description]),
                       method: :post,
-                      class: "text-xs px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold border border-amber-200 rounded-md transition cursor-pointer" do %>
+                      class: "text-xs px-2.5 py-1.5 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 font-semibold border border-amber-200 dark:border-amber-800 rounded-md transition cursor-pointer" do %>
           Acknowledge
+        <% end %>
+      <% elsif service[:acknowledged] %>
+        <%= button_to remove_service_acknowledgment_host_path(service[:host_name], service_desc: service[:description]),
+                      method: :post,
+                      title: "Cabut acknowledgement agar alert kembali aktif (Disack)",
+                      class: "text-xs px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium border border-slate-200 dark:border-slate-700 rounded-md transition cursor-pointer" do %>
+          Disack
         <% end %>
       <% end %>
 
       <%= button_to schedule_service_downtime_host_path(service[:host_name], service_desc: service[:description], duration_hours: 1),
                     method: :post,
-                    class: "text-xs px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium border border-indigo-200 rounded-md transition cursor-pointer" do %>
+                    class: "text-xs px-2.5 py-1.5 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-medium border border-indigo-200 dark:border-indigo-800 rounded-md transition cursor-pointer" do %>
         + Downtime
+      <% end %>
+
+      <% if service[:notifications_enabled] == false %>
+        <%= button_to toggle_service_notifications_host_path(service[:host_name], service_desc: service[:description], enable: 'true'),
+                      method: :post,
+                      title: "Aktifkan notifikasi untuk service ini",
+                      class: "text-xs px-2 py-1.5 bg-amber-50 dark:bg-amber-950/70 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-medium rounded-md border border-amber-200 dark:border-amber-800 transition cursor-pointer" do %>
+          🔔 Unmute
+        <% end %>
+      <% else %>
+        <%= button_to toggle_service_notifications_host_path(service[:host_name], service_desc: service[:description], enable: 'false'),
+                      method: :post,
+                      title: "Mute notifikasi untuk service ini",
+                      class: "text-xs px-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 font-medium rounded-md border border-slate-200 dark:border-slate-700 transition cursor-pointer" do %>
+          🔕 Mute
+        <% end %>
       <% end %>
 
       <%= button_to recheck_service_host_path(service[:host_name], service_desc: service[:description]),
                     method: :post,
-                    class: "text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-md transition cursor-pointer" do %>
+                    class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-md border border-slate-200/80 dark:border-slate-700 transition cursor-pointer" do %>
         Re-check
       <% end %>
     </div>

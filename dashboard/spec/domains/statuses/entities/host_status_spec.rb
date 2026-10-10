@@ -32,6 +32,16 @@ RSpec.describe Statuses::Entities::HostStatus do
       host = described_class.new(name: 'server1', status: 2, current_attempt: 1, max_attempts: 10)
       expect(host.attempts_formatted).to eq('1/10')
     end
+
+    it 'detects flapping state correctly' do
+      host_flapping = described_class.new(name: 'server1', status: 2, is_flapping: true)
+      host_stable = described_class.new(name: 'server2', status: 2, is_flapping: false)
+
+      expect(host_flapping.flapping?).to be true
+      expect(host_flapping.to_h[:flapping]).to be true
+      expect(host_stable.flapping?).to be false
+      expect(host_stable.to_h[:flapping]).to be false
+    end
   end
 
   describe '#to_h' do

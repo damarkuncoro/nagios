@@ -1,35 +1,42 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8">
+<div class="max-w-6xl mx-auto space-y-8">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Hostgroups</h1>
-      <p class="text-slate-500 text-sm mt-1">Pengelompokan server berdasarkan kategori infrastruktur</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Hostgroups</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Pengelompokan server berdasarkan kategori infrastruktur (*status.cgi?hostgroup=all*)</p>
     </div>
   </div>
 
   <% if @hostgroups.empty? %>
-    <div class="bg-white p-8 rounded-xl border border-slate-200 text-center text-slate-400">
+    <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 text-center text-slate-400 dark:text-slate-500">
       Tidak ada Hostgroup terdaftar di Nagios Core.
     </div>
   <% else %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <% @hostgroups.each do |group| %>
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-            <h3 class="font-bold text-slate-800 text-lg"><%= group[:name] %></h3>
-            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full border border-indigo-100">
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg"><%= group[:alias].presence || group[:name] %></h3>
+              <% if group[:alias].present? && group[:alias] != group[:name] %>
+                <p class="text-xs font-mono text-slate-400 dark:text-slate-500"><%= group[:name] %></p>
+              <% end %>
+            </div>
+            <span class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 text-xs font-semibold rounded-full border border-indigo-100 dark:border-indigo-800">
               <%= group[:hosts].size %> Hosts
             </span>
           </div>
 
-          <div class="p-6 divide-y divide-slate-100">
+          <div class="p-6 divide-y divide-slate-100 dark:divide-slate-800">
             <% group[:hosts].each do |host| %>
               <% h_hash = host.is_a?(Hash) ? host : host.to_h %>
               <div class="py-3 flex justify-between items-center">
                 <div>
-                  <p class="font-semibold text-slate-800 text-sm"><%= h_hash[:name] %></p>
-                  <p class="text-xs text-slate-500 mt-0.5"><%= h_hash[:plugin_output] %></p>
+                  <p class="font-semibold text-slate-800 dark:text-slate-200 text-sm">
+                    <%= link_to h_hash[:name], host_path(h_hash[:name]), class: "hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline" %>
+                  </p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"><%= h_hash[:plugin_output] %></p>
                 </div>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold <%= h_hash[:status] == 'UP' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800' %>">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold <%= h_hash[:status] == 'UP' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' %>">
                   ● <%= h_hash[:status] %>
                 </span>
               </div>

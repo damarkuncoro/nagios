@@ -1,0 +1,52 @@
+<!-- Operational Commands Panel (Adopsi dari cmd.cgi) -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 space-y-4">
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base flex items-center gap-2">
+        <span>⚡ Kontrol Operasional Engine</span>
+        <span class="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">cmd.cgi</span>
+      </h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Kelola eksekusi check, notifikasi, atau kirim hasil passive check secara instan</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-2">
+    <!-- Quick Toggles -->
+    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200/80 dark:border-slate-700/60 space-y-3">
+      <p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Host Switches</p>
+      <div class="flex flex-wrap gap-2.5">
+        <% if host[:notifications_enabled] == false %>
+          <%= button_to toggle_notifications_host_path(host[:name], enable: 'true'), method: :post, class: "text-xs px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/70 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 font-medium rounded-md border border-emerald-200 dark:border-emerald-800 transition cursor-pointer" do %>
+            🔔 Enable Notifications
+          <% end %>
+        <% else %>
+          <%= button_to toggle_notifications_host_path(host[:name], enable: 'false'), method: :post, class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-md border border-slate-200 dark:border-slate-700 transition cursor-pointer" do %>
+            🔕 Mute Notifications
+          <% end %>
+        <% end %>
+
+        <% if host[:checks_enabled] == false %>
+          <%= button_to toggle_checks_host_path(host[:name], enable: 'true'), method: :post, class: "text-xs px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/70 hover:bg-indigo-100 text-indigo-800 dark:text-indigo-300 font-medium rounded-md border border-indigo-200 dark:border-indigo-800 transition cursor-pointer" do %>
+            ▶️ Enable Active Checks
+          <% end %>
+        <% else %>
+          <%= button_to toggle_checks_host_path(host[:name], enable: 'false'), method: :post, class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-md border border-slate-200 dark:border-slate-700 transition cursor-pointer" do %>
+            ⏸️ Pause Checks
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Submit Passive Check Form -->
+    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200/80 dark:border-slate-700/60">
+      <p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Submit Passive Check</p>
+      <%= form_with url: submit_passive_check_host_path(host[:name]), method: :post, class: "space-y-2 text-xs" do |f| %>
+        <div class="flex gap-2">
+          <%= f.select :status_code, options_for_select([["0 - OK / UP", 0], ["1 - WARNING", 1], ["2 - CRITICAL / DOWN", 2], ["3 - UNKNOWN", 3]]), {}, class: "p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 focus:outline-none" %>
+          <%= f.text_field :output, placeholder: "Custom check output message...", class: "flex-1 p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none" %>
+        </div>
+        <%= f.submit "Kirim Hasil Check ke Engine", class: "w-full py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded transition cursor-pointer" %>
+      <% end %>
+    </div>
+  </div>
+</div>

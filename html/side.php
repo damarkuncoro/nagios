@@ -25,10 +25,17 @@ if ($theme != 'dark' && $theme != 'light') {
 	<a href="https://www.nagios.org" target="_blank"><div class="fulllogo nagioslogo"></div></a>
 </div>
 
+<div style="padding: 10px 14px 6px 14px;">
+	<a href="http://localhost:3000" target="_blank" style="display: block; background: #4f46e5; color: #ffffff; text-align: center; padding: 7px 10px; border-radius: 6px; font-weight: bold; font-size: 11px; text-decoration: none; box-shadow: 0 1px 3px rgba(0,0,0,0.4);">
+		🚀 Modern Dashboard
+	</a>
+</div>
+
 <div class="navsection">
 	<div class="navsectiontitle">General</div>
 	<div class="navsectionlinks">
 		<ul class="navsectionlinks">
+			<li><a href="http://localhost:3000" target="_blank" style="color: #818cf8; font-weight: bold;">Modern Rails Dashboard</a></li>
 			<li><a href="main.php" target="<?php echo $link_target;?>">Home</a></li>
 			<li><a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/" target="_blank">Documentation</a></li>
 		</ul>

@@ -1,9 +1,9 @@
 module Statuses
   module Entities
     class ServiceStatus
-      attr_reader :host_name, :description, :status_code, :plugin_output, :performance_data, :last_check, :next_check, :state_type, :attempts, :latency, :execution_time, :acknowledged
+      attr_reader :host_name, :description, :status_code, :plugin_output, :performance_data, :last_check, :next_check, :state_type, :attempts, :latency, :execution_time, :acknowledged, :notifications_enabled, :checks_enabled, :is_flapping
 
-      def initialize(host_name:, description:, status:, plugin_output: '', perf_data: '', last_check: nil, next_check: nil, state_type: 'HARD', attempts: '1/1', latency: 0.0, execution_time: 0.0, acknowledged: false)
+      def initialize(host_name:, description:, status:, plugin_output: '', perf_data: '', last_check: nil, next_check: nil, state_type: 'HARD', attempts: '1/1', latency: 0.0, execution_time: 0.0, acknowledged: false, notifications_enabled: true, checks_enabled: true, is_flapping: false)
         @host_name = host_name
         @description = description
         @status_code = ValueObjects::StatusCode.new(status, type: :service)
@@ -16,6 +16,9 @@ module Statuses
         @latency = latency.to_f
         @execution_time = execution_time.to_f
         @acknowledged = !!acknowledged
+        @notifications_enabled = notifications_enabled != false
+        @checks_enabled = checks_enabled != false
+        @is_flapping = is_flapping == true || is_flapping.to_s == '1'
       end
 
       def status
@@ -42,6 +45,22 @@ module Statuses
         @acknowledged
       end
 
+      def flapping?
+        @is_flapping
+      end
+
+      def hard_state?
+        state_type == 'HARD'
+      end
+
+      def soft_state?
+        state_type == 'SOFT'
+      end
+
+      def stale?(tolerance_seconds: 300)
+        Services::FreshnessDetector.stale?(self, tolerance_seconds: tolerance_seconds)
+      end
+
       def perf_data
         performance_data.raw
       end
@@ -63,7 +82,11 @@ module Statuses
           attempts: attempts,
           latency: latency,
           execution_time: execution_time,
-          acknowledged: acknowledged
+          acknowledged: acknowledged,
+          notifications_enabled: notifications_enabled,
+          checks_enabled: checks_enabled,
+          flapping: flapping?,
+          stale: stale?
         }
       end
 

@@ -1,57 +1,144 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
-  <div class="flex justify-between items-center">
+<div class="max-w-6xl mx-auto space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Scheduling Queue</h1>
-      <p class="text-slate-500 text-sm mt-1">Antrean eksekusi check mendatang yang dijadwalkan oleh Nagios Core Engine</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Scheduling Queue & Distribution</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Antrean eksekusi check dan analisis pemerataan waktu (*base/events.c & extinfo.cgi?type=7*)</p>
+    </div>
+
+    <%= link_to queue_path(filter: @filter), class: "self-start sm:self-auto flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-xs rounded-lg shadow-xs transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+      <span>Refresh</span>
+    <% end %>
+  </div>
+
+  <!-- Check Spread Distribution Metrics (base/events.c display_scheduling_info) -->
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total in Queue</p>
+      <p class="text-2xl font-black text-slate-800 dark:text-slate-200 mt-1"><%= @metrics[:total] %></p>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"><%= @metrics[:host_checks] %> Hosts / <%= @metrics[:service_checks] %> Svcs</p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border <%= @metrics[:due_in_1m].positive? ? 'border-amber-300 dark:border-amber-800/80 bg-amber-50/30 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-800' %> shadow-xs">
+      <div class="flex items-center justify-between">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Due in ≤ 1 Min</p>
+        <% if @metrics[:due_in_1m].positive? %>
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+        <% end %>
+      </div>
+      <p class="text-2xl font-black <%= @metrics[:due_in_1m].positive? ? 'text-amber-600 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300' %> mt-1">
+        <%= @metrics[:due_in_1m] %>
+      </p>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Realtime execution</p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Due in 1–5 Min</p>
+      <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1"><%= @metrics[:due_in_5m] %></p>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Upcoming cycle</p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Due in 5–15 Min</p>
+      <p class="text-2xl font-black text-sky-600 dark:text-sky-400 mt-1"><%= @metrics[:due_in_15m] %></p>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Mid-term window</p>
+    </div>
+
+    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs col-span-2 sm:col-span-1">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Due > 15 Min</p>
+      <p class="text-2xl font-black text-slate-600 dark:text-slate-400 mt-1"><%= @metrics[:due_later] %></p>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Long interval</p>
     </div>
   </div>
 
-  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-          <th class="py-3.5 px-6">Waktu Check Mendatang</th>
-          <th class="py-3.5 px-6">Host</th>
-          <th class="py-3.5 px-6">Service</th>
-          <th class="py-3.5 px-6">Status Terakhir</th>
-          <th class="py-3.5 px-6 text-right">Aksi</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100">
-        <% if @queue.empty? %>
-          <tr>
-            <td colspan="5" class="py-12 px-6 text-center text-slate-400">
-              Tidak ada antrean check terdaftar.
-            </td>
+  <!-- Filter Pills -->
+  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+    <%= link_to "All Events (#{@metrics[:total]})", queue_path,
+                class: "px-3 py-1.5 rounded-lg text-xs font-semibold transition #{ @filter.blank? ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+    <%= link_to "Host Checks (#{@metrics[:host_checks]})", queue_path(filter: 'host'),
+                class: "px-3 py-1.5 rounded-lg text-xs font-semibold transition #{ @filter == 'host' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+    <%= link_to "Service Checks (#{@metrics[:service_checks]})", queue_path(filter: 'service'),
+                class: "px-3 py-1.5 rounded-lg text-xs font-semibold transition #{ @filter == 'service' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+  </div>
+
+  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[700px]">
+        <thead>
+          <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <th class="py-3.5 px-6">Waktu Check Mendatang</th>
+            <th class="py-3.5 px-6">Event Type</th>
+            <th class="py-3.5 px-6">Target</th>
+            <th class="py-3.5 px-6">Status Terakhir</th>
+            <th class="py-3.5 px-6">Attempts</th>
+            <th class="py-3.5 px-6 text-right">Aksi</th>
           </tr>
-        <% else %>
-          <% @queue.each do |item| %>
-            <tr class="hover:bg-slate-50 transition">
-              <td class="py-4 px-6 text-sm font-mono text-indigo-600 font-bold">
-                <%= item[:next_check].strftime("%H:%M:%S (%d %b)") %>
-              </td>
-              <td class="py-4 px-6 text-sm font-semibold text-slate-800">
-                <%= item[:host_name] %>
-              </td>
-              <td class="py-4 px-6 text-sm text-slate-700">
-                <%= item[:description] %>
-              </td>
-              <td class="py-4 px-6 text-sm">
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold <%= item[:status] == 'OK' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' %>">
-                  ● <%= item[:status] %>
-                </span>
-              </td>
-              <td class="py-4 px-6 text-right">
-                <%= button_to recheck_service_host_path(item[:host_name], service_desc: item[:description]),
-                              method: :post,
-                              class: "text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-md transition cursor-pointer" do %>
-                  Force Check Now
-                <% end %>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+          <% if @queue.empty? %>
+            <tr>
+              <td colspan="6" class="py-12 px-6 text-center text-slate-400 dark:text-slate-500">
+                Tidak ada antrean check terdaftar sesuai filter saat ini.
               </td>
             </tr>
+          <% else %>
+            <% @queue.each do |item| %>
+              <% is_due_soon = (item[:next_check] - Time.current) <= 60 %>
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition <%= 'bg-amber-50/20 dark:bg-amber-950/10' if is_due_soon %>">
+                <td class="py-4 px-6 text-sm font-mono text-indigo-600 dark:text-indigo-400 font-bold whitespace-nowrap">
+                  <%= item[:next_check].strftime("%H:%M:%S (%d %b)") %>
+                  <% if is_due_soon %>
+                    <span class="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">⚡ DUE SOON</span>
+                  <% end %>
+                </td>
+                <td class="py-4 px-6 text-sm">
+                  <% if item[:type] == :host_check %>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                      HOST CHECK
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                      SERVICE CHECK
+                    </span>
+                  <% end %>
+                </td>
+                <td class="py-4 px-6 text-sm">
+                  <div class="font-semibold text-slate-800 dark:text-slate-200">
+                    <%= link_to item[:host_name], host_path(item[:host_name]), class: "hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline" %>
+                  </div>
+                  <% if item[:type] == :service_check %>
+                    <p class="text-xs text-slate-500 dark:text-slate-400"><%= item[:description] %></p>
+                  <% end %>
+                </td>
+                <td class="py-4 px-6 text-sm">
+                  <% status_str = item[:status].to_s.upcase %>
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold <%= (status_str == 'OK' || status_str == 'UP') ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' %>">
+                    <span class="w-1.5 h-1.5 rounded-full <%= (status_str == 'OK' || status_str == 'UP') ? 'bg-emerald-500' : 'bg-amber-500' %>"></span> <%= status_str %>
+                  </span>
+                </td>
+                <td class="py-4 px-6 text-xs font-mono text-slate-600 dark:text-slate-400">
+                  <%= item[:attempts].presence || "1/1" %>
+                </td>
+                <td class="py-4 px-6 text-right whitespace-nowrap">
+                  <% if item[:type] == :host_check %>
+                    <%= button_to recheck_host_path(item[:host_name]),
+                                  method: :post,
+                                  class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-md border border-slate-200 dark:border-slate-700 transition cursor-pointer" do %>
+                      Force Check
+                    <% end %>
+                  <% else %>
+                    <%= button_to recheck_service_host_path(item[:host_name], service_desc: item[:description]),
+                                  method: :post,
+                                  class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-md border border-slate-200 dark:border-slate-700 transition cursor-pointer" do %>
+                      Force Check
+                    <% end %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
           <% end %>
-        <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

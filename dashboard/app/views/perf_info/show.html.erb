@@ -1,34 +1,34 @@
 <div class="max-w-6xl mx-auto p-6 space-y-8">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Performance Info</h1>
-      <p class="text-slate-500 text-sm mt-1">Statistik performa eksekusi check dan latensi jaringan Nagios Core</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Performance Info</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Statistik performa eksekusi check dan latensi jaringan Nagios Core</p>
     </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-    <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Monitored Services</p>
-      <p class="text-3xl font-extrabold text-slate-900 mt-2"><%= @stats[:total_services] %></p>
-      <p class="text-xs text-slate-400 mt-1">Active Check Execution</p>
+    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Monitored Services</p>
+      <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2"><%= @stats[:total_services] %></p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Active Check Execution</p>
     </div>
 
-    <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Average Latency</p>
-      <p class="text-3xl font-extrabold text-indigo-600 mt-2"><%= @stats[:avg_latency] %>s</p>
-      <p class="text-xs text-slate-400 mt-1">Max: <%= @stats[:max_latency] %>s</p>
+    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Average Latency</p>
+      <p class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-2"><%= @stats[:avg_latency] %>s</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Max: <%= @stats[:max_latency] %>s</p>
     </div>
 
-    <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Average Execution Time</p>
-      <p class="text-3xl font-extrabold text-emerald-600 mt-2"><%= @stats[:avg_execution_time] %>s</p>
-      <p class="text-xs text-slate-400 mt-1">Max: <%= @stats[:max_execution_time] %>s</p>
+    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Average Execution Time</p>
+      <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2"><%= @stats[:avg_execution_time] %>s</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Max: <%= @stats[:max_execution_time] %>s</p>
     </div>
 
-    <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-sm">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Check Efficiency</p>
-      <p class="text-3xl font-extrabold text-slate-800 mt-2">100%</p>
-      <p class="text-xs text-emerald-600 mt-1 font-semibold">Optimal Engine Throughput</p>
+    <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Check Efficiency</p>
+      <p class="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-2">100%</p>
+      <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-semibold">Optimal Engine Throughput</p>
     </div>
   </div>
 </div>

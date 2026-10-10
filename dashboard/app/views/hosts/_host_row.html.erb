@@ -1,33 +1,55 @@
-<tr id="host_<%= host[:name].parameterize %>" class="hover:bg-slate-50 transition">
-  <td class="py-4 px-6 font-semibold text-slate-800">
-    <%= link_to host[:name], host_path(host[:name]), class: "text-indigo-600 hover:text-indigo-800 hover:underline transition" %>
+<tr id="host_<%= host[:name].parameterize %>" class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+  <td class="py-4 px-6 font-semibold text-slate-800 dark:text-slate-200">
+    <div class="flex items-center gap-2">
+      <%= link_to host[:name], host_path(host[:name]), class: "text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline transition" %>
+      <% if host[:notifications_enabled] == false %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800" title="Notifikasi host dimatikan">
+          🔕 Muted
+        </span>
+      <% end %>
+      <% if host[:checks_enabled] == false %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700" title="Active check host dimatikan">
+          ⏸️ Paused
+        </span>
+      <% end %>
+      <% if host[:flapping] %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 animate-pulse" title="Host is flapping (sering berubah status)">
+          🔀 Flapping
+        </span>
+      <% end %>
+      <% if host[:stale] %>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800" title="Hasil check host sudah usang / terlambat dieksekusi">
+          ⏱️ Stale
+        </span>
+      <% end %>
+    </div>
   </td>
   <td class="py-4 px-6">
     <% case host[:status] %>
     <% when 'UP' %>
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> UP
       </span>
     <% when 'DOWN' %>
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 dark:bg-rose-950/70 text-red-800 dark:text-rose-300 border border-red-200/50 dark:border-rose-800/50">
         <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> DOWN
       </span>
     <% else %>
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/50">
         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> <%= host[:status] %>
       </span>
     <% end %>
   </td>
-  <td class="py-4 px-6 text-sm text-slate-600 max-w-xs truncate">
+  <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300 max-w-xs truncate font-mono text-xs">
     <%= host[:plugin_output].presence || "-" %>
   </td>
-  <td class="py-4 px-6 text-sm text-slate-500">
+  <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400">
     <%= host[:last_check] ? host[:last_check].strftime("%H:%M:%S (%d %b)") : "-" %>
   </td>
   <td class="py-4 px-6 text-right">
     <%= button_to recheck_host_path(host[:name]),
                   method: :post,
-                  class: "text-xs px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-md transition cursor-pointer" do %>
+                  class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-md border border-slate-200/80 dark:border-slate-700 transition cursor-pointer" do %>
       Re-check
     <% end %>
   </td>

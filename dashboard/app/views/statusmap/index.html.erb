@@ -1,9 +1,9 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8" data-controller="auto-refresh filter" data-auto-refresh-interval-value="15000">
+<div class="max-w-6xl mx-auto space-y-8" data-controller="auto-refresh filter" data-auto-refresh-interval-value="15000">
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Network Topology Map</h1>
-      <p class="text-slate-500 text-sm mt-1">Peta hubungan hierarki topologi jaringan dan server (*statusmap.cgi*)</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Network Topology Map</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Peta hubungan hierarki topologi jaringan dan server (*statusmap.cgi*)</p>
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
@@ -12,14 +12,14 @@
              placeholder="Cari node host..."
              data-filter-target="input"
              data-action="input->filter#search"
-             class="px-3.5 py-2 text-xs bg-white border border-slate-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48">
+             class="px-3.5 py-2 text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48">
 
-      <div class="flex items-center gap-2 px-3.5 py-2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold">
+      <div class="flex items-center gap-2 px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg text-xs font-semibold">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         <span>Topology Live Sync</span>
       </div>
 
-      <%= link_to statusmap_path, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-xs rounded-lg shadow-sm transition" do %>
+      <%= link_to statusmap_path, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-xs rounded-lg shadow-xs transition" do %>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         Refresh Map
       <% end %>
@@ -28,30 +28,30 @@
 
   <!-- Summary Cards Bar -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Root Engine Node</p>
-        <p class="text-xl font-bold text-slate-900 mt-1"><%= @map[:root][:name] %></p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Root Engine Node</p>
+        <p class="text-xl font-bold text-slate-900 dark:text-white mt-1"><%= @map[:root][:name] %></p>
       </div>
-      <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100 rounded-full">ACTIVE</span>
+      <span class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 text-xs font-bold border border-indigo-100 dark:border-indigo-800 rounded-full">ACTIVE</span>
     </div>
 
-    <div class="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Host Nodes</p>
-        <p class="text-xl font-bold text-slate-900 mt-1"><%= @map[:nodes].size %> Server Nodes</p>
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Host Nodes</p>
+        <p class="text-xl font-bold text-slate-900 dark:text-white mt-1"><%= @map[:nodes].size %> Server Nodes</p>
       </div>
-      <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 rounded-full">100% ONLINE</span>
+      <span class="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-100 dark:border-emerald-800 rounded-full">100% ONLINE</span>
     </div>
 
-    <div class="p-5 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Sub-Services Health</p>
-        <p class="text-xl font-bold text-emerald-600 mt-1">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Sub-Services Health</p>
+        <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
           <%= @map[:nodes].sum { |n| n[:ok_services] } %> / <%= @map[:nodes].sum { |n| n[:total_services] } %> OK
         </p>
       </div>
-      <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 rounded-full">HEALTHY</span>
+      <span class="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-100 dark:border-emerald-800 rounded-full">HEALTHY</span>
     </div>
   </div>
 

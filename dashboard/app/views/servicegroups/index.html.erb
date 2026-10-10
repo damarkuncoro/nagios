@@ -1,11 +1,11 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
+<div class="max-w-6xl mx-auto space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
   <div class="flex justify-between items-center">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Service Groups Overview</h1>
-      <p class="text-slate-500 text-sm mt-1">Pengelompokan ketersediaan service berdasarkan jenis fungsi infrastruktur (*status.cgi?servicegroup=all*)</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Service Groups Overview</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Pengelompokan ketersediaan service berdasarkan jenis fungsi infrastruktur (*status.cgi?servicegroup=all*)</p>
     </div>
 
-    <%= link_to servicegroups_path, class: "flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-sm rounded-lg shadow-sm transition" do %>
+    <%= link_to servicegroups_path, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-xs rounded-lg shadow-xs transition" do %>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
       Refresh
     <% end %>
@@ -13,11 +13,11 @@
 
   <div class="space-y-6">
     <% @servicegroups.each do |sg| %>
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+      <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
           <div class="flex items-center gap-3">
-            <h3 class="font-bold text-slate-800 text-lg"><%= sg[:name] %></h3>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <%= sg[:all_ok] ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200' %>">
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg"><%= sg[:name] %></h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <%= sg[:all_ok] ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800' %>">
               <%= sg[:ok_count] %> / <%= sg[:total_count] %> Services OK
             </span>
           </div>
@@ -25,7 +25,7 @@
 
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               <th class="py-3 px-6">Host</th>
               <th class="py-3 px-6">Service</th>
               <th class="py-3 px-6">Status</th>
@@ -33,7 +33,7 @@
               <th class="py-3 px-6 text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
             <% sg[:services].each do |service| %>
               <%= render "hosts/service_row", service: service %>
             <% end %>

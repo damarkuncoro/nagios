@@ -1,6 +1,7 @@
 class ProcessInfoController < ApplicationController
   def show
     @program_status = Engines::NagiosEngine.program_status
+    @recent_broker_events = Statuses::Events::Broker.history(limit: 5)
   end
 
   def toggle

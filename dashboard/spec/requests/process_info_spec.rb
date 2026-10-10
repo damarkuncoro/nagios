@@ -6,10 +6,13 @@ RSpec.describe "Process Info", type: :request do
   end
 
   describe "GET /process_info" do
-    it "returns http success" do
+    it "returns http success and renders Live Domain Event Broker info" do
+      Statuses::Events::Broker.publish(:check, { host_name: "test-node", service_desc: "PING" }, source: "unit_test")
       get process_info_path, headers: { "Host" => "localhost" }
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Nagios Core Process Info")
+      expect(response.body).to include("Live Domain Event Broker")
+      expect(response.body).to include("test-node")
     end
   end
 

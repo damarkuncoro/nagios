@@ -11,11 +11,16 @@ class CommentsController < ApplicationController
     comment_text = params[:comment]
     author = params[:author].presence || "nagiosadmin"
 
-    if host_name.present? && service_desc.present? && comment_text.present?
-      Engines::NagiosEngine.add_service_comment(host_name, service_desc, author, comment_text)
-      redirect_to comments_path, notice: "Catatan insiden untuk #{service_desc} di #{host_name} berhasil ditambahkan!"
+    if host_name.present? && comment_text.present?
+      if service_desc.present?
+        Engines::NagiosEngine.add_service_comment(host_name, service_desc, author, comment_text)
+        redirect_back fallback_location: comments_path, notice: "Catatan insiden untuk #{service_desc} di #{host_name} berhasil ditambahkan!"
+      else
+        Engines::NagiosEngine.add_host_comment(host_name, author, comment_text)
+        redirect_back fallback_location: comments_path, notice: "Catatan insiden untuk host #{host_name} berhasil ditambahkan!"
+      end
     else
-      redirect_to comments_path, alert: "Mohon isi seluruh field formulir komentar."
+      redirect_back fallback_location: comments_path, alert: "Mohon isi nama host dan komentar."
     end
   end
 

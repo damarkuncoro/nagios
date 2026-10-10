@@ -25,6 +25,16 @@ RSpec.describe Statuses::Entities::ServiceStatus do
       service = described_class.new(host_name: 'localhost', description: 'Root Partition', status: 2)
       expect(service.dom_id).to eq('service_localhost_root-partition')
     end
+
+    it 'detects flapping state correctly' do
+      svc_flapping = described_class.new(host_name: 'localhost', description: 'HTTP', status: 2, is_flapping: true)
+      svc_stable = described_class.new(host_name: 'localhost', description: 'HTTP', status: 2, is_flapping: false)
+
+      expect(svc_flapping.flapping?).to be true
+      expect(svc_flapping.to_h[:flapping]).to be true
+      expect(svc_stable.flapping?).to be false
+      expect(svc_stable.to_h[:flapping]).to be false
+    end
   end
 
   describe '#to_h' do

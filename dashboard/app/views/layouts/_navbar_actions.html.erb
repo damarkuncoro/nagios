@@ -1,0 +1,36 @@
+<div class="flex items-center gap-3 ml-4">
+  <!-- Auto-Refresh Interval Controls (CGI Meta-Refresh Modernization) -->
+  <div data-controller="auto-refresh" data-auto-refresh-interval-value="30" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-xs">
+    <button type="button" data-action="click->auto-refresh#toggle" title="Pause / Resume auto-refresh" class="text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    </button>
+    <span data-auto-refresh-target="badge" class="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400">30s</span>
+    <select data-auto-refresh-target="select" data-action="change->auto-refresh#changeInterval" class="bg-transparent text-[11px] text-slate-600 dark:text-slate-300 border-0 focus:ring-0 p-0 cursor-pointer pr-1">
+      <option value="10" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">10s</option>
+      <option value="15" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">15s</option>
+      <option value="30" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">30s</option>
+      <option value="60" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">60s</option>
+      <option value="0" class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">Off</option>
+    </select>
+  </div>
+
+  <!-- Engine Health Pill -->
+  <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-900">
+    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+    <span>Nagios Active</span>
+  </div>
+
+  <!-- Theme Toggle Switcher (Stimulus Controller) -->
+  <div data-controller="theme">
+    <button type="button" data-action="click->theme#toggle" title="Toggle Dark/Light Mode" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+      <svg data-theme-target="sunIcon" class="w-4 h-4 hidden text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+      <svg data-theme-target="moonIcon" class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+    </button>
+  </div>
+
+  <!-- Legacy Web UI Link -->
+  <a href="http://localhost:8080" target="_blank" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition">
+    <span>Classic UI</span>
+    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+  </a>
+</div>

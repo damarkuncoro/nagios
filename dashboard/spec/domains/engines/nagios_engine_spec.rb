@@ -72,4 +72,26 @@ RSpec.describe Engines::NagiosEngine do
       expect(services.first.status).to eq('OK')
     end
   end
+
+  describe '.host_objects' do
+    it 'fetches and returns host definition objects hash' do
+      mock_json = { data: { hostlist: { "localhost" => { "check_command" => "check-host-alive" } } } }.to_json
+      allow(Net::HTTP).to receive(:start).and_return(double(is_a?: true, body: mock_json))
+
+      hosts = described_class.host_objects
+      expect(hosts).to be_a(Hash)
+      expect(hosts["localhost"]["check_command"]).to eq("check-host-alive")
+    end
+  end
+
+  describe '.service_objects' do
+    it 'fetches and returns service definition objects hash' do
+      mock_json = { data: { servicelist: { "localhost" => { "HTTP" => { "check_command" => "check_http" } } } } }.to_json
+      allow(Net::HTTP).to receive(:start).and_return(double(is_a?: true, body: mock_json))
+
+      services = described_class.service_objects
+      expect(services).to be_a(Hash)
+      expect(services.dig("localhost", "HTTP", "check_command")).to eq("check_http")
+    end
+  end
 end

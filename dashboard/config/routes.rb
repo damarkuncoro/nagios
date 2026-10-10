@@ -4,8 +4,19 @@ Rails.application.routes.draw do
     member do
       post :recheck
       post :recheck_service
+      post :recheck_all_services
+      post :acknowledge
+      post :remove_acknowledgment
       post :acknowledge_service
+      post :remove_service_acknowledgment
+      post :schedule_downtime
+      post :schedule_cluster_downtime
       post :schedule_service_downtime
+      post :toggle_notifications
+      post :toggle_checks
+      post :toggle_service_notifications
+      post :toggle_service_checks
+      post :submit_passive_check
     end
   end
 
@@ -18,13 +29,17 @@ Rails.application.routes.draw do
   get "/process_info", to: "process_info#show", as: :process_info
   post "/process_info/toggle", to: "process_info#toggle", as: :toggle_process_info_feature
   post "/process_info/test_webhook", to: "process_info#test_webhook", as: :test_process_info_webhook
+  get "/outages", to: "outages#index", as: :outages
   get "/queue", to: "queue#index", as: :queue
   get "/configuration", to: "configuration#index", as: :configuration
+  post "/configuration/verify", to: "configuration#verify", as: :verify_configuration
   get "/perf_info", to: "perf_info#show", as: :perf_info
 
   resources :hostgroups, only: [:index]
   resources :servicegroups, only: [:index]
   resources :alerts, only: [:index]
+  resources :notifications, only: [:index]
+  resources :logs, only: [:index]
   resources :downtimes, only: [:index, :destroy]
   resources :comments, only: [:index, :create, :destroy]
 
