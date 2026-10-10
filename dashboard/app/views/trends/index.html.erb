@@ -22,7 +22,9 @@
         </h3>
         <p class="text-xs text-slate-500 dark:text-slate-400">Analisis frekuensi alert berdasarkan waktu dalam sehari (00:00 - 23:00) untuk mendeteksi pola insiden puncak</p>
       </div>
-      <span class="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-full border border-amber-200/60 dark:border-amber-800">24h Pattern</span>
+      <span class="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-full border border-amber-200/60 dark:border-amber-800">
+        Peak: <%= @trends.dig(:histogram, :peak_hour_label) || '12:00' %> (<%= @trends.dig(:histogram, :peak_hour_count) || 0 %> alerts)
+      </span>
     </div>
 
     <div class="h-64 w-full">
@@ -78,15 +80,22 @@
       return (i < 10 ? '0' : '') + i + ':00';
     });
 
-    // Mock distribution data aligned with events
-    var warningData = [0, 0, 0, 0, 0, 0, 1, 2, 4, 3, 2, 1, 1, 2, 3, 5, 2, 1, 0, 0, 0, 0, 0, 0];
-    var criticalData = [0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0];
+    // Real distribution data calculated from alerts (cgi/histogram.c)
+    var warningData = <%= raw (@trends.dig(:histogram, :warning_series) || Array.new(24, 0)).to_json %>;
+    var criticalData = <%= raw (@trends.dig(:histogram, :critical_series) || Array.new(24, 0)).to_json %>;
+    var recoveryData = <%= raw (@trends.dig(:histogram, :recovery_series) || Array.new(24, 0)).to_json %>;
 
     new Chart(ctx, {
       type: 'bar',
       data: {
         labels: hours,
         datasets: [
+          {
+            label: 'Recovery / OK',
+            data: recoveryData,
+            backgroundColor: '#10B981',
+            borderRadius: 4
+          },
           {
             label: 'Warning Alerts',
             data: warningData,

@@ -8,27 +8,132 @@
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
     <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Monitored Services</p>
-      <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2"><%= @stats[:total_services] %></p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Active Check Execution</p>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Monitored Objects</p>
+      <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2"><%= @stats[:total_services] + @stats[:total_hosts] %></p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1"><%= @stats[:total_hosts] %> Hosts • <%= @stats[:total_services] %> Services</p>
     </div>
 
     <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
       <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Average Latency</p>
       <p class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-2"><%= @stats[:avg_latency] %>s</p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Max: <%= @stats[:max_latency] %>s</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Min: <%= @stats[:min_latency] %>s • Max: <%= @stats[:max_latency] %>s</p>
     </div>
 
     <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
       <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Average Execution Time</p>
       <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2"><%= @stats[:avg_execution_time] %>s</p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Max: <%= @stats[:max_execution_time] %>s</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Min: <%= @stats[:min_execution_time] %>s • Max: <%= @stats[:max_execution_time] %>s</p>
     </div>
 
     <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Check Efficiency</p>
-      <p class="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-2">100%</p>
-      <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-semibold">Optimal Engine Throughput</p>
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Cluster Health Index</p>
+      <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2"><%= @stats[:health_percentage] %>%</p>
+      <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-semibold">Operational Health Score</p>
     </div>
+  </div>
+
+  <% if @stats[:summary] %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <h3 class="font-bold text-slate-900 dark:text-white text-base">Host Execution Distribution</h3>
+        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded border border-emerald-200 dark:border-emerald-800 font-bold text-emerald-700 dark:text-emerald-300">
+            <p class="text-xl"><%= @stats[:summary].hosts[:up] %></p>
+            <p>UP</p>
+          </div>
+          <div class="p-3 bg-rose-50 dark:bg-rose-950/60 rounded border border-rose-200 dark:border-rose-800 font-bold text-rose-700 dark:text-rose-300">
+            <p class="text-xl"><%= @stats[:summary].hosts[:down] %></p>
+            <p>DOWN</p>
+          </div>
+          <div class="p-3 bg-amber-50 dark:bg-amber-950/60 rounded border border-amber-200 dark:border-amber-800 font-bold text-amber-700 dark:text-amber-300">
+            <p class="text-xl"><%= @stats[:summary].hosts[:unreachable] %></p>
+            <p>UNREACHABLE</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <h3 class="font-bold text-slate-900 dark:text-white text-base">Service Execution Distribution</h3>
+        <div class="grid grid-cols-4 gap-2 text-center text-xs">
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded border border-emerald-200 dark:border-emerald-800 font-bold text-emerald-700 dark:text-emerald-300">
+            <p class="text-xl"><%= @stats[:summary].services[:ok] %></p>
+            <p>OK</p>
+          </div>
+          <div class="p-3 bg-amber-50 dark:bg-amber-950/60 rounded border border-amber-200 dark:border-amber-800 font-bold text-amber-700 dark:text-amber-300">
+            <p class="text-xl"><%= @stats[:summary].services[:warning] %></p>
+            <p>WARN</p>
+          </div>
+          <div class="p-3 bg-rose-50 dark:bg-rose-950/60 rounded border border-rose-200 dark:border-rose-800 font-bold text-rose-700 dark:text-rose-300">
+            <p class="text-xl"><%= @stats[:summary].services[:critical] %></p>
+            <p>CRIT</p>
+          </div>
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded border border-slate-200 dark:border-slate-700 font-bold text-slate-700 dark:text-slate-300">
+            <p class="text-xl"><%= @stats[:summary].services[:unknown] %></p>
+            <p>UNKN</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Performance Data Telemetry Explorer (base/perfdata.c) -->
+  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+      <div>
+        <h3 class="font-bold text-slate-900 dark:text-white text-lg flex items-center gap-2">
+          <span>📊 Live Performance Telemetry Explorer</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-mono">base/perfdata.c</span>
+        </h3>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Ekstraksi metrik terstruktur (UOM, threshold warn/crit, rasio persentase batas) dari plugin output</p>
+      </div>
+      <span class="text-xs font-mono px-2.5 py-1 bg-slate-100 dark:bg-slate-800 rounded font-semibold text-slate-600 dark:text-slate-300">
+        <%= @parsed_metrics.sum { |m| m[:metrics].size } %> Total Metrik Aktif
+      </span>
+    </div>
+
+    <% if @parsed_metrics.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @parsed_metrics.each do |item| %>
+          <div class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/60 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-800 dark:text-white">
+                <%= item[:host_name] %> • <span class="text-indigo-600 dark:text-indigo-400"><%= item[:description] %></span>
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold <%= item[:status] == 'OK' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' %>">
+                <%= item[:status] %>
+              </span>
+            </div>
+
+            <div class="space-y-2">
+              <% item[:metrics].each do |m| %>
+                <div class="p-2.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 text-xs space-y-1.5">
+                  <div class="flex justify-between items-center">
+                    <span class="font-mono font-bold text-slate-700 dark:text-slate-300"><%= m.label %></span>
+                    <span class="font-mono font-black text-slate-900 dark:text-white">
+                      <%= m.value %><%= m.uom %>
+                    </span>
+                  </div>
+
+                  <div class="flex justify-between items-center text-[10px] text-slate-400">
+                    <span>Warn: <%= m.warn ? "#{m.warn}#{m.uom}" : "-" %> • Crit: <%= m.crit ? "#{m.crit}#{m.uom}" : "-" %></span>
+                    <% if m.percentage %>
+                      <span class="font-bold text-slate-600 dark:text-slate-300"><%= m.percentage %>%</span>
+                    <% end %>
+                  </div>
+
+                  <% if m.percentage %>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full <%= m.critical? ? 'bg-rose-500' : (m.warning? ? 'bg-amber-500' : 'bg-emerald-500') %>" style="width: <%= [m.percentage, 100].min %>%"></div>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-xs text-slate-400 italic py-2">Tidak ada metrik performance data yang terdeteksi.</p>
+    <% end %>
   </div>
 </div>

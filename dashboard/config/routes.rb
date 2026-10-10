@@ -31,6 +31,9 @@ Rails.application.routes.draw do
   get "/process_info", to: "process_info#show", as: :process_info
   post "/process_info/toggle", to: "process_info#toggle", as: :toggle_process_info_feature
   post "/process_info/test_webhook", to: "process_info#test_webhook", as: :test_process_info_webhook
+  post "/process_info/toggle_daemon", to: "process_info#toggle_daemon", as: :toggle_daemon
+  post "/process_info/test_tcp_probe", to: "process_info#test_tcp_probe", as: :test_tcp_probe
+  post "/process_info/execute_command", to: "process_info#execute_command", as: :execute_command
   get "/outages", to: "outages#index", as: :outages
   get "/queue", to: "queue#index", as: :queue
   get "/configuration", to: "configuration#index", as: :configuration

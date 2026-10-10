@@ -1,16 +1,36 @@
 class PerfInfoController < ApplicationController
   def show
-    services = Engines::NagiosEngine.services.map(&:to_h)
+    hosts = (Engines::NagiosEngine.hosts rescue []).map(&:to_h)
+    services = (Engines::NagiosEngine.services rescue []).map(&:to_h)
 
-    latencies = services.map { |s| s[:latency] }
-    exec_times = services.map { |s| s[:execution_time] }
+    summary = Statuses::Services::OperationalMetricsAggregator.aggregate(hosts: hosts, services: services)
+
+    @parsed_metrics = services.map do |s|
+      perf_raw = s[:performance_data] || s['perf_data'] || s['performance_data']
+      next if perf_raw.blank?
+
+      parsed = Statuses::Services::PerfdataParser.parse("#{s[:plugin_output]} | #{perf_raw}")
+      next unless parsed.has_metrics?
+
+      {
+        host_name: s[:host_name],
+        description: s[:description],
+        status: s[:status],
+        metrics: parsed.metrics
+      }
+    end.compact
 
     @stats = {
-      total_services: services.size,
-      avg_latency: latencies.any? ? (latencies.sum / latencies.size).round(3) : 0.0,
-      max_latency: latencies.max || 0.0,
-      avg_execution_time: exec_times.any? ? (exec_times.sum / exec_times.size).round(3) : 0.0,
-      max_execution_time: exec_times.max || 0.0
+      total_services: summary.services[:total],
+      total_hosts: summary.hosts[:total],
+      avg_latency: summary.latency[:avg],
+      max_latency: summary.latency[:max],
+      min_latency: summary.latency[:min],
+      avg_execution_time: summary.execution_time[:avg],
+      max_execution_time: summary.execution_time[:max],
+      min_execution_time: summary.execution_time[:min],
+      health_percentage: summary.health_percentage,
+      summary: summary
     }
   end
 end

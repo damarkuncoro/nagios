@@ -45,5 +45,27 @@ RSpec.describe Statuses::Services::MacroResolver do
       expect(resolved).not_to include('$ARG1$')
       expect(resolved).not_to include('$ARG2$')
     end
+
+    it 'resolves state macros and IDs for host and service' do
+      tpl = 'HOST=$HOSTNAME$ STATE=$HOSTSTATE$ ($HOSTSTATEID$) SVC=$SERVICEDESC$ STATE=$SERVICESTATE$ ($SERVICESTATEID$)'
+      host = { name: 'db-master', status: 'DOWN' }
+      service = { description: 'Replication Lag', status: 'CRITICAL' }
+
+      resolved = described_class.resolve(tpl, host: host, service: service)
+      expect(resolved).to eq('HOST=db-master STATE=DOWN (1) SVC=Replication Lag STATE=CRITICAL (2)')
+    end
+
+    it 'resolves date and notification macros' do
+      tpl = 'DATE=$DATE$ TIME=$TIME$ NOTIF=$NOTIFICATIONTYPE$ CONTACT=$CONTACTNAME$ EMAIL=$CONTACTEMAIL$'
+      notif = { type: 'PROBLEM' }
+      contact = { name: 'sysadmin', email: 'ops@company.internal' }
+
+      resolved = described_class.resolve(tpl, notification: notif, contact: contact)
+      expect(resolved).to include('NOTIF=PROBLEM')
+      expect(resolved).to include('CONTACT=sysadmin')
+      expect(resolved).to include('EMAIL=ops@company.internal')
+      expect(resolved).not_to include('$DATE$')
+      expect(resolved).not_to include('$TIME$')
+    end
   end
 end

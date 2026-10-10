@@ -94,15 +94,90 @@
           <% end %>
         </div>
       </div>
-    <!-- Live Event Broker (NEB Adaptation from base/broker.c) -->
+    </div>
+
+    <!-- Modern Ruby Daemon Lifecycle Coordinator (base/nagios.c & base/events.c) -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 p-6 space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="font-bold text-slate-900 dark:text-white text-lg">⚙️ Ruby Daemon Lifecycle Coordinator</h3>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 font-mono">base/nagios.c</span>
+          </div>
+          <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Pengendali siklus hidup proses, event queue loops, dan worker process pool</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <% case @daemon_status.state %>
+          <% when :running %>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 animate-pulse">
+              ● RUNNING
+            </span>
+            <%= button_to toggle_daemon_path(daemon_action: 'pause'), method: :post, class: "px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition cursor-pointer" do %>
+              Jeda
+            <% end %>
+            <%= button_to toggle_daemon_path(daemon_action: 'stop'), method: :post, class: "px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition cursor-pointer" do %>
+              Hentikan
+            <% end %>
+          <% when :paused %>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              ❚❚ PAUSED
+            </span>
+            <%= button_to toggle_daemon_path(daemon_action: 'resume'), method: :post, class: "px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition cursor-pointer" do %>
+              Lanjutkan
+            <% end %>
+            <%= button_to toggle_daemon_path(daemon_action: 'stop'), method: :post, class: "px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition cursor-pointer" do %>
+              Hentikan
+            <% end %>
+          <% else %>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-400 border border-slate-300 dark:border-slate-700">
+              ■ STOPPED
+            </span>
+            <%= button_to toggle_daemon_path(daemon_action: 'start'), method: :post, class: "px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs transition cursor-pointer" do %>
+              Mulai Daemon
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/60">
+          <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Timed Event Queue</p>
+          <p class="text-2xl font-black text-slate-800 dark:text-white mt-1"><%= @daemon_status.queued_events %></p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Antrean event terjadwal</p>
+        </div>
+
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/60">
+          <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Workers</p>
+          <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1"><%= @daemon_status.active_workers %></p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Slot eksekusi berjalan</p>
+        </div>
+
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/60">
+          <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Uptime</p>
+          <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1"><%= @daemon_status.uptime_seconds %>s</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Durasi runtime daemon</p>
+        </div>
+
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/60">
+          <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">IPC Query Handler</p>
+          <p class="text-2xl font-black <%= @qh_ping ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300' %> mt-1">
+            <%= @qh_ping ? 'ACTIVE' : 'IDLE' %>
+          </p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Socket @echo probe</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Event Broker (NEB Adaptation from base/broker.c & base/nerd.c) -->
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 p-6 space-y-4">
       <div class="flex items-center justify-between">
         <div>
           <h3 class="font-bold text-slate-800 dark:text-white text-lg flex items-center gap-2">
-            <span>⚡ Live Domain Event Broker</span>
-            <span class="text-xs px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-mono">base/broker.c NEB</span>
+            <span>⚡ Live Domain Event Broker & NERD Dispatcher</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-mono">base/broker.c & base/nerd.c</span>
           </h3>
-          <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Event internal yang ditangkap dan disalurkan secara reaktif oleh event bus</p>
+          <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Event internal dan saluran siaran radio streaming reaktif</p>
         </div>
         <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">
           Broker Active
@@ -118,9 +193,9 @@
                   <%= e[:type] %>
                 </span>
                 <span class="text-slate-800 dark:text-slate-200 font-medium">
-                  <%= e[:payload][:host_name] %>
-                  <% if e[:payload][:service_desc] %>
-                    • <%= e[:payload][:service_desc] %>
+                  <%= e[:payload][:host_name] || e[:payload][:host] || e[:payload][:target] %>
+                  <% if e[:payload][:service_desc] || e[:payload][:service] %>
+                    • <%= e[:payload][:service_desc] || e[:payload][:service] %>
                   <% end %>
                 </span>
                 <span class="text-[10px] text-slate-400">via <%= e[:source] %></span>
@@ -134,8 +209,56 @@
       <% end %>
     </div>
 
+    <!-- External Command Dispatcher Console (base/commands.c) -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-slate-800 dark:text-white text-lg flex items-center gap-2">
+            <span>💻 External Command Dispatcher Console</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 font-mono">base/commands.c</span>
+          </h3>
+          <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Eksekusi instruksi external command Nagios (FIFO nagios.cmd format) secara real-time</p>
+        </div>
+        <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">
+          37 Command Opcodes
+        </span>
+      </div>
+
+      <%= form_with url: execute_command_path, method: :post, class: "space-y-3" do |f| %>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <%= f.text_field :command_string, id: "external_cmd_input", placeholder: "Contoh: PROCESS_SERVICE_CHECK_RESULT;localhost;PING;0;OK - Packet loss 0%|rta=0.12ms", value: "PROCESS_SERVICE_CHECK_RESULT;localhost;HTTP;0;OK - HTTP/1.1 200 OK - 0.042 second response time|time=0.042s;0.500;1.000", class: "flex-1 text-xs p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 font-mono" %>
+          <%= f.submit "Eksekusi Command", class: "py-3 px-5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-lg transition cursor-pointer shrink-0" %>
+        </div>
+        <div class="flex flex-wrap gap-2 text-[11px] items-center text-slate-500 dark:text-slate-400">
+          <span class="font-semibold text-slate-700 dark:text-slate-300">Preset:</span>
+          <button type="button" onclick="document.getElementById('external_cmd_input').value='PROCESS_SERVICE_CHECK_RESULT;localhost;HTTP;0;OK - HTTP 200 OK|time=0.035s'" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-mono cursor-pointer">Passive Svc OK</button>
+          <button type="button" onclick="document.getElementById('external_cmd_input').value='PROCESS_SERVICE_CHECK_RESULT;localhost;HTTP;2;CRITICAL - Connection timed out|time=5.000s'" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-mono cursor-pointer">Passive Svc CRIT</button>
+          <button type="button" onclick="document.getElementById('external_cmd_input').value='ENABLE_NOTIFICATIONS'" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-mono cursor-pointer">Enable Notifs</button>
+          <button type="button" onclick="document.getElementById('external_cmd_input').value='DISABLE_NOTIFICATIONS'" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-mono cursor-pointer">Disable Notifs</button>
+          <button type="button" onclick="document.getElementById('external_cmd_input').value='SCHEDULE_FORCED_SVC_CHECK;localhost;PING;<%= Time.now.to_i %>'" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-mono cursor-pointer">Schedule Check</button>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- TCP Network Probe Tool (base/netutils.c) -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+      <div>
+        <h3 class="font-bold text-slate-800 dark:text-white text-lg flex items-center gap-2">
+          <span>🌐 Network TCP Connection Probe</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 font-mono">base/netutils.c</span>
+        </h3>
+        <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Uji coba koneksi soket TCP non-blocking dan latensi respon port secara langsung</p>
+      </div>
+
+      <%= form_with url: test_tcp_probe_path, method: :post, class: "flex flex-col sm:flex-row gap-3" do |f| %>
+        <%= f.text_field :host, placeholder: "Hostname / IP (cth. localhost / 127.0.0.1)", value: "127.0.0.1", class: "flex-1 text-xs p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 font-mono" %>
+        <%= f.number_field :port, placeholder: "Port (cth. 80, 443, 22)", value: 80, class: "w-32 text-xs p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 font-mono" %>
+        <%= f.submit "Jalankan TCP Probe", class: "py-3 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg transition cursor-pointer shrink-0" %>
+      <% end %>
+    </div>
+
     <!-- Test Webhook Integration Card -->
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 p-6 space-y-4">
       <div>
         <h3 class="font-bold text-slate-800 dark:text-white text-lg">Test Multi-Channel Webhook Alerts</h3>
         <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Kirimkan notifikasi tes ke Slack, Discord, atau Telegram Incoming Webhook</p>

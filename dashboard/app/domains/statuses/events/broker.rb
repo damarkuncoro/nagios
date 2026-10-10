@@ -7,6 +7,7 @@ module Statuses
       PASSIVE_CHECK   = :passive_check
       COMMENT         = :comment
       STATE_CHANGE    = :state_change
+      FLAPPING        = :flapping
 
       MAX_HISTORY = 100
 
