@@ -8,11 +8,11 @@
           Audit Trail
         </span>
       </div>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Riwayat lengkap alert yang dikirimkan Nagios ke kontak admin & on-call</p>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Riwayat lengkap alert yang dikirimkan Nagios ke kontak admin & on-call (*notifications.cgi*)</p>
     </div>
 
     <div class="flex items-center gap-3">
-      <%= link_to notifications_path(format: :csv), class: "flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm rounded-lg border border-slate-200 dark:border-slate-700 transition shadow-2xs", title: "Download Notifications as CSV" do %>
+      <%= link_to notifications_path(format: :csv, contact: params[:contact], host: params[:host], reason: params[:reason]), class: "flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm rounded-lg border border-slate-200 dark:border-slate-700 transition shadow-2xs", title: "Download Notifications as CSV" do %>
         <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <span>Export CSV</span>
       <% end %>
@@ -20,6 +20,55 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         <span>Refresh Log</span>
       <% end %>
+    </div>
+  </div>
+
+  <% if @stats %>
+    <!-- Notification Metrics Overview -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Notifications</p>
+        <p class="text-2xl font-black text-slate-800 dark:text-slate-200 mt-1"><%= @stats.total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"><%= @stats.host_total %> Host / <%= @stats.service_total %> Service</p>
+      </div>
+
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Problem Dispatched</p>
+        <p class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1"><%= @stats.problem_total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Critical & Down alerts</p>
+      </div>
+
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Recoveries</p>
+        <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1"><%= @stats.recovery_total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Resolved alerts</p>
+      </div>
+
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Acknowledgments</p>
+        <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1"><%= @stats.ack_total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">User acknowledgments</p>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Filter & Search Bar -->
+  <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+    <form method="get" action="<%= notifications_path %>" class="flex flex-wrap items-center gap-3">
+      <div class="relative">
+        <input type="text" name="host" value="<%= params[:host] %>" placeholder="Filter host..." class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <div class="relative">
+        <input type="text" name="contact" value="<%= params[:contact] %>" placeholder="Filter contact..." class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <button type="submit" class="px-3.5 py-1.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition">Filter</button>
+      <% if params[:host].present? || params[:contact].present? || params[:reason].present? %>
+        <%= link_to "Reset", notifications_path, class: "text-xs text-rose-600 dark:text-rose-400 hover:underline font-medium" %>
+      <% end %>
+    </form>
+
+    <div class="text-xs text-slate-400 dark:text-slate-500 font-mono">
+      Showing <%= @notifications.size %> entries
     </div>
   </div>
 
@@ -40,7 +89,7 @@
           <tr>
             <td colspan="5" class="py-12 px-6 text-center text-slate-400 dark:text-slate-500">
               <svg class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-              Belum ada riwayat notifikasi yang dikirimkan dalam 7 hari terakhir.
+              Belum ada riwayat notifikasi yang sesuai filter.
             </td>
           </tr>
         <% else %>
@@ -60,12 +109,24 @@
                   👤 <%= n[:contact_name] %>
                 </span>
               </td>
-              <td class="py-4 px-6">
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold <%= n[:state].to_s.upcase == 'OK' || n[:state].to_s.upcase == 'UP' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' %>">
-                  <%= n[:notification_type] || n[:state] %>
+              <td class="py-4 px-6 text-sm">
+                <% 
+                  st = n[:state].to_s.upcase
+                  badge_class = case st
+                                when 'DOWN', 'CRITICAL' then 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                                when 'WARNING' then 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                                when 'UP', 'OK', 'RECOVERY' then 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                else 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
+                                end
+                %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold <%= badge_class %>">
+                  <%= n[:state] %>
                 </span>
+                <% if n[:reason].present? %>
+                  <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5 font-mono uppercase"><%= n[:reason] %></span>
+                <% end %>
               </td>
-              <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-300 font-mono text-xs max-w-md truncate">
+              <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate" title="<%= n[:output] %>">
                 <%= n[:output] %>
               </td>
             </tr>
