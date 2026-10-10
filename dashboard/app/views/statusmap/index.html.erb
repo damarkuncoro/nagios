@@ -13,6 +13,23 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
+      <!-- Blast Radius Simulation Toggle -->
+      <button type="button"
+              id="blastRadiusToggleBtn"
+              onclick="toggleBlastRadiusMode()"
+              class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition cursor-pointer bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700">
+        <span>⚡</span>
+        <span id="blastRadiusBtnText">Simulate Blast Radius</span>
+      </button>
+
+      <!-- Export Diagram Button -->
+      <button type="button"
+              onclick="exportTopologyDiagram()"
+              class="inline-flex items-center gap-2 px-3.5 py-2 glass-panel hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer shadow-2xs">
+        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <span>Export Diagram</span>
+      </button>
+
       <div class="flex items-center gap-2 px-3.5 py-2 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/20 rounded-xl text-xs font-semibold">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         <span>Topology Live Sync</span>
@@ -23,6 +40,20 @@
         <span>Refresh Map</span>
       <% end %>
     </div>
+  </div>
+
+  <!-- Blast Radius Simulation Active Banner -->
+  <div id="blastRadiusBanner" class="hidden p-4 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-xs font-semibold flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-xl">⚠️</span>
+      <div>
+        <p class="font-bold text-sm">Mode Simulasi Blast Radius Aktif</p>
+        <p class="text-[11px] text-amber-700 dark:text-amber-300 font-normal mt-0.5">Klik node server/gateway mana saja pada topologi untuk mensimulasikan kegagalan jaringan dan melihat dampaknya terhadap server turunan (*downstream impact*).</p>
+      </div>
+    </div>
+    <button type="button" onclick="toggleBlastRadiusMode()" class="px-3 py-1.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition cursor-pointer font-bold">
+      Keluar Mode Simulasi
+    </button>
   </div>
 
   <!-- Summary Cards Bar -->
@@ -70,7 +101,7 @@
   </div>
 
   <!-- Interactive Topology Canvas -->
-  <div class="glass-panel rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl overflow-hidden flex flex-col relative">
+  <div id="topologyCanvasContainer" class="glass-panel rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl overflow-hidden flex flex-col relative">
     
     <!-- Toolbar Controls -->
     <div class="px-6 py-4 bg-slate-50/70 dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-800/80 flex flex-wrap justify-between items-center gap-4">
@@ -119,7 +150,7 @@
     </div>
 
     <!-- Visual Canvas Viewport -->
-    <div class="relative bg-[#070B14] p-8 sm:p-12 min-h-[580px] flex flex-col items-center justify-center overflow-hidden select-none">
+    <div id="printableTopologyArea" class="relative bg-[#070B14] p-8 sm:p-12 min-h-[580px] flex flex-col items-center justify-center overflow-hidden select-none">
       <!-- Dark Cyberpunk Grid Canvas Background -->
       <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-indigo-950/15 via-transparent to-slate-950/50 pointer-events-none"></div>
@@ -131,7 +162,7 @@
         <div id="treeLayoutContainer" class="flex flex-col items-center space-y-10 w-full max-w-5xl py-4">
           
           <!-- TIER 0: Root Master Coordinator -->
-          <div class="flex flex-col items-center group cursor-pointer" onclick="openNodeInspector('root')">
+          <div id="node_root" class="flex flex-col items-center group cursor-pointer transition-all duration-300" onclick="handleNodeClick('root')">
             <div class="p-4 px-6 bg-slate-900/95 backdrop-blur-md border-2 border-indigo-500/80 rounded-2xl flex items-center gap-4 shadow-xl shadow-indigo-500/20 hover:border-indigo-400 transition-all duration-300 transform hover:scale-105">
               <div class="relative">
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-indigo-500/30">
@@ -150,15 +181,18 @@
             </div>
           </div>
 
-          <!-- Connecting Line from Root to Gateway -->
-          <div class="w-full flex justify-center -my-4">
-            <svg class="w-48 h-10 text-indigo-500/60" viewBox="0 0 100 40" fill="none">
-              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" class="animate-pulse" />
+          <!-- Animated Packet Flow Connector SVG from Root to Gateway -->
+          <div class="w-full flex justify-center -my-4 relative">
+            <svg class="w-48 h-10 text-indigo-500" viewBox="0 0 100 40" fill="none">
+              <!-- Static Path -->
+              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-opacity="0.3" stroke-width="2" />
+              <!-- Animated Glowing Flow Line -->
+              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 14" stroke-linecap="round" class="animate-[dash_1.5s_linear_infinite]" />
             </svg>
           </div>
 
           <!-- TIER 1: Network Gateway Layer -->
-          <div class="flex flex-col items-center">
+          <div id="node_gateway" class="flex flex-col items-center transition-all duration-300 cursor-pointer" onclick="handleNodeClick('gateway')">
             <div class="px-5 py-2.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl flex items-center gap-3 text-xs text-slate-300 shadow-lg shadow-black/40 hover:border-slate-500 transition">
               <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -171,10 +205,13 @@
             </div>
           </div>
 
-          <!-- Connecting Line from Gateway to Host Nodes -->
-          <div class="w-full flex justify-center -my-4">
-            <svg class="w-72 h-10 text-indigo-500/60" viewBox="0 0 100 40" fill="none">
-              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" class="animate-pulse" />
+          <!-- Animated Packet Flow Connector SVG from Gateway to Hosts -->
+          <div class="w-full flex justify-center -my-4 relative">
+            <svg class="w-72 h-10 text-indigo-500" viewBox="0 0 100 40" fill="none">
+              <!-- Static Path -->
+              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-opacity="0.3" stroke-width="2" />
+              <!-- Animated Glowing Flow Line -->
+              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 14" stroke-linecap="round" class="animate-[dash_1.5s_linear_infinite]" />
             </svg>
           </div>
 
@@ -185,25 +222,26 @@
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Monitored Infrastructure Nodes</span>
                 <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono"><%= @map[:nodes].size %> Hosts</span>
               </div>
-              <span class="text-xs text-slate-500 font-mono">Klik node untuk membuka Quick Inspector</span>
+              <span class="text-xs text-slate-500 font-mono">Klik node untuk melihat Quick Inspector atau simulasi</span>
             </div>
 
             <div id="topologyNodesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <% @map[:nodes].each_with_index do |node, idx| %>
-                <div class="topology-node-card p-5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800/90 shadow-xl flex flex-col justify-between space-y-4 hover:border-indigo-500/80 transition-all duration-300 card-hover group cursor-pointer"
+                <div id="node_card_<%= idx %>"
+                     class="topology-node-card p-5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800/90 shadow-xl flex flex-col justify-between space-y-4 hover:border-indigo-500/80 transition-all duration-300 card-hover group cursor-pointer"
                      data-name="<%= node[:name].downcase %>"
                      data-status="<%= node[:status] %>"
-                     onclick="openNodeInspector(<%= idx %>)">
+                     onclick="handleNodeClick(<%= idx %>)">
                   
                   <!-- Node Header -->
                   <div class="flex items-start justify-between gap-3">
                     <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-10 h-10 rounded-xl <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                      <div class="w-10 h-10 rounded-xl <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> flex items-center justify-center font-bold text-sm shrink-0 shadow-sm node-icon-box">
                         🖥️
                       </div>
                       <div class="min-w-0">
                         <div class="flex items-center gap-2">
-                          <p class="font-bold text-sm text-white font-mono truncate group-hover:text-indigo-400 transition">
+                          <p class="font-bold text-sm text-white font-mono truncate group-hover:text-indigo-400 transition node-name-label">
                             <%= node[:name] %>
                           </p>
                         </div>
@@ -211,7 +249,7 @@
                       </div>
                     </div>
 
-                    <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> font-mono">
+                    <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> font-mono node-status-badge">
                       ● <%= node[:status] %>
                     </span>
                   </div>
@@ -259,7 +297,7 @@
         <!-- RADIAL HUB LAYOUT MODE (Hidden by default) -->
         <div id="radialLayoutContainer" class="hidden flex-col items-center justify-center min-h-[500px] w-full max-w-4xl py-8 relative">
           <!-- Central Hub -->
-          <div class="relative z-20 flex flex-col items-center cursor-pointer" onclick="openNodeInspector('root')">
+          <div class="relative z-20 flex flex-col items-center cursor-pointer" onclick="handleNodeClick('root')">
             <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 border-4 border-indigo-400/80 flex flex-col items-center justify-center shadow-2xl shadow-indigo-500/40 transform hover:scale-110 transition duration-300">
               <span class="text-2xl font-black text-white">N</span>
               <span class="text-[9px] font-mono font-bold text-indigo-100 uppercase mt-0.5">Master</span>
@@ -274,7 +312,7 @@
           <div class="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-3 gap-6 pt-12 z-20">
             <% @map[:nodes].each_with_index do |node, idx| %>
               <div class="topology-radial-node p-4 bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-800 shadow-xl flex flex-col items-center text-center space-y-2 hover:border-indigo-500 transition-all card-hover cursor-pointer"
-                   onclick="openNodeInspector(<%= idx %>)">
+                   onclick="handleNodeClick(<%= idx %>)">
                 <div class="w-10 h-10 rounded-full <%= node[:status] == 'UP' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40' %> flex items-center justify-center font-bold text-xs">
                   🖥️
                 </div>
@@ -380,6 +418,14 @@
   </div>
 </div>
 
+<style>
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+</style>
+
 <!-- Embedded Node Data for Client-Side Interactivity -->
 <script>
   const topologyData = {
@@ -389,6 +435,91 @@
 
   let currentZoom = 1.0;
   let currentStatus = 'ALL';
+  let isBlastRadiusMode = false;
+
+  function toggleBlastRadiusMode() {
+    isBlastRadiusMode = !isBlastRadiusMode;
+    const banner = document.getElementById('blastRadiusBanner');
+    const btn = document.getElementById('blastRadiusToggleBtn');
+    const text = document.getElementById('blastRadiusBtnText');
+
+    if (isBlastRadiusMode) {
+      banner.classList.remove('hidden');
+      btn.className = "inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition cursor-pointer bg-amber-500 text-white border-amber-600 shadow-md shadow-amber-500/30";
+      text.textContent = "Simulation Mode Active";
+    } else {
+      banner.classList.add('hidden');
+      btn.className = "inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition cursor-pointer bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700";
+      text.textContent = "Simulate Blast Radius";
+      resetSimulationVisuals();
+    }
+  }
+
+  function handleNodeClick(nodeIndex) {
+    if (isBlastRadiusMode) {
+      simulateOutage(nodeIndex);
+    } else {
+      openNodeInspector(nodeIndex);
+    }
+  }
+
+  function simulateOutage(failedIndex) {
+    resetSimulationVisuals();
+
+    if (failedIndex === 'root' || failedIndex === 'gateway') {
+      // Root or Gateway failure -> all child nodes become UNREACHABLE
+      const gatewayNode = document.getElementById('node_gateway');
+      if (gatewayNode) {
+        gatewayNode.classList.add('ring-4', 'ring-rose-500', 'animate-pulse');
+      }
+
+      topologyData.nodes.forEach((_, idx) => {
+        const card = document.getElementById(`node_card_${idx}`);
+        if (card) {
+          card.classList.add('opacity-50', 'border-rose-500', 'bg-rose-950/40');
+          const badge = card.querySelector('.node-status-badge');
+          if (badge) {
+            badge.textContent = "● UNREACHABLE";
+            badge.className = "shrink-0 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 font-mono node-status-badge animate-pulse";
+          }
+        }
+      });
+    } else {
+      // Individual host failure
+      const card = document.getElementById(`node_card_${failedIndex}`);
+      if (card) {
+        card.classList.add('ring-4', 'ring-rose-500', 'animate-pulse');
+        const badge = card.querySelector('.node-status-badge');
+        if (badge) {
+          badge.textContent = "● DOWN";
+          badge.className = "shrink-0 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500 text-white font-mono node-status-badge";
+        }
+      }
+    }
+  }
+
+  function resetSimulationVisuals() {
+    const gatewayNode = document.getElementById('node_gateway');
+    if (gatewayNode) {
+      gatewayNode.classList.remove('ring-4', 'ring-rose-500', 'animate-pulse');
+    }
+
+    topologyData.nodes.forEach((node, idx) => {
+      const card = document.getElementById(`node_card_${idx}`);
+      if (card) {
+        card.classList.remove('opacity-50', 'border-rose-500', 'bg-rose-950/40', 'ring-4', 'ring-rose-500', 'animate-pulse');
+        const badge = card.querySelector('.node-status-badge');
+        if (badge) {
+          badge.textContent = `● ${node.status}`;
+          badge.className = `shrink-0 px-2.5 py-1 rounded-full text-xs font-bold ${node.status === 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'} font-mono node-status-badge`;
+        }
+      }
+    });
+  }
+
+  function exportTopologyDiagram() {
+    window.print();
+  }
 
   function setLayoutMode(mode) {
     const treeBtn = document.getElementById('layoutTreeBtn');
@@ -498,6 +629,18 @@
         plugin_output: 'Nagios Core Process Coordinator Active & Healthy',
         services: []
       };
+    } else if (nodeIndex === 'gateway') {
+      node = {
+        name: 'Core Gateway Switch',
+        alias: 'Local Gateway / Switch Layer',
+        address: '127.0.0.1 (Loopback Gateway)',
+        status: 'UP',
+        tier: 1,
+        parent: topologyData.root.name,
+        children: topologyData.nodes.map(n => n.name),
+        plugin_output: 'Network gateway link active with 0% packet loss',
+        services: []
+      };
     } else {
       node = topologyData.nodes[nodeIndex];
     }
@@ -555,7 +698,7 @@
     }
 
     // Action links
-    if (nodeIndex === 'root') {
+    if (nodeIndex === 'root' || nodeIndex === 'gateway') {
       document.getElementById('drawerFullDetailLink').href = '/process_info';
       document.getElementById('drawerFullDetailLink').textContent = 'Process Info ↗';
       document.getElementById('drawerRecheckForm').action = '/process_info';
