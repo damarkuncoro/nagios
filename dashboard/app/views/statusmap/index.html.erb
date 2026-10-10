@@ -70,15 +70,25 @@
   </div>
 
   <!-- Interactive Topology Canvas -->
-  <div class="glass-panel rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl overflow-hidden flex flex-col">
+  <div class="glass-panel rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xl overflow-hidden flex flex-col relative">
+    
     <!-- Toolbar Controls -->
     <div class="px-6 py-4 bg-slate-50/70 dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-800/80 flex flex-wrap justify-between items-center gap-4">
       <div class="flex items-center gap-3">
         <span class="w-3 h-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50"></span>
         <h2 class="text-sm font-bold text-slate-800 dark:text-slate-100">Live Network Hierarchy Graph</h2>
-        <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 font-mono">
-          Parent-Child Topology
-        </span>
+
+        <!-- Layout Mode Switcher -->
+        <div class="flex items-center bg-slate-200/70 dark:bg-slate-800/80 p-0.5 rounded-xl text-xs font-semibold ml-2">
+          <button type="button" id="layoutTreeBtn" onclick="setLayoutMode('tree')" class="px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            <span>Hierarchical Tree</span>
+          </button>
+          <button type="button" id="layoutRadialBtn" onclick="setLayoutMode('radial')" class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Radial Hub</span>
+          </button>
+        </div>
       </div>
 
       <div class="flex items-center gap-3">
@@ -94,157 +104,331 @@
 
         <!-- Filter Status Switcher -->
         <div class="flex items-center bg-slate-200/60 dark:bg-slate-800/60 p-0.5 rounded-xl text-xs font-semibold">
-          <button type="button" onclick="filterStatus('ALL')" id="filterBtnAll" class="px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition">All</button>
-          <button type="button" onclick="filterStatus('UP')" id="filterBtnUp" class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition">UP</button>
-          <button type="button" onclick="filterStatus('DOWN')" id="filterBtnDown" class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition">DOWN</button>
+          <button type="button" onclick="filterStatus('ALL')" id="filterBtnAll" class="px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition cursor-pointer">All</button>
+          <button type="button" onclick="filterStatus('UP')" id="filterBtnUp" class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer">UP</button>
+          <button type="button" onclick="filterStatus('DOWN')" id="filterBtnDown" class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer">DOWN</button>
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="flex items-center bg-slate-200/60 dark:bg-slate-800/60 p-0.5 rounded-xl text-xs font-mono">
+          <button type="button" onclick="adjustZoom(-0.1)" title="Zoom Out" class="px-2 py-1 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition cursor-pointer">-</button>
+          <button type="button" onclick="resetZoom()" title="Reset Zoom" id="zoomLevelIndicator" class="px-2 py-1 text-[11px] font-bold text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition cursor-pointer">100%</button>
+          <button type="button" onclick="adjustZoom(0.1)" title="Zoom In" class="px-2 py-1 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition cursor-pointer">+</button>
         </div>
       </div>
     </div>
 
-    <!-- Visual Canvas Area -->
-    <div class="relative bg-[#070B14] p-8 sm:p-12 min-h-[560px] flex flex-col items-center justify-center overflow-x-auto select-none">
+    <!-- Visual Canvas Viewport -->
+    <div class="relative bg-[#070B14] p-8 sm:p-12 min-h-[580px] flex flex-col items-center justify-center overflow-hidden select-none">
       <!-- Dark Cyberpunk Grid Canvas Background -->
-      <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-40"></div>
-      <div class="absolute inset-0 bg-gradient-to-b from-indigo-950/10 via-transparent to-slate-950/40 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-indigo-950/15 via-transparent to-slate-950/50 pointer-events-none"></div>
 
-      <!-- Graph Tree Layout Container -->
-      <div class="relative z-10 flex flex-col items-center space-y-10 w-full max-w-5xl py-4">
+      <!-- Zoomable Container Wrapper -->
+      <div id="zoomableCanvas" class="relative z-10 w-full flex flex-col items-center transition-transform duration-200 origin-top">
         
-        <!-- TIER 0: Root Master Coordinator -->
-        <div class="flex flex-col items-center group">
-          <div class="p-4 px-6 bg-slate-900/95 backdrop-blur-md border-2 border-indigo-500/80 rounded-2xl flex items-center gap-4 shadow-xl shadow-indigo-500/20 hover:border-indigo-400 transition-all duration-300 transform hover:scale-105 cursor-pointer">
-            <div class="relative">
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-indigo-500/30">
-                N
+        <!-- TREE LAYOUT MODE -->
+        <div id="treeLayoutContainer" class="flex flex-col items-center space-y-10 w-full max-w-5xl py-4">
+          
+          <!-- TIER 0: Root Master Coordinator -->
+          <div class="flex flex-col items-center group cursor-pointer" onclick="openNodeInspector('root')">
+            <div class="p-4 px-6 bg-slate-900/95 backdrop-blur-md border-2 border-indigo-500/80 rounded-2xl flex items-center gap-4 shadow-xl shadow-indigo-500/20 hover:border-indigo-400 transition-all duration-300 transform hover:scale-105">
+              <div class="relative">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-indigo-500/30">
+                  N
+                </div>
+                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900 animate-ping"></span>
+                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
               </div>
-              <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900 animate-ping"></span>
-              <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-sm text-white font-mono"><%= @map[:root][:name] %></p>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">TIER 0</span>
+                </div>
+                <p class="text-xs text-indigo-400/90 font-medium mt-0.5">Master Monitoring Engine & IPC Dispatcher</p>
+              </div>
             </div>
-            <div>
+          </div>
+
+          <!-- Connecting Line from Root to Gateway -->
+          <div class="w-full flex justify-center -my-4">
+            <svg class="w-48 h-10 text-indigo-500/60" viewBox="0 0 100 40" fill="none">
+              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" class="animate-pulse" />
+            </svg>
+          </div>
+
+          <!-- TIER 1: Network Gateway Layer -->
+          <div class="flex flex-col items-center">
+            <div class="px-5 py-2.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl flex items-center gap-3 text-xs text-slate-300 shadow-lg shadow-black/40 hover:border-slate-500 transition">
+              <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+              </div>
+              <div>
+                <span class="font-bold text-slate-100 font-mono">Core Gateway Switch</span>
+                <span class="text-slate-400 text-[11px] font-mono ml-1.5">(127.0.0.1 / Loopback)</span>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30 font-mono">ACTIVE</span>
+            </div>
+          </div>
+
+          <!-- Connecting Line from Gateway to Host Nodes -->
+          <div class="w-full flex justify-center -my-4">
+            <svg class="w-72 h-10 text-indigo-500/60" viewBox="0 0 100 40" fill="none">
+              <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" class="animate-pulse" />
+            </svg>
+          </div>
+
+          <!-- TIER 2+: Host Nodes Grid -->
+          <div class="w-full">
+            <div class="flex items-center justify-between mb-4 px-2">
               <div class="flex items-center gap-2">
-                <p class="font-bold text-sm text-white font-mono"><%= @map[:root][:name] %></p>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">TIER 0</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Monitored Infrastructure Nodes</span>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono"><%= @map[:nodes].size %> Hosts</span>
               </div>
-              <p class="text-xs text-indigo-400/90 font-medium mt-0.5">Master Monitoring Engine & IPC Dispatcher</p>
+              <span class="text-xs text-slate-500 font-mono">Klik node untuk membuka Quick Inspector</span>
             </div>
-          </div>
-        </div>
 
-        <!-- Connecting Line from Root to Gateway / Children -->
-        <div class="w-full flex justify-center -my-4">
-          <svg class="w-48 h-10 text-indigo-500/60" viewBox="0 0 100 40" fill="none">
-            <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" class="animate-pulse" />
-          </svg>
-        </div>
-
-        <!-- TIER 1: Network Gateway Layer -->
-        <div class="flex flex-col items-center">
-          <div class="px-5 py-2.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl flex items-center gap-3 text-xs text-slate-300 shadow-lg shadow-black/40 hover:border-slate-500 transition">
-            <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-            </div>
-            <div>
-              <span class="font-bold text-slate-100 font-mono">Core Gateway Switch</span>
-              <span class="text-slate-400 text-[11px] font-mono ml-1.5">(127.0.0.1 / Loopback)</span>
-            </div>
-            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30 font-mono">ACTIVE</span>
-          </div>
-        </div>
-
-        <!-- Connecting Line from Gateway to Host Nodes -->
-        <div class="w-full flex justify-center -my-4">
-          <svg class="w-72 h-10 text-indigo-500/60" viewBox="0 0 100 40" fill="none">
-            <path d="M 50 0 L 50 40" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" class="animate-pulse" />
-          </svg>
-        </div>
-
-        <!-- TIER 2+: Host Nodes Grid -->
-        <div class="w-full">
-          <div class="flex items-center justify-between mb-4 px-2">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Monitored Infrastructure Nodes</span>
-              <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono"><%= @map[:nodes].size %> Hosts</span>
-            </div>
-            <span class="text-xs text-slate-500 font-mono">Auto-arranged by Parent Dependency</span>
-          </div>
-
-          <div id="topologyNodesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <% @map[:nodes].each do |node| %>
-              <div class="topology-node-card p-5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800/90 shadow-xl flex flex-col justify-between space-y-4 hover:border-indigo-500/80 transition-all duration-300 card-hover group"
-                   data-name="<%= node[:name].downcase %>"
-                   data-status="<%= node[:status] %>">
-                
-                <!-- Node Header -->
-                <div class="flex items-start justify-between gap-3">
-                  <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-10 h-10 rounded-xl <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-                      🖥️
-                    </div>
-                    <div class="min-w-0">
-                      <div class="flex items-center gap-2">
-                        <p class="font-bold text-sm text-white font-mono truncate group-hover:text-indigo-400 transition">
-                          <%= link_to node[:name], host_path(node[:name]) %>
-                        </p>
+            <div id="topologyNodesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <% @map[:nodes].each_with_index do |node, idx| %>
+                <div class="topology-node-card p-5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800/90 shadow-xl flex flex-col justify-between space-y-4 hover:border-indigo-500/80 transition-all duration-300 card-hover group cursor-pointer"
+                     data-name="<%= node[:name].downcase %>"
+                     data-status="<%= node[:status] %>"
+                     onclick="openNodeInspector(<%= idx %>)">
+                  
+                  <!-- Node Header -->
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <div class="w-10 h-10 rounded-xl <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                        🖥️
                       </div>
-                      <p class="text-xs text-slate-400 font-mono truncate mt-0.5"><%= node[:address] %></p>
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                          <p class="font-bold text-sm text-white font-mono truncate group-hover:text-indigo-400 transition">
+                            <%= node[:name] %>
+                          </p>
+                        </div>
+                        <p class="text-xs text-slate-400 font-mono truncate mt-0.5"><%= node[:address] %></p>
+                      </div>
+                    </div>
+
+                    <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> font-mono">
+                      ● <%= node[:status] %>
+                    </span>
+                  </div>
+
+                  <!-- Services Health Mini Progress Bar -->
+                  <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80 space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                      <span class="text-slate-400">Child Services Health:</span>
+                      <span class="font-mono font-bold text-slate-200"><%= node[:ok_services] %> / <%= node[:total_services] %> OK</span>
+                    </div>
+                    <% pct = node[:total_services] > 0 ? ((node[:ok_services].to_f / node[:total_services]) * 100).round : 100 %>
+                    <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                      <div class="h-full <%= pct == 100 ? 'bg-emerald-500' : 'bg-amber-500' %> transition-all duration-500" style="width: <%= pct %>%;"></div>
                     </div>
                   </div>
 
-                  <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> font-mono">
-                    ● <%= node[:status] %>
-                  </span>
-                </div>
+                  <!-- Plugin Output -->
+                  <p class="text-xs text-slate-400 line-clamp-2 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50 font-mono text-[11px]" title="<%= node[:plugin_output] %>">
+                    <%= node[:plugin_output].presence || "No check output recorded" %>
+                  </p>
 
-                <!-- Services Health Mini Progress Bar -->
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80 space-y-1.5">
-                  <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-400">Child Services Health:</span>
-                    <span class="font-mono font-bold text-slate-200"><%= node[:ok_services] %> / <%= node[:total_services] %> OK</span>
-                  </div>
-                  <% pct = node[:total_services] > 0 ? ((node[:ok_services].to_f / node[:total_services]) * 100).round : 100 %>
-                  <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div class="h-full <%= pct == 100 ? 'bg-emerald-500' : 'bg-amber-500' %> transition-all duration-500" style="width: <%= pct %>%;"></div>
-                  </div>
-                </div>
+                  <!-- Actions Footer -->
+                  <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+                    <div class="flex items-center gap-2">
+                      <%= link_to host_path(node[:name]), class: "text-xs text-indigo-400 hover:text-indigo-300 font-medium transition" do %>
+                        Detail ↗
+                      <% end %>
+                      <a href="http://localhost:8080/nagios/cgi-bin/status.cgi?host=<%= node[:name] %>" target="_blank" class="text-[11px] text-slate-500 hover:text-slate-400 transition font-mono">
+                        CGI ↗
+                      </a>
+                    </div>
 
-                <!-- Plugin Output -->
-                <p class="text-xs text-slate-400 line-clamp-2 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50 font-mono text-[11px]" title="<%= node[:plugin_output] %>">
-                  <%= node[:plugin_output].presence || "No check output recorded" %>
-                </p>
-
-                <!-- Actions Footer -->
-                <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-2">
-                    <%= link_to host_path(node[:name]), class: "text-xs text-indigo-400 hover:text-indigo-300 font-medium transition" do %>
-                      Inspector ↗
+                    <%= button_to recheck_host_path(node[:name]),
+                                  method: :post,
+                                  class: "text-xs px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-600/30" do %>
+                      Re-check
                     <% end %>
-                    <a href="http://localhost:8080/nagios/cgi-bin/status.cgi?host=<%= node[:name] %>" target="_blank" class="text-[11px] text-slate-500 hover:text-slate-400 transition font-mono">
-                      CGI ↗
-                    </a>
                   </div>
-
-                  <%= button_to recheck_host_path(node[:name]),
-                                method: :post,
-                                class: "text-xs px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-600/30" do %>
-                    Re-check
-                  <% end %>
                 </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- RADIAL HUB LAYOUT MODE (Hidden by default) -->
+        <div id="radialLayoutContainer" class="hidden flex-col items-center justify-center min-h-[500px] w-full max-w-4xl py-8 relative">
+          <!-- Central Hub -->
+          <div class="relative z-20 flex flex-col items-center cursor-pointer" onclick="openNodeInspector('root')">
+            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 border-4 border-indigo-400/80 flex flex-col items-center justify-center shadow-2xl shadow-indigo-500/40 transform hover:scale-110 transition duration-300">
+              <span class="text-2xl font-black text-white">N</span>
+              <span class="text-[9px] font-mono font-bold text-indigo-100 uppercase mt-0.5">Master</span>
+            </div>
+          </div>
+
+          <!-- Orbit Circles -->
+          <div class="absolute w-[420px] h-[420px] rounded-full border border-indigo-500/20 pointer-events-none animate-[spin_60s_linear_infinite]"></div>
+          <div class="absolute w-[320px] h-[320px] rounded-full border border-slate-700/40 pointer-events-none"></div>
+
+          <!-- Nodes Arranged Along Radial Orbit -->
+          <div class="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-3 gap-6 pt-12 z-20">
+            <% @map[:nodes].each_with_index do |node, idx| %>
+              <div class="topology-radial-node p-4 bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-800 shadow-xl flex flex-col items-center text-center space-y-2 hover:border-indigo-500 transition-all card-hover cursor-pointer"
+                   onclick="openNodeInspector(<%= idx %>)">
+                <div class="w-10 h-10 rounded-full <%= node[:status] == 'UP' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40' %> flex items-center justify-center font-bold text-xs">
+                  🖥️
+                </div>
+                <p class="font-bold text-xs text-white font-mono truncate w-full"><%= node[:name] %></p>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400' %>">
+                  <%= node[:status] %>
+                </span>
               </div>
             <% end %>
           </div>
+        </div>
 
-          <!-- Empty search filter state -->
-          <div id="noMatchMessage" class="hidden py-14 text-center text-slate-500 text-xs font-mono">
-            Tidak ada host yang cocok dengan filter pencarian.
-          </div>
+        <!-- Empty search filter state -->
+        <div id="noMatchMessage" class="hidden py-14 text-center text-slate-500 text-xs font-mono">
+          Tidak ada host yang cocok dengan filter pencarian.
         </div>
       </div>
     </div>
   </div>
+
+  <!-- SLIDE-OVER NODE INSPECTOR DRAWER -->
+  <div id="nodeInspectorBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 transition-opacity opacity-0 pointer-events-none" onclick="closeNodeInspector()"></div>
+  <div id="nodeInspectorDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Drawer Header -->
+    <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/60">
+      <div class="flex items-center gap-3">
+        <div id="drawerIcon" class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg font-bold border border-indigo-500/20">
+          🖥️
+        </div>
+        <div>
+          <h3 id="drawerTitle" class="font-bold text-base text-slate-900 dark:text-white font-mono">Host Inspector</h3>
+          <p id="drawerSubtitle" class="text-xs text-slate-500 dark:text-slate-400 font-mono">127.0.0.1</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeNodeInspector()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Drawer Content Scrollable Area -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <!-- Status & Health Pill Bar -->
+      <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Node Status</p>
+          <div id="drawerStatusBadge" class="mt-1 inline-flex items-center gap-1.5 text-xs font-bold font-mono">
+            ● UP
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Topology Tier</p>
+          <p id="drawerTier" class="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 mt-1">Tier 1</p>
+        </div>
+      </div>
+
+      <!-- Plugin Output -->
+      <div class="space-y-1.5">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Plugin Check Output</p>
+        <p id="drawerPluginOutput" class="text-xs font-mono p-3 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 break-words">
+          OK - 127.0.0.1: rta 0.040ms, lost 0%
+        </p>
+      </div>
+
+      <!-- Hierarchy Relationship -->
+      <div class="space-y-2">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Topology Dependencies</p>
+        <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
+            <span class="text-slate-400 block text-[10px] uppercase">Parent Gateway</span>
+            <span id="drawerParent" class="font-bold text-slate-700 dark:text-slate-300 mt-0.5 block truncate">Core Gateway</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
+            <span class="text-slate-400 block text-[10px] uppercase">Child Dependents</span>
+            <span id="drawerChildrenCount" class="font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">0 Nodes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monitored Services List -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Monitored Services</p>
+          <span id="drawerServicesCount" class="text-xs font-mono text-slate-400">0 Services</span>
+        </div>
+        <div id="drawerServicesList" class="space-y-2">
+          <!-- Dynamic Services Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Footer Actions -->
+    <div class="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between gap-3">
+      <a id="drawerFullDetailLink" href="#" class="flex-1 py-2.5 px-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl text-center transition">
+        Full Host Page ↗
+      </a>
+      <form id="drawerRecheckForm" method="post" action="#" class="flex-1">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <button type="submit" class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-semibold rounded-xl text-center transition shadow-xs cursor-pointer">
+          Re-check Host
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
 
+<!-- Embedded Node Data for Client-Side Interactivity -->
 <script>
+  const topologyData = {
+    root: <%= raw @map[:root].to_json %>,
+    nodes: <%= raw @map[:nodes].to_json %>
+  };
+
+  let currentZoom = 1.0;
   let currentStatus = 'ALL';
+
+  function setLayoutMode(mode) {
+    const treeBtn = document.getElementById('layoutTreeBtn');
+    const radialBtn = document.getElementById('layoutRadialBtn');
+    const treeContainer = document.getElementById('treeLayoutContainer');
+    const radialContainer = document.getElementById('radialLayoutContainer');
+
+    if (mode === 'tree') {
+      treeBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition flex items-center gap-1.5 cursor-pointer";
+      radialBtn.className = "px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer";
+      treeContainer.classList.remove('hidden');
+      radialContainer.classList.add('hidden');
+    } else {
+      radialBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition flex items-center gap-1.5 cursor-pointer";
+      treeBtn.className = "px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer";
+      radialContainer.classList.remove('hidden');
+      treeContainer.classList.add('hidden');
+    }
+  }
+
+  function adjustZoom(delta) {
+    currentZoom = Math.min(Math.max(currentZoom + delta, 0.6), 1.5);
+    applyZoom();
+  }
+
+  function resetZoom() {
+    currentZoom = 1.0;
+    applyZoom();
+  }
+
+  function applyZoom() {
+    const canvas = document.getElementById('zoomableCanvas');
+    if (canvas) {
+      canvas.style.transform = `scale(${currentZoom})`;
+    }
+    const indicator = document.getElementById('zoomLevelIndicator');
+    if (indicator) {
+      indicator.textContent = `${Math.round(currentZoom * 100)}%`;
+    }
+  }
 
   function filterTopologyNodes(query) {
     applyFilters(query.trim().toLowerCase(), currentStatus);
@@ -257,15 +441,15 @@
     const downBtn = document.getElementById('filterBtnDown');
 
     [allBtn, upBtn, downBtn].forEach(b => {
-      b.className = "px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition";
+      b.className = "px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer";
     });
 
     if (status === 'ALL') {
-      allBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition";
+      allBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition cursor-pointer";
     } else if (status === 'UP') {
-      upBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-2xs transition";
+      upBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-2xs transition cursor-pointer";
     } else if (status === 'DOWN') {
-      downBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 shadow-2xs transition";
+      downBtn.className = "px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-rose-600 dark:text-rose-400 shadow-2xs transition cursor-pointer";
     }
 
     const query = (document.getElementById('topologySearchInput').value || "").trim().toLowerCase();
@@ -296,4 +480,111 @@
       emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
     }
   }
+
+  function openNodeInspector(nodeIndex) {
+    const drawer = document.getElementById('nodeInspectorDrawer');
+    const backdrop = document.getElementById('nodeInspectorBackdrop');
+
+    let node;
+    if (nodeIndex === 'root') {
+      node = {
+        name: topologyData.root.name,
+        alias: 'Nagios Core Master Coordinator',
+        address: '127.0.0.1 (Local Daemon)',
+        status: topologyData.root.status || 'UP',
+        tier: 0,
+        parent: 'None (Root Master Engine)',
+        children: topologyData.nodes.map(n => n.name),
+        plugin_output: 'Nagios Core Process Coordinator Active & Healthy',
+        services: []
+      };
+    } else {
+      node = topologyData.nodes[nodeIndex];
+    }
+
+    if (!node) return;
+
+    document.getElementById('drawerTitle').textContent = node.name;
+    document.getElementById('drawerSubtitle').textContent = node.address || node.alias || '-';
+
+    const statusBadge = document.getElementById('drawerStatusBadge');
+    if (node.status === 'UP') {
+      statusBadge.className = "mt-1 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30";
+      statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> UP';
+    } else {
+      statusBadge.className = "mt-1 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30";
+      statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> ' + node.status;
+    }
+
+    document.getElementById('drawerTier').textContent = `Tier ${node.tier !== undefined ? node.tier : 1}`;
+    document.getElementById('drawerPluginOutput').textContent = node.plugin_output || '-';
+    document.getElementById('drawerParent').textContent = node.parent || 'Core Gateway';
+    document.getElementById('drawerChildrenCount').textContent = `${(node.children || []).length} Nodes`;
+
+    // Services list injection
+    const servicesList = document.getElementById('drawerServicesList');
+    const servicesCount = document.getElementById('drawerServicesCount');
+    servicesList.innerHTML = '';
+
+    const services = node.services || [];
+    servicesCount.textContent = `${services.length} Services`;
+
+    if (services.length === 0) {
+      servicesList.innerHTML = '<p class="text-xs text-slate-400 font-mono italic p-3 text-center bg-slate-50 dark:bg-slate-800/40 rounded-xl">Tidak ada service spesifik.</p>';
+    } else {
+      services.forEach(svc => {
+        const item = document.createElement('div');
+        item.className = "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between text-xs";
+        
+        const isOk = svc.status === 'OK';
+        const badgeClass = isOk 
+          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+          : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+
+        item.innerHTML = `
+          <div class="min-w-0 pr-2">
+            <p class="font-bold text-slate-800 dark:text-slate-200 font-mono truncate">${svc.description}</p>
+            <p class="text-[11px] text-slate-400 truncate mt-0.5 font-mono">${svc.plugin_output || '-'}</p>
+          </div>
+          <span class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold border font-mono ${badgeClass}">
+            ${svc.status}
+          </span>
+        `;
+        servicesList.appendChild(item);
+      });
+    }
+
+    // Action links
+    if (nodeIndex === 'root') {
+      document.getElementById('drawerFullDetailLink').href = '/process_info';
+      document.getElementById('drawerFullDetailLink').textContent = 'Process Info ↗';
+      document.getElementById('drawerRecheckForm').action = '/process_info';
+    } else {
+      document.getElementById('drawerFullDetailLink').href = `/hosts/${encodeURIComponent(node.name)}`;
+      document.getElementById('drawerFullDetailLink').textContent = 'Full Host Page ↗';
+      document.getElementById('drawerRecheckForm').action = `/hosts/${encodeURIComponent(node.name)}/recheck`;
+    }
+
+    // Show Drawer
+    drawer.classList.remove('translate-x-full');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100');
+  }
+
+  function closeNodeInspector() {
+    const drawer = document.getElementById('nodeInspectorDrawer');
+    const backdrop = document.getElementById('nodeInspectorBackdrop');
+    if (drawer && backdrop) {
+      drawer.classList.add('translate-x-full');
+      backdrop.classList.remove('opacity-100');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+    }
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeNodeInspector();
+    }
+  });
 </script>

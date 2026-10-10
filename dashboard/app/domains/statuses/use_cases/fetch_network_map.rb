@@ -13,6 +13,11 @@ module Statuses
         )
 
         nodes = graph.nodes.map do |n|
+          h_services = Array(services).select do |s|
+            s_host = s.is_a?(Hash) ? (s[:host_name] || s['host_name']) : (s.respond_to?(:host_name) ? s.host_name : nil)
+            s_host.to_s == n.name.to_s
+          end
+
           {
             name: n.name,
             alias: n.alias,
@@ -24,7 +29,17 @@ module Statuses
             plugin_output: n.plugin_output,
             ok_services: n.ok_services,
             total_services: n.total_services,
-            parent: n.parents.first || graph.root_name
+            parent: n.parents.first || graph.root_name,
+            services: h_services.map do |s|
+              s_desc = s.is_a?(Hash) ? (s[:description] || s['description']) : (s.respond_to?(:description) ? s.description : '')
+              s_st = s.is_a?(Hash) ? (s[:status] || s['status']) : (s.respond_to?(:status) ? s.status : 'OK')
+              s_out = s.is_a?(Hash) ? (s[:plugin_output] || s['plugin_output']) : (s.respond_to?(:plugin_output) ? s.plugin_output : '')
+              {
+                description: s_desc.to_s,
+                status: s_st.to_s.upcase,
+                plugin_output: s_out.to_s
+              }
+            end
           }
         end
 
