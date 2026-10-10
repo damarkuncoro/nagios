@@ -72,7 +72,7 @@ class ProcessInfoController < ApplicationController
     webhook_url = params[:webhook_url]
 
     if webhook_url.present?
-      success = Statuses::Services::NotificationService.send_alert(
+      result = Statuses::Services::NotificationService.deliver_alert(
         target_url: webhook_url,
         host_name: "production-server-01",
         service_desc: "HTTP Service",
@@ -80,10 +80,10 @@ class ProcessInfoController < ApplicationController
         plugin_output: "CRITICAL - HTTP 500 Internal Server Error (Test Alert from Dashboard)"
       )
 
-      if success
-        redirect_to process_info_path, notice: "Test notifikasi Webhook berhasil dikirimkan!"
+      if result.success?
+        redirect_to process_info_path, notice: "Test notifikasi Webhook (#{result.platform.to_s.upcase}) berhasil dikirimkan!"
       else
-        redirect_to process_info_path, alert: "Gagal mengirimkan notifikasi Webhook. Periksa URL Webhook."
+        redirect_to process_info_path, alert: "Gagal mengirimkan notifikasi Webhook (#{result.platform.to_s.upcase}): #{result.error}"
       end
     else
       redirect_to process_info_path, alert: "Mohon isi URL Webhook."

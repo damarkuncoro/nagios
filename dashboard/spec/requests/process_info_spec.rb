@@ -60,4 +60,22 @@ RSpec.describe "Process Info", type: :request do
       expect(flash[:alert]).to include("tidak boleh kosong")
     end
   end
+
+  describe "POST /process_info/test_webhook" do
+    it "dispatches test webhook alert and redirects with notice" do
+      allow(Statuses::Services::NotificationService).to receive(:deliver_alert).and_return(
+        Statuses::Services::NotificationService::DeliveryResult.new(success: true, platform: :slack, status_code: 200)
+      )
+      post test_process_info_webhook_path, params: { webhook_url: "https://hooks.slack.com/services/test" }, headers: { "Host" => "localhost" }
+      expect(response).to have_http_status(:redirect)
+      expect(flash[:notice]).to include("SLACK")
+      expect(flash[:notice]).to include("berhasil dikirimkan")
+    end
+
+    it "handles missing webhook url with alert" do
+      post test_process_info_webhook_path, params: { webhook_url: "" }, headers: { "Host" => "localhost" }
+      expect(response).to have_http_status(:redirect)
+      expect(flash[:alert]).to include("Mohon isi URL Webhook")
+    end
+  end
 end
