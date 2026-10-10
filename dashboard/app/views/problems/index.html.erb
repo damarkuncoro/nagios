@@ -23,11 +23,25 @@
   </div>
 
   <!-- Filter Pills -->
-  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
     <%= link_to "Semua Masalah", problems_path,
-                class: "px-3 py-1.5 rounded-lg text-xs font-semibold transition #{ @filter.blank? ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+                class: "px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter.blank? ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+    <%= link_to problems_path(filter: 'critical'),
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter == 'critical' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" do %>
+      <span>🔥 Critical / Down</span>
+      <span class="px-1.5 py-0.2 rounded-full text-[10px] <%= @filter == 'critical' ? 'bg-rose-700 text-white' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' %>">
+        <%= @problems[:total_critical] %>
+      </span>
+    <% end %>
+    <%= link_to problems_path(filter: 'hard'),
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter == 'hard' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" do %>
+      <span>⚠️ Hard State</span>
+      <span class="px-1.5 py-0.2 rounded-full text-[10px] <%= @filter == 'hard' ? 'bg-amber-700 text-white' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' %>">
+        <%= @problems[:total_hard] %>
+      </span>
+    <% end %>
     <%= link_to problems_path(filter: 'flapping'),
-                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition #{ @filter == 'flapping' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" do %>
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter == 'flapping' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" do %>
       <span>🔀 Flapping Objects</span>
       <span class="px-1.5 py-0.2 rounded-full text-[10px] <%= @filter == 'flapping' ? 'bg-purple-700 text-white' : 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300' %>">
         <%= @problems[:total_flapping] %>

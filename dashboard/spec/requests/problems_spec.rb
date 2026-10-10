@@ -16,5 +16,15 @@ RSpec.describe "Unhandled Problems", type: :request do
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Unhandled Problems Center")
     end
+
+    it "filters problems by critical and hard outages" do
+      get problems_path(filter: 'critical'), headers: { "Host" => "localhost" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Critical / Down")
+
+      get problems_path(filter: 'hard'), headers: { "Host" => "localhost" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Hard State")
+    end
   end
 end
