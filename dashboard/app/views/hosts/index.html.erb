@@ -103,15 +103,62 @@
 
   <!-- Section 1: Host List -->
   <div class="space-y-4">
-    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">Host Status</h2>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">Host Status</h2>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <form method="get" action="<%= hosts_path %>" class="flex items-center gap-2">
+          <input type="text" name="search" value="<%= @search %>" placeholder="Cari host / output..." class="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 shadow-2xs">
+          <% if @status.present? %>
+            <input type="hidden" name="status" value="<%= @status %>">
+          <% end %>
+          <button type="submit" class="px-3 py-1.5 bg-slate-900 dark:bg-slate-800 text-white text-xs font-semibold rounded-lg hover:bg-slate-800 transition">Cari</button>
+          <% if @search.present? || @status.present? %>
+            <%= link_to "Reset", hosts_path, class: "text-xs text-rose-600 dark:text-rose-400 hover:underline font-medium" %>
+          <% end %>
+        </form>
+      </div>
+    </div>
+
+    <!-- Host Filter Pills -->
+    <div class="flex items-center gap-2 pb-1 overflow-x-auto">
+      <%= link_to "Semua (#{@host_stats[:total]})", hosts_path(search: @search),
+                  class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status.blank? ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+      <%= link_to "UP (#{@host_stats[:up]})", hosts_path(status: 'UP', search: @search),
+                  class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status == 'UP' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+      <% if @host_stats[:down].to_i > 0 %>
+        <%= link_to "DOWN (#{@host_stats[:down]})", hosts_path(status: 'DOWN', search: @search),
+                    class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status == 'DOWN' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+      <% end %>
+      <% if @host_stats[:unreachable].to_i > 0 %>
+        <%= link_to "UNREACHABLE (#{@host_stats[:unreachable]})", hosts_path(status: 'UNREACHABLE', search: @search),
+                    class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status == 'UNREACHABLE' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+      <% end %>
+    </div>
+
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            <th class="py-3.5 px-6">Host Name</th>
-            <th class="py-3.5 px-6">Status</th>
+            <th class="py-3.5 px-6">
+              <%= link_to hosts_path(status: @status, search: @search, sort_by: 'name', sort_order: (@sort_by == 'name' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1" do %>
+                <span>Host Name</span>
+                <span class="text-[10px]"><%= (@sort_by == 'name' && @sort_order.to_s == 'desc') ? '▼' : '▲' if @sort_by == 'name' %></span>
+              <% end %>
+            </th>
+            <th class="py-3.5 px-6">
+              <%= link_to hosts_path(status: @status, search: @search, sort_by: 'status', sort_order: (@sort_by == 'status' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1" do %>
+                <span>Status</span>
+                <span class="text-[10px]"><%= (@sort_by == 'status' && @sort_order.to_s == 'desc') ? '▼' : '▲' if @sort_by == 'status' %></span>
+              <% end %>
+            </th>
             <th class="py-3.5 px-6">Plugin Output</th>
-            <th class="py-3.5 px-6">Terakhir Dicek</th>
+            <th class="py-3.5 px-6">
+              <%= link_to hosts_path(status: @status, search: @search, sort_by: 'last_check', sort_order: (@sort_by == 'last_check' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1" do %>
+                <span>Terakhir Dicek</span>
+                <span class="text-[10px]"><%= (@sort_by == 'last_check' && @sort_order.to_s == 'desc') ? '▼' : '▲' if @sort_by == 'last_check' %></span>
+              <% end %>
+            </th>
             <th class="py-3.5 px-6 text-right">Aksi</th>
           </tr>
         </thead>

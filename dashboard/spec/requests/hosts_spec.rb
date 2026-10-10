@@ -13,6 +13,12 @@ RSpec.describe "Hosts", type: :request do
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Nagios Core Dashboard")
     end
+
+    it "filters hosts by status and search keyword" do
+      get root_path(status: 'UP', search: 'web'), headers: { "Host" => "localhost" }
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Host Status")
+    end
   end
 
   describe "GET /hosts.csv" do

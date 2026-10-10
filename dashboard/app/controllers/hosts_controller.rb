@@ -1,12 +1,23 @@
 class HostsController < ApplicationController
   def index
-    data = Statuses::UseCases::FetchDashboardData.call
+    data = Statuses::UseCases::FetchDashboardData.call(
+      search: params[:search],
+      status: params[:status],
+      sort_by: params[:sort_by],
+      sort_order: params[:sort_order] || :asc
+    )
 
     @program_status = data[:program_status]
     @hosts = data[:hosts]
     @services = data[:services]
     @host_stats = data[:host_stats]
     @service_stats = data[:service_stats]
+    @host_totals = data[:host_totals]
+    @service_totals = data[:service_totals]
+    @search = params[:search]
+    @status = params[:status]
+    @sort_by = params[:sort_by]
+    @sort_order = params[:sort_order]
 
     respond_to do |format|
       format.html
