@@ -2,6 +2,7 @@
 
 require 'fileutils'
 require 'time'
+require_relative 'perfdata_parser'
 
 module Statuses
   module Services

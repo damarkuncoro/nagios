@@ -39,6 +39,7 @@ Rails.application.routes.draw do
   get "/configuration", to: "configuration#index", as: :configuration
   post "/configuration/verify", to: "configuration#verify", as: :verify_configuration
   get "/perf_info", to: "perf_info#show", as: :perf_info
+  get "/metrics", to: "perf_info#metrics", as: :prometheus_metrics
 
   resources :hostgroups, only: [:index]
   resources :servicegroups, only: [:index]
