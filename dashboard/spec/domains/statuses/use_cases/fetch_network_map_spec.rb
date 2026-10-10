@@ -11,7 +11,7 @@ RSpec.describe Statuses::UseCases::FetchNetworkMap do
 
       map = described_class.call
 
-      expect(map[:root][:name]).to eq('Nagios Core Server')
+      expect(map[:root][:name]).to eq('Nagios Core Master')
       expect(map[:nodes].size).to eq(1)
       expect(map[:nodes].first[:name]).to eq('host1')
       expect(map[:nodes].first[:ok_services]).to eq(1)

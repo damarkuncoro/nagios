@@ -78,7 +78,7 @@ RSpec.describe Statuses::Services::CgiConfigParser do
 
   describe '.format_date' do
     it 'formats timestamps into selected formats' do
-      t = Time.at(1_700_000_000)
+      t = Time.utc(2023, 11, 15, 5, 13, 20)
       expect(described_class.format_date(t, format: :iso8601)).to eq('2023-11-15 05:13:20')
       expect(described_class.format_date(t, format: :us)).to eq('11-15-2023 05:13:20')
       expect(described_class.format_date(t, format: :euro)).to eq('15-11-2023 05:13:20')

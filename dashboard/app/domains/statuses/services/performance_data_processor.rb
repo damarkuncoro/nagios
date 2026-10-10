@@ -172,7 +172,7 @@ module Statuses
       end
 
       def sanitize_metric_key(str)
-        str.to_s.strip.downcase.gsub(/[^a-z0-9_-]/, '_').squeeze('_').sub(/^_+/, '').sub(/_+$/, '')
+        str.to_s.strip.downcase.gsub(/[^a-z0-9_]/, '_').squeeze('_').sub(/^_+/, '').sub(/_+$/, '')
       end
 
       def extract_metrics(raw)

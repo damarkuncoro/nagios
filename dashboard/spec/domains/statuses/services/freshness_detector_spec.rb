@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Statuses::Services::FreshnessDetector do
-  let(:now) { Time.new(2026, 10, 10, 12, 0, 0) }
+  let(:now) { Time.now }
 
   describe '.stale?' do
     it 'returns false when next_check is in the future' do

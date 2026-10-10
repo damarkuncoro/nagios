@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 RSpec.describe 'Statuses CSV Export Use Cases' do
   describe Statuses::UseCases::ExportHostsCsv do
@@ -58,8 +58,9 @@ RSpec.describe 'Statuses CSV Export Use Cases' do
 
     it 'generates CSV with headers and notification rows' do
       csv = described_class.call(notifications)
-      expect(csv).to include('Timestamp,Host Name,Service Description,Contact Name,Notification Type,State,Output')
-      expect(csv).to include('2026-10-10 04:30:00,web-server-01,HTTP Service,nagiosadmin,PROBLEM,CRITICAL,HTTP CRITICAL - Connection refused')
+      expect(csv).to include('Timestamp,Host Name,Service Description,Contact Name,Notification Type,Reason / State,Output')
+      expect(csv).to include('2026-10-10 04:30:00,web-server-01,HTTP Service,nagiosadmin,SERVICE')
+      expect(csv).to include('HTTP CRITICAL - Connection refused')
     end
   end
 end

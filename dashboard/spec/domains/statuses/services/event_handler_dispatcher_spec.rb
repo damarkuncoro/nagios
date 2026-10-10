@@ -14,7 +14,7 @@ RSpec.describe Statuses::Services::EventHandlerDispatcher do
     let(:service) do
       {
         'description' => 'Sidekiq Workers',
-        'event_handler' => '$USER1$/eventhandlers/restart_service.sh $HOSTNAME$ $SERVICEDESC$ $SERVICESTATE$ $SERVICESTATETYPE$ $SERVICEATTEMPT$',
+        'event_handler' => '$USER1$/eventhandlers/restart_service.sh $HOSTNAME$ "$SERVICEDESC$" $SERVICESTATE$ $SERVICESTATETYPE$ $SERVICEATTEMPT$',
         'event_handler_enabled' => true
       }
     end

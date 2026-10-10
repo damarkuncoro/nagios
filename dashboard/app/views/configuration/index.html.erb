@@ -1,8 +1,8 @@
 <div class="max-w-6xl mx-auto space-y-8">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Objects Configuration Explorer</h1>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Inspeksi definisi perintah (*Check Commands*), kontak, grup, dan jadwal waktu (*config.cgi*)</p>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Configuration Explorer</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Inspeksi objek definisi (*config.cgi*), direktif daemon (*nagios.cfg*), dan otorisasi web (*cgi.cfg*)</p>
     </div>
     <div>
       <%= button_to verify_configuration_path, method: :post, class: "inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs tracking-wide rounded-lg shadow-sm hover:shadow transition cursor-pointer" do %>
@@ -18,178 +18,424 @@
     <% end %>
   </div>
 
-  <!-- Summary Metric Badges -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Commands</p>
-      <p class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1"><%= @commands.size %></p>
-      <p class="text-[11px] text-slate-400 dark:text-slate-500">Executable definitions</p>
-    </div>
-    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contacts</p>
-      <p class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1"><%= @contacts.size %></p>
-      <p class="text-[11px] text-slate-400 dark:text-slate-500">Recipients configured</p>
-    </div>
-    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contact Groups</p>
-      <p class="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1"><%= @contactgroups.size %></p>
-      <p class="text-[11px] text-slate-400 dark:text-slate-500">Escalation teams</p>
-    </div>
-    <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-      <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Time Periods</p>
-      <p class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1"><%= @timeperiods.size %></p>
-      <p class="text-[11px] text-slate-400 dark:text-slate-500">Active monitoring windows</p>
-    </div>
+  <!-- Navigation Tabs -->
+  <div class="border-b border-slate-200 dark:border-slate-800">
+    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+      <%= link_to configuration_path(tab: "objects"), class: "inline-flex items-center gap-2 py-3 px-1 border-b-2 font-medium text-sm transition-colors #{@active_tab == 'objects' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-200'}" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <span>Objects Explorer</span>
+        <span class="px-2 py-0.5 rounded-full text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold"><%= @commands.size + @contacts.size + @contactgroups.size + @timeperiods.size %></span>
+      <% end %>
+
+      <%= link_to configuration_path(tab: "daemon"), class: "inline-flex items-center gap-2 py-3 px-1 border-b-2 font-medium text-sm transition-colors #{@active_tab == 'daemon' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-200'}" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <span>Daemon Directives (<code class="text-xs font-mono">nagios.cfg</code>)</span>
+        <span class="px-2 py-0.5 rounded-full text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold"><%= @main_directives.size %></span>
+      <% end %>
+
+      <%= link_to configuration_path(tab: "cgi"), class: "inline-flex items-center gap-2 py-3 px-1 border-b-2 font-medium text-sm transition-colors #{@active_tab == 'cgi' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-200'}" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        <span>Web & CGI Access (<code class="text-xs font-mono">cgi.cfg</code>)</span>
+        <span class="px-2 py-0.5 rounded-full text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold"><%= @cgi_directives.size %></span>
+      <% end %>
+    </nav>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Registered Commands with Full Command Lines -->
-    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden flex flex-col">
-      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-        <div>
-          <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Check Commands & Definitions</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Template command line eksekusi plugin</p>
+  <% if @active_tab == 'daemon' %>
+    <!-- Nagios Core Daemon Directives (nagios.cfg) -->
+    <div class="space-y-8">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Directives</p>
+          <p class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1"><%= @main_directives.size %></p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">Parsed nagios.cfg keys</p>
         </div>
-        <span class="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 text-xs font-semibold rounded-full border border-indigo-100 dark:border-indigo-800">
-          <%= @commands.size %> Total
-        </span>
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Service Timeout</p>
+          <p class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1"><%= @main_directives['service_check_timeout'] || 60 %>s</p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">Host timeout: <%= @main_directives['host_check_timeout'] || 30 %>s</p>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Flap Detection</p>
+          <p class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1"><%= @main_directives['enable_flap_detection'] ? 'ACTIVE' : 'OFF' %></p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">Service: <%= @main_directives['low_service_flap_threshold'] %>% / <%= @main_directives['high_service_flap_threshold'] %>%</p>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Performance Data</p>
+          <p class="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1"><%= @main_directives['process_performance_data'] ? 'ENABLED' : 'DISABLED' %></p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">OpenMetrics & Spooling</p>
+        </div>
       </div>
 
-      <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800 overflow-y-auto max-h-[500px] space-y-3">
-        <% @commands.each do |cmd| %>
-          <% cmd_name = cmd.is_a?(Hash) ? cmd['name'] : cmd %>
-          <% cmd_line = cmd.is_a?(Hash) ? cmd['command_line'] : '' %>
-          <div class="pt-3 first:pt-0 space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400"><%= cmd_name %></span>
-              <span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded">COMMAND</span>
-            </div>
-            <% if cmd_line.present? %>
-              <div class="p-2 bg-slate-50 dark:bg-slate-950/60 rounded border border-slate-200/80 dark:border-slate-800 space-y-1">
-                <code class="text-[11px] font-mono text-slate-700 dark:text-slate-300 break-all select-all block"><%= cmd_line %></code>
-                <% resolved_line = Statuses::Services::MacroResolver.resolve(cmd_line) %>
-                <% if resolved_line != cmd_line %>
-                  <div class="pt-1 border-t border-slate-200/60 dark:border-slate-800 flex items-start gap-1.5">
-                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">Resolved:</span>
-                    <code class="text-[10px] font-mono text-emerald-700 dark:text-emerald-300 break-all select-all block"><%= resolved_line %></code>
+      <!-- Core Engine Controls & Paths -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Core Daemon Paths & Spools</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">File lokasi log, cache objek, state retention, dan command pipe</p>
+          </div>
+          <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+            <% %w[log_file cfg_file resource_file status_file state_retention_file command_file check_result_path object_cache_file].each do |k| %>
+              <% val = @main_directives[k] %>
+              <div class="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <span class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300"><%= k %></span>
+                <% if val.is_a?(Array) %>
+                  <div class="flex flex-col gap-1 items-end">
+                    <% val.each do |v| %>
+                      <code class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800"><%= v %></code>
+                    <% end %>
                   </div>
+                <% elsif val.present? %>
+                  <code class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 break-all"><%= val %></code>
+                <% else %>
+                  <span class="text-xs text-slate-400 italic">default / unspecified</span>
                 <% end %>
               </div>
             <% end %>
           </div>
-        <% end %>
-      </div>
-    </div>
+        </div>
 
-    <!-- Contacts & Contact Groups -->
-    <div class="space-y-6">
-      <!-- Contacts -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Execution Intervals & Timeouts</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Parameter interval polling, reaper cycle, dan timeout limit</p>
+          </div>
+          <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+            <% %w[interval_length service_check_timeout host_check_timeout event_handler_timeout notification_timeout check_result_reaper_frequency max_check_result_reaper_time status_update_interval retention_update_interval].each do |k| %>
+              <% val = @main_directives[k] %>
+              <div class="py-2.5 flex items-center justify-between">
+                <span class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300"><%= k %></span>
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                  <%= val.present? ? "#{val}#{k.include?('timeout') || k.include?('frequency') || k.include?('time') || k.include?('interval') ? 's' : ''}" : 'default' %>
+                </span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Directives Table -->
       <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
           <div>
-            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Registered Contacts</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Daftar penerima alert & email tujuan</p>
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Parsed nagios.cfg Directives</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Daftar lengkap konfigurasi daemon dari <code class="font-mono text-[10px]">Statuses::Services::MainConfigParser</code></p>
           </div>
-          <span class="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full border border-emerald-100 dark:border-emerald-800">
-            <%= @contacts.size %>
+          <span class="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 text-xs font-semibold rounded-full border border-indigo-100 dark:border-indigo-800">
+            <%= @main_directives.size %> Directives
           </span>
         </div>
-
-        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
-          <% @contacts.each do |contact| %>
-            <% c_name = contact.is_a?(Hash) ? contact['name'] : contact %>
-            <% c_alias = contact.is_a?(Hash) ? contact['alias'] : '' %>
-            <% c_email = contact.is_a?(Hash) ? contact['email'] : '' %>
-            <div class="py-3 flex items-center justify-between">
-              <div>
-                <p class="font-bold text-slate-800 dark:text-slate-200 text-xs"><%= c_name %></p>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400"><%= c_alias.presence || "Nagios Contact" %></p>
-                <% if c_email.present? %>
-                  <p class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 mt-0.5">✉️ <%= c_email %></p>
-                <% end %>
-              </div>
-              <span class="text-[10px] px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 rounded-full">ACTIVE</span>
-            </div>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Contact Groups -->
-      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-          <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Contact Groups</h3>
-          <span class="px-2.5 py-0.5 bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-400 text-xs font-semibold rounded-full border border-sky-100 dark:border-sky-800">
-            <%= @contactgroups.size %>
-          </span>
-        </div>
-
-        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
-          <% @contactgroups.each do |cg| %>
-            <div class="py-3 space-y-1">
-              <div class="flex justify-between items-center">
-                <span class="font-bold text-xs text-slate-800 dark:text-slate-200"><%= cg['group_name'] %></span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400"><%= cg['alias'] %></span>
-              </div>
-              <% members = cg['members'] || [] %>
-              <div class="flex flex-wrap gap-1.5 pt-1">
-                <% members.each do |m| %>
-                  <span class="px-2 py-0.5 text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700">
-                    👤 <%= m %>
+        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800 overflow-y-auto max-h-[600px]">
+          <% @main_directives.sort.each do |key, val| %>
+            <div class="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <span class="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200"><%= key %></span>
+              <div class="text-right">
+                <% if val.is_a?(Array) %>
+                  <div class="flex flex-col gap-0.5 items-end">
+                    <% val.each do |v| %>
+                      <code class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-800"><%= v %></code>
+                    <% end %>
+                  </div>
+                <% elsif val.is_a?(TrueClass) || val.is_a?(FalseClass) %>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded <%= val ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400' %>">
+                    <%= val ? 'ENABLED (1)' : 'DISABLED (0)' %>
                   </span>
+                <% else %>
+                  <code class="text-[11px] font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 break-all"><%= val %></code>
                 <% end %>
               </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Time Periods -->
-      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-          <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Time Periods</h3>
-          <span class="px-2.5 py-0.5 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 text-xs font-semibold rounded-full border border-indigo-100 dark:border-amber-800">
-            <%= @timeperiods.size %>
-          </span>
-        </div>
-
-        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
-          <% @timeperiods.each do |tp| %>
-            <% tp_name = tp.is_a?(Hash) ? tp['name'] : tp %>
-            <% tp_alias = tp.is_a?(Hash) ? tp['alias'] : '' %>
-            <div class="py-2.5 flex items-center justify-between">
-              <div>
-                <span class="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200"><%= tp_name %></span>
-                <% if tp_alias.present? && tp_alias != tp_name %>
-                  <p class="text-[11px] text-slate-400 dark:text-slate-500"><%= tp_alias %></p>
-                <% end %>
-              </div>
-              <span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded">WINDOW</span>
-            </div>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Resource Macros ($USERx$) -->
-      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-          <div>
-            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Resource Macros</h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Path plugin & macro dari <code class="font-mono text-[10px]">resource.cfg</code></p>
-          </div>
-          <span class="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full border border-emerald-100 dark:border-emerald-800">
-            <%= (@user_macros || {}).size %> Defined
-          </span>
-        </div>
-
-        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
-          <% (@user_macros || {}).each do |macro, val| %>
-            <div class="py-2.5 flex items-center justify-between gap-2">
-              <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400"><%= macro %></span>
-              <code class="text-[11px] font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 break-all"><%= val %></code>
             </div>
           <% end %>
         </div>
       </div>
     </div>
-  </div>
+
+  <% elsif @active_tab == 'cgi' %>
+    <!-- Web & CGI Access Directives (cgi.cfg) -->
+    <div class="space-y-8">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">CGI Directives</p>
+          <p class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1"><%= @cgi_directives.size %></p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">Parsed cgi.cfg keys</p>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Refresh Rate</p>
+          <p class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1"><%= @cgi_directives['refresh_rate'] || 90 %>s</p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500"><%= Statuses::Services::CgiConfigParser.format_interval(@cgi_directives['refresh_rate'] || 90) %></p>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Authentication</p>
+          <p class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1"><%= @cgi_directives['use_authentication'] ? 'ACTIVE' : 'OFF' %></p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">SSL: <%= @cgi_directives['use_ssl_authentication'] ? 'YES' : 'NO' %></p>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">HTML Escaping</p>
+          <p class="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1"><%= @cgi_directives['escape_html_tags'] ? 'SECURED' : 'RAW' %></p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500">Plugin output sanitizer</p>
+        </div>
+      </div>
+
+      <!-- Role-Based Authorization Matrix -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
+          <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Contact Authorization Matrix</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Hak akses kontak untuk inspeksi sistem dan eksekusi perintah CGI (*cgi/cgiauth.c*)</p>
+        </div>
+        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+          <% Statuses::Services::CgiConfigParser::CONTACT_LIST_DIRECTIVES.each do |directive| %>
+            <% contacts = @cgi_parser ? @cgi_parser.authorized_contacts_for(directive) : (@cgi_directives[directive] || []) %>
+            <div class="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <span class="font-mono text-xs font-bold text-slate-800 dark:text-slate-200"><%= directive %></span>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500">
+                  <% case directive %>
+                  <% when 'authorized_for_system_information' %>
+                    Akses ringkasan performa daemon dan process info
+                  <% when 'authorized_for_configuration_information' %>
+                    Akses inspeksi konfigurasi objek dan direktif engine
+                  <% when 'authorized_for_system_commands' %>
+                    Izin eksekusi perintah shutdown, restart, dan process toggle
+                  <% when 'authorized_for_all_hosts' %>
+                    Izin melihat seluruh status host tanpa pembatasan kontak
+                  <% when 'authorized_for_all_services' %>
+                    Izin melihat seluruh status service tanpa pembatasan kontak
+                  <% when 'authorized_for_all_host_commands' %>
+                    Izin eksekusi perintah pada seluruh host (recheck, downtime, ACK)
+                  <% when 'authorized_for_all_service_commands' %>
+                    Izin eksekusi perintah pada seluruh service
+                  <% when 'authorized_for_read_only' %>
+                    Profil hanya baca (read-only viewer)
+                  <% end %>
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-1.5 justify-end">
+                <% if contacts.any? %>
+                  <% contacts.each do |c| %>
+                    <span class="px-2 py-0.5 text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 rounded-md border border-indigo-100 dark:border-indigo-800">
+                      👤 <%= c %>
+                    </span>
+                  <% end %>
+                <% else %>
+                  <span class="text-xs text-slate-400 italic">none (restricted)</span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- All CGI Directives Table -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Parsed cgi.cfg Directives</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Daftar lengkap konfigurasi CGI dari <code class="font-mono text-[10px]">Statuses::Services::CgiConfigParser</code></p>
+          </div>
+          <span class="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full border border-emerald-100 dark:border-emerald-800">
+            <%= @cgi_directives.size %> Directives
+          </span>
+        </div>
+        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800 overflow-y-auto max-h-[600px]">
+          <% @cgi_directives.sort.each do |key, val| %>
+            <div class="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <span class="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200"><%= key %></span>
+              <div class="text-right">
+                <% if val.is_a?(Array) %>
+                  <div class="flex flex-wrap gap-1 justify-end">
+                    <% val.each do |v| %>
+                      <code class="text-[11px] font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-800"><%= v %></code>
+                    <% end %>
+                  </div>
+                <% elsif val.is_a?(TrueClass) || val.is_a?(FalseClass) %>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded <%= val ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400' %>">
+                    <%= val ? 'ENABLED (1)' : 'DISABLED (0)' %>
+                  </span>
+                <% else %>
+                  <code class="text-[11px] font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 break-all"><%= val %></code>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+  <% else %>
+    <!-- Objects Explorer (Default) -->
+    <!-- Summary Metric Badges -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Commands</p>
+        <p class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1"><%= @commands.size %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500">Executable definitions</p>
+      </div>
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contacts</p>
+        <p class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1"><%= @contacts.size %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500">Recipients configured</p>
+      </div>
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contact Groups</p>
+        <p class="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1"><%= @contactgroups.size %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500">Escalation teams</p>
+      </div>
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Time Periods</p>
+        <p class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1"><%= @timeperiods.size %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500">Active monitoring windows</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Registered Commands with Full Command Lines -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden flex flex-col">
+        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Check Commands & Definitions</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Template command line eksekusi plugin</p>
+          </div>
+          <span class="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 text-xs font-semibold rounded-full border border-indigo-100 dark:border-indigo-800">
+            <%= @commands.size %> Total
+          </span>
+        </div>
+
+        <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800 overflow-y-auto max-h-[500px] space-y-3">
+          <% @commands.each do |cmd| %>
+            <% cmd_name = cmd.is_a?(Hash) ? cmd['name'] : cmd %>
+            <% cmd_line = cmd.is_a?(Hash) ? cmd['command_line'] : '' %>
+            <div class="pt-3 first:pt-0 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400"><%= cmd_name %></span>
+                <span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded">COMMAND</span>
+              </div>
+              <% if cmd_line.present? %>
+                <div class="p-2 bg-slate-50 dark:bg-slate-950/60 rounded border border-slate-200/80 dark:border-slate-800 space-y-1">
+                  <code class="text-[11px] font-mono text-slate-700 dark:text-slate-300 break-all select-all block"><%= cmd_line %></code>
+                  <% resolved_line = Statuses::Services::MacroResolver.resolve(cmd_line) %>
+                  <% if resolved_line != cmd_line %>
+                    <div class="pt-1 border-t border-slate-200/60 dark:border-slate-800 flex items-start gap-1.5">
+                      <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">Resolved:</span>
+                      <code class="text-[10px] font-mono text-emerald-700 dark:text-emerald-300 break-all select-all block"><%= resolved_line %></code>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Contacts & Contact Groups -->
+      <div class="space-y-6">
+        <!-- Contacts -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Registered Contacts</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Daftar penerima alert & email tujuan</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full border border-emerald-100 dark:border-emerald-800">
+              <%= @contacts.size %>
+            </span>
+          </div>
+
+          <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+            <% @contacts.each do |contact| %>
+              <% c_name = contact.is_a?(Hash) ? contact['name'] : contact %>
+              <% c_alias = contact.is_a?(Hash) ? contact['alias'] : '' %>
+              <% c_email = contact.is_a?(Hash) ? contact['email'] : '' %>
+              <div class="py-3 flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-800 dark:text-slate-200 text-xs"><%= c_name %></p>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400"><%= c_alias.presence || "Nagios Contact" %></p>
+                  <% if c_email.present? %>
+                    <p class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 mt-0.5">✉️ <%= c_email %></p>
+                  <% end %>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 rounded-full">ACTIVE</span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Contact Groups -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Contact Groups</h3>
+            <span class="px-2.5 py-0.5 bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-400 text-xs font-semibold rounded-full border border-sky-100 dark:border-sky-800">
+              <%= @contactgroups.size %>
+            </span>
+          </div>
+
+          <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+            <% @contactgroups.each do |cg| %>
+              <div class="py-3 space-y-1">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold text-xs text-slate-800 dark:text-slate-200"><%= cg['group_name'] %></span>
+                  <span class="text-[11px] text-slate-500 dark:text-slate-400"><%= cg['alias'] %></span>
+                </div>
+                <% members = cg['members'] || [] %>
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                  <% members.each do |m| %>
+                    <span class="px-2 py-0.5 text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700">
+                      👤 <%= m %>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Time Periods -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+            <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Time Periods</h3>
+            <span class="px-2.5 py-0.5 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 text-xs font-semibold rounded-full border border-indigo-100 dark:border-amber-800">
+              <%= @timeperiods.size %>
+            </span>
+          </div>
+
+          <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+            <% @timeperiods.each do |tp| %>
+              <% tp_name = tp.is_a?(Hash) ? tp['name'] : tp %>
+              <% tp_alias = tp.is_a?(Hash) ? tp['alias'] : '' %>
+              <div class="py-2.5 flex items-center justify-between">
+                <div>
+                  <span class="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200"><%= tp_name %></span>
+                  <% if tp_alias.present? && tp_alias != tp_name %>
+                    <p class="text-[11px] text-slate-400 dark:text-slate-500"><%= tp_alias %></p>
+                  <% end %>
+                </div>
+                <span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded">WINDOW</span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Resource Macros ($USERx$) -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+          <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Resource Macros</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Path plugin & macro dari <code class="font-mono text-[10px]">resource.cfg</code></p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-semibold rounded-full border border-emerald-100 dark:border-emerald-800">
+              <%= (@user_macros || {}).size %> Defined
+            </span>
+          </div>
+
+          <div class="p-4 divide-y divide-slate-100 dark:divide-slate-800">
+            <% (@user_macros || {}).each do |macro, val| %>
+              <div class="py-2.5 flex items-center justify-between gap-2">
+                <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400"><%= macro %></span>
+                <code class="text-[11px] font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 break-all"><%= val %></code>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>

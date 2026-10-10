@@ -256,8 +256,18 @@ module Statuses
           start_t = params[:start_time].to_i
           end_t = params[:end_time].to_i
           fixed = params[:fixed] == true
+          triggered_by_id = params[:triggered_by].to_i
+          parent_dt = triggered_by_id.positive? ? @downtimes[triggered_by_id] : nil
 
-          is_active = fixed && (now >= start_t && now <= end_t)
+          if parent_dt && parent_dt.active?
+            is_active = true
+            actual_start = now
+            actual_end = now + params[:duration].to_i
+          else
+            is_active = fixed && (now >= start_t && now <= end_t)
+            actual_start = is_active ? start_t : nil
+            actual_end = is_active ? end_t : nil
+          end
 
           dt = ScheduledDowntime.new(
             id: id,
@@ -268,13 +278,13 @@ module Statuses
             start_time: start_t,
             end_time: end_t,
             fixed: fixed,
-            triggered_by: params[:triggered_by].to_i,
+            triggered_by: triggered_by_id,
             duration: params[:duration].to_i,
             author: params[:author].to_s,
             comment: params[:comment].to_s,
             is_in_effect: is_active,
-            actual_start_time: is_active ? start_t : nil,
-            actual_end_time: is_active ? end_t : nil
+            actual_start_time: actual_start,
+            actual_end_time: actual_end
           )
 
           @downtimes[id] = dt

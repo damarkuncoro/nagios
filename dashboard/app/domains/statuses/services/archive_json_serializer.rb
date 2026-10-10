@@ -188,7 +188,15 @@ module Statuses
         end_ts = params[:endtime].to_i if params[:endtime]
 
         entries.select do |e|
-          is_alert = e.respond_to?(:alert?) ? e.alert? : (get_attr(e, :category).to_s == 'alert' || !get_attr(e, :state).nil?)
+          is_alert = if e.respond_to?(:alert?)
+                       e.alert?
+                     elsif !get_attr(e, :category).nil?
+                       get_attr(e, :category).to_s == 'alert'
+                     elsif !get_attr(e, :event_type).nil?
+                       get_attr(e, :event_type).to_s.include?('ALERT')
+                     else
+                       !get_attr(e, :state).nil? && get_attr(e, :contact_name).nil?
+                     end
           next false unless is_alert
 
           h_name = get_attr(e, :host_name).to_s.downcase

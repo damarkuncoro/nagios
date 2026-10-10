@@ -7,6 +7,7 @@ RSpec.describe Statuses::Services::DowntimeCoordinator do
   let(:now) { 1700000000 }
 
   before do
+    allow(coordinator).to receive(:current_timestamp).and_return(now)
     coordinator.clear!
   end
 
@@ -98,14 +99,14 @@ RSpec.describe Statuses::Services::DowntimeCoordinator do
     it 'expires active downtime when current time exceeds end time' do
       coordinator.schedule_host_downtime(
         host_name: 'srv-app01',
-        start_time: now - 2000,
-        end_time: now - 100,
+        start_time: now - 500,
+        end_time: now + 500,
         fixed: true
       )
 
       expect(coordinator.in_downtime?('srv-app01')).to be true
 
-      expired = coordinator.check_for_expired_downtimes(now)
+      expired = coordinator.check_for_expired_downtimes(now + 600)
       expect(expired.size).to eq(1)
       expect(coordinator.in_downtime?('srv-app01')).to be false
     end

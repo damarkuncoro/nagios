@@ -36,7 +36,7 @@ module Statuses
       end
 
       INTEGER_KEYS = %w[
-        created version modified_attributes_host modified_attributes_service
+        created modified_attributes_host modified_attributes_service
         current_state last_state last_hard_state state_type
         current_attempt max_attempts last_check next_check check_type
         has_been_checked problem_has_been_acknowledged acknowledgement_type

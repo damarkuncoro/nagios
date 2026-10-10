@@ -67,18 +67,18 @@ module Statuses
           end
 
           # 4. Resolve macros (base/sehandlers.c line 187, 247)
+          cmd = cmd_template.dup
+          cmd.gsub!('$SERVICESTATE$', new_state.to_s.upcase)
+          cmd.gsub!('$SERVICESTATETYPE$', state_type.to_s.upcase)
+          cmd.gsub!('$SERVICEATTEMPT$', "#{attempt}/#{max_attempts}")
+          cmd.gsub!('$LASTSERVICESTATE$', old_state.to_s.upcase)
+
           command_line = MacroResolver.resolve(
-            cmd_template,
+            cmd,
             host: host,
             service: service,
             bang_args: [new_state.to_s, state_type.to_s, attempt.to_s]
           )
-
-          # Expand specific state handler macros
-          command_line.gsub!('$SERVICESTATE$', new_state.to_s.upcase)
-          command_line.gsub!('$SERVICESTATETYPE$', state_type.to_s.upcase)
-          command_line.gsub!('$SERVICEATTEMPT$', "#{attempt}/#{max_attempts}")
-          command_line.gsub!('$LASTSERVICESTATE$', old_state.to_s.upcase)
 
           # 5. Notify Event Broker (NEB statechange data broker_statechange_data line 181)
           event_broker.publish(
@@ -153,16 +153,17 @@ module Statuses
           end
 
           # 4. Resolve macros
+          cmd = cmd_template.dup
+          cmd.gsub!('$HOSTSTATE$', new_state.to_s.upcase)
+          cmd.gsub!('$HOSTSTATETYPE$', state_type.to_s.upcase)
+          cmd.gsub!('$HOSTATTEMPT$', "#{attempt}/#{max_attempts}")
+          cmd.gsub!('$LASTHOSTSTATE$', old_state.to_s.upcase)
+
           command_line = MacroResolver.resolve(
-            cmd_template,
+            cmd,
             host: host,
             bang_args: [new_state.to_s, state_type.to_s, attempt.to_s]
           )
-
-          command_line.gsub!('$HOSTSTATE$', new_state.to_s.upcase)
-          command_line.gsub!('$HOSTSTATETYPE$', state_type.to_s.upcase)
-          command_line.gsub!('$HOSTATTEMPT$', "#{attempt}/#{max_attempts}")
-          command_line.gsub!('$LASTHOSTSTATE$', old_state.to_s.upcase)
 
           # 5. Notify Event Broker
           event_broker.publish(
