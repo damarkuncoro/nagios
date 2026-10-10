@@ -2,7 +2,27 @@
 
 Modern, reactive, and mobile-friendly monitoring dashboard for Nagios Core built with **Ruby on Rails 7**, **Hotwire (Turbo & Stimulus)**, and **Tailwind CSS**.
 
-Berjalan berdampingan (*side-by-side*) dengan Nagios Core Engine klasik melalui Docker Compose, mengadopsi kontrol operasional, audit, dan analitik secara menyeluruh dengan antarmuka modern.
+Berjalan berdampingan (*side-by-side*) dengan Nagios Core Engine klasik melalui Docker Compose, mengadopsi kontrol operasional, audit, dan analitik secara menyeluruh dengan antarmuka modern berstandar industri.
+
+---
+
+## 🎨 Modern UI/UX Design System
+
+Dashboard dirancang dengan filosofi estetika premium, modern, dan responsif:
+- **Dark Glassmorphism Architecture**: Panel semi-transparan (`.glass-panel`), efek blur backdrop (`backdrop-blur-md`), dan border glow halus (`glow-indigo`, `glow-emerald`, `glow-rose`, `glow-amber`).
+- **Premium Typography**:
+  - **Plus Jakarta Sans**: Tampilan UI modern, bersih, dan mudah dibaca pada antarmuka monitoring.
+  - **JetBrains Mono**: Format monospaced presisi untuk plugin outputs, timestamps, ID log, direktif konfigurasi, dan telemetri metrik.
+- **Micro-Animations & Hover Effects**:
+  - `.card-hover`: Transisi pengangkatan kartu (*subtle lift*) pada kartu metrik dan baris data.
+  - Pulse Badges: Indikator live auto-sync, engine daemon heartbeat, dan deteksi status *Flapping*.
+- **Visual Gauges & Graphs**:
+  - **SVG Radial Progress Rings**: Meteran persentase kesehatan kluster pada Tactical Overview dan pencapaian SLA pada Availability Report.
+  - **Interactive 24h Failure Histogram**: Bar bertumpuk (*Critical, Warning, OK*) dengan tooltip interaktif pada ringkasan insiden.
+  - **Chart.js Latency & Alert Trends**: Kurva telemetri latensi check dan histogram transisi state per jam.
+  - **Cyberpunk Network Topology Canvas**: Visualisasi graf keterhubungan host parent-child dengan node melingkar bercahaya.
+  - **Mac OS-Style Terminal Viewer**: Tampilan live event log real-time dengan tombol jendela (*red/yellow/green pills*) dan penanda warna baris log.
+- **Global Command Palette (`⌘K` / `Ctrl+K`)**: Pencarian instan untuk seluruh halaman navigasi, host, dan service dengan badge status dinamis.
 
 ---
 
@@ -85,7 +105,7 @@ dashboard/app/
 │       ├── use_cases/             # ScheduleCheck, AcknowledgeProblem, ScheduleDowntime, FetchDashboardData
 │       └── value_objects/         # StatusCode, PerformanceData
 ├── controllers/                   # Rails Controllers (Hotwire Turbo Stream & JSON/HTML responses)
-├── javascript/controllers/        # Stimulus Controllers (quick_search, theme, filter)
+├── javascript/controllers/        # Stimulus Controllers (quick_search, theme, filter, auto_refresh)
 └── views/                         # Tailwind CSS Views (100% Dark Mode & Turbo Frames)
 ```
 

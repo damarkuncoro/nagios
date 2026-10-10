@@ -164,28 +164,24 @@ export default class extends Controller {
     results.forEach((item, index) => {
       const el = document.createElement("a")
       el.href = item.url
-      el.className = `flex items-center justify-between p-3 rounded-lg text-sm transition cursor-pointer ${
-        index === this.selectedIndex
-          ? "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300"
-          : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
-      }`
       el.dataset.index = index
+      this.applyItemClasses(el, index === this.selectedIndex)
 
       const badgeHtml = item.badge
-        ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+        ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
             item.badge === "OK" || item.badge === "UP"
-              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
               : item.badge === "WARNING"
-              ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
-              : "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300"
+              ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+              : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
           }">${item.badge}</span>`
-        : `<span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">${item.type}</span>`
+        : `<span class="text-[11px] font-medium text-slate-400 dark:text-slate-500 font-mono">${item.type}</span>`
 
       el.innerHTML = `
         <div class="flex items-center gap-3 min-w-0">
           <span class="text-base">${item.icon}</span>
           <div class="truncate">
-            <p class="font-medium truncate">${this.highlightMatch(item.title, this.inputTarget.value)}</p>
+            <p class="font-medium text-sm truncate">${this.highlightMatch(item.title, this.inputTarget.value)}</p>
             <p class="text-xs text-slate-500 dark:text-slate-400 truncate">${item.subtitle}</p>
           </div>
         </div>
@@ -203,10 +199,18 @@ export default class extends Controller {
     })
   }
 
+  applyItemClasses(el, isSelected) {
+    if (isSelected) {
+      el.className = "flex items-center justify-between p-3 rounded-xl text-sm transition cursor-pointer bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 shadow-2xs"
+    } else {
+      el.className = "flex items-center justify-between p-3 rounded-xl text-sm transition cursor-pointer hover:bg-slate-100/80 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-200 border border-transparent"
+    }
+  }
+
   highlightMatch(text, query) {
     if (!query) return text
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi")
-    return text.replace(regex, `<mark class="bg-amber-200 dark:bg-amber-800/80 text-inherit rounded px-0.5">$1</mark>`)
+    return text.replace(regex, `<mark class="bg-amber-400/30 text-inherit rounded px-0.5 font-bold">$1</mark>`)
   }
 
   navigateResults(direction) {
@@ -221,11 +225,7 @@ export default class extends Controller {
   updateSelectionStyles() {
     const items = this.resultsContainerTarget.querySelectorAll("a")
     items.forEach((item, idx) => {
-      if (idx === this.selectedIndex) {
-        item.className = "flex items-center justify-between p-3 rounded-lg text-sm transition cursor-pointer bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300"
-      } else {
-        item.className = "flex items-center justify-between p-3 rounded-lg text-sm transition cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
-      }
+      this.applyItemClasses(item, idx === this.selectedIndex)
     })
   }
 
