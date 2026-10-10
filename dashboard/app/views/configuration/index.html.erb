@@ -1,11 +1,17 @@
-<div class="max-w-6xl mx-auto space-y-8">
+<div class="max-w-7xl mx-auto space-y-8">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Configuration Explorer</h1>
+      <div class="flex items-center gap-3">
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Configuration Explorer</h1>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20 shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <span>config.cgi engine</span>
+        </span>
+      </div>
       <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Inspeksi objek definisi (*config.cgi*), direktif daemon (*nagios.cfg*), dan otorisasi web (*cgi.cfg*)</p>
     </div>
     <div>
-      <%= button_to verify_configuration_path, method: :post, class: "inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs tracking-wide rounded-lg shadow-sm hover:shadow transition cursor-pointer" do %>
+      <%= button_to verify_configuration_path, method: :post, class: "inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs tracking-wide rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer" do %>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <span>Pre-Flight Check (<code class="font-mono text-[11px] bg-indigo-700/80 px-1 py-0.5 rounded">nagios -v</code>)</span>
       <% end %>

@@ -1,120 +1,142 @@
-<div class="max-w-6xl mx-auto space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
+<div class="space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Nagios Core Dashboard</h1>
-        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live Auto-sync
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Live Auto-Sync</span>
         </span>
       </div>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Real-time Monitoring powered by Ruby on Rails 7 & Hotwire</p>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Real-time enterprise observability powered by Rails 7 Hotwire & Nagios Engine</p>
     </div>
 
-    <div class="flex items-center gap-3">
-      <%= link_to hosts_path(format: :csv), class: "flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm rounded-lg border border-slate-200 dark:border-slate-700 transition shadow-2xs", title: "Download Host Status as CSV" do %>
+    <div class="flex items-center gap-2.5">
+      <%= link_to hosts_path(format: :csv), class: "inline-flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition shadow-xs cursor-pointer", title: "Export Host Status to CSV" do %>
         <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <span>Export CSV</span>
       <% end %>
-      <a href="http://localhost:8080" target="_blank" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm rounded-lg border border-slate-200 dark:border-slate-700 transition">
-        CGI Classic Web
+      <a href="http://localhost:8080" target="_blank" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition shadow-xs">
+        Classic Web
       </a>
-      <%= link_to hosts_path, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-sm rounded-lg shadow-sm transition" do %>
+      <%= link_to hosts_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer" do %>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-        Refresh
+        <span>Refresh Now</span>
       <% end %>
     </div>
   </div>
 
   <% if notice.present? %>
-    <div class="p-4 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-lg text-sm font-medium">
+    <div class="p-4 bg-emerald-50/90 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl text-sm font-medium shadow-xs">
       <%= notice %>
     </div>
   <% end %>
 
-  <!-- Engine Status Banner -->
+  <!-- Engine Status Banner with Modern Gradient Accent -->
   <% if @program_status %>
-    <div class="p-4 bg-slate-900 text-slate-100 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs border border-slate-800">
+    <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950/50 to-slate-900 text-slate-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs border border-indigo-500/20 shadow-md">
       <div class="flex items-center gap-4">
-        <div class="p-2 bg-slate-800 rounded-lg">
-          <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <div class="p-2.5 bg-indigo-600/20 border border-indigo-500/30 rounded-xl">
+          <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
         </div>
         <div>
-          <p class="font-bold text-sm text-white">Nagios Engine v<%= @program_status[:version] %></p>
-          <p class="text-slate-400">PID: <%= @program_status[:pid] %> • Started: <%= @program_status[:program_start]&.strftime("%H:%M:%S (%d %b)") %></p>
+          <div class="flex items-center gap-2">
+            <p class="font-bold text-sm text-white">Nagios Engine Core v<%= @program_status[:version] %></p>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">PID <%= @program_status[:pid] %></span>
+          </div>
+          <p class="text-slate-400 mt-0.5">Engine Online • Uptime sejak <%= @program_status[:program_start]&.strftime("%H:%M:%S (%d %b %Y)") %></p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 text-slate-300">
-          Notifications: <strong class="<%= @program_status[:notifications_enabled] ? 'text-emerald-400' : 'text-slate-400' %>"><%= @program_status[:notifications_enabled] ? 'ENABLED' : 'DISABLED' %></strong>
+      <div class="flex flex-wrap items-center gap-2.5">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-300">
+          <span>Alerts:</span>
+          <strong class="<%= @program_status[:notifications_enabled] ? 'text-emerald-400' : 'text-slate-400' %>"><%= @program_status[:notifications_enabled] ? 'ENABLED' : 'PAUSED' %></strong>
         </span>
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 text-slate-300">
-          Checks: <strong class="<%= @program_status[:checks_enabled] ? 'text-emerald-400' : 'text-slate-400' %>"><%= @program_status[:checks_enabled] ? 'ACTIVE' : 'PAUSED' %></strong>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-300">
+          <span>Active Checks:</span>
+          <strong class="<%= @program_status[:checks_enabled] ? 'text-emerald-400' : 'text-slate-400' %>"><%= @program_status[:checks_enabled] ? 'ACTIVE' : 'PAUSED' %></strong>
         </span>
       </div>
     </div>
   <% end %>
 
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+  <!-- Summary Metric Cards with Glowing Colored Tops -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- Card 1: Hosts -->
+    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
       <div class="flex items-center justify-between">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Hosts</p>
-        <!-- Tooltip Context Help -->
-        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs cursor-help" title="Seluruh node fisik dan virtual host yang dipantau engine.">ⓘ</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Hosts</p>
+        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-help" title="Seluruh node fisik dan virtual host yang dipantau engine.">ⓘ</span>
       </div>
-      <p class="text-3xl font-bold text-slate-900 dark:text-white mt-2"><%= @host_stats[:total] %></p>
-      <div class="flex gap-2 mt-2 text-xs font-semibold">
-        <span class="text-emerald-600 dark:text-emerald-400"><%= @host_stats[:up] %> UP</span>
-        <% if @host_stats[:down] > 0 %>
-          <span class="text-rose-600 dark:text-rose-400"><%= @host_stats[:down] %> DOWN</span>
+      <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 tracking-tight"><%= @host_stats[:total] %></p>
+      <div class="flex items-center gap-2.5 mt-2.5 text-xs font-semibold">
+        <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <%= @host_stats[:up] %> UP
+        </span>
+        <% if @host_stats[:down].to_i > 0 %>
+          <span class="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+            <%= @host_stats[:down] %> DOWN
+          </span>
         <% end %>
       </div>
     </div>
 
-    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+    <!-- Card 2: Services OK -->
+    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
       <div class="flex items-center justify-between">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services OK</p>
-        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs cursor-help" title="Layanan beroperasi normal sesuai batas ambang wajar.">ⓘ</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services OK</p>
+        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-help" title="Layanan beroperasi normal sesuai batas ambang wajar.">ⓘ</span>
       </div>
-      <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2"><%= @service_stats[:ok] %></p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Normal operational status</p>
+      <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2 tracking-tight"><%= @service_stats[:ok] %></p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2.5">Normal operational status</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+    <!-- Card 3: Services Warning -->
+    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-yellow-500"></div>
       <div class="flex items-center justify-between">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services Warning</p>
-        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs cursor-help" title="Layanan melampaui ambang batas peringatan, memerlukan investigasi.">ⓘ</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services Warning</p>
+        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-help" title="Layanan melampaui ambang batas peringatan, memerlukan investigasi.">ⓘ</span>
       </div>
-      <p class="text-3xl font-bold text-amber-500 dark:text-amber-400 mt-2"><%= @service_stats[:warning] %></p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Requires attention</p>
+      <p class="text-3xl font-extrabold text-amber-500 dark:text-amber-400 mt-2 tracking-tight"><%= @service_stats[:warning] %></p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2.5">Requires attention</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+    <!-- Card 4: Services Critical -->
+    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-red-600"></div>
       <div class="flex items-center justify-between">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services Critical</p>
-        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs cursor-help" title="Layanan tidak berfungsi / gagal total, memerlukan tindakan segera.">ⓘ</span>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services Critical</p>
+        <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-help" title="Layanan tidak berfungsi / gagal total, memerlukan tindakan segera.">ⓘ</span>
       </div>
-      <p class="text-3xl font-bold text-rose-600 dark:text-rose-400 mt-2"><%= @service_stats[:critical] %></p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Immediate action required</p>
+      <p class="text-3xl font-extrabold text-rose-600 dark:text-rose-400 mt-2 tracking-tight"><%= @service_stats[:critical] %></p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2.5">Immediate action required</p>
     </div>
   </div>
 
   <!-- Section 1: Host List -->
   <div class="space-y-4">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">Host Status</h2>
+      <div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Host Infrastructure</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Status dan latensi respon mesin host</p>
+      </div>
 
       <div class="flex flex-wrap items-center gap-2">
         <form method="get" action="<%= hosts_path %>" class="flex items-center gap-2">
-          <input type="text" name="search" value="<%= @search %>" placeholder="Cari host / output..." class="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 shadow-2xs">
+          <input type="text" name="search" value="<%= @search %>" placeholder="Cari host / output..." class="px-3.5 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 shadow-xs">
           <% if @status.present? %>
             <input type="hidden" name="status" value="<%= @status %>">
           <% end %>
-          <button type="submit" class="px-3 py-1.5 bg-slate-900 dark:bg-slate-800 text-white text-xs font-semibold rounded-lg hover:bg-slate-800 transition">Cari</button>
+          <button type="submit" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition cursor-pointer shadow-xs">Cari</button>
           <% if @search.present? || @status.present? %>
-            <%= link_to "Reset", hosts_path, class: "text-xs text-rose-600 dark:text-rose-400 hover:underline font-medium" %>
+            <%= link_to "Reset", hosts_path, class: "text-xs text-rose-600 dark:text-rose-400 hover:underline font-semibold ml-1" %>
           <% end %>
         </form>
       </div>
@@ -123,23 +145,24 @@
     <!-- Host Filter Pills -->
     <div class="flex items-center gap-2 pb-1 overflow-x-auto">
       <%= link_to "Semua (#{@host_stats[:total]})", hosts_path(search: @search),
-                  class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status.blank? ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+                  class: "px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition #{ @status.blank? ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800' }" %>
       <%= link_to "UP (#{@host_stats[:up]})", hosts_path(status: 'UP', search: @search),
-                  class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status == 'UP' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+                  class: "px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition #{ @status == 'UP' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800' }" %>
       <% if @host_stats[:down].to_i > 0 %>
         <%= link_to "DOWN (#{@host_stats[:down]})", hosts_path(status: 'DOWN', search: @search),
-                    class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status == 'DOWN' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+                    class: "px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition #{ @status == 'DOWN' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800' }" %>
       <% end %>
       <% if @host_stats[:unreachable].to_i > 0 %>
         <%= link_to "UNREACHABLE (#{@host_stats[:unreachable]})", hosts_path(status: 'UNREACHABLE', search: @search),
-                    class: "px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition #{ @status == 'UNREACHABLE' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+                    class: "px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition #{ @status == 'UNREACHABLE' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800' }" %>
       <% end %>
     </div>
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <!-- Host Table Card -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+          <tr class="bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             <th class="py-3.5 px-6">
               <%= link_to hosts_path(status: @status, search: @search, sort_by: 'name', sort_order: (@sort_by == 'name' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1" do %>
                 <span>Host Name</span>
@@ -162,11 +185,11 @@
             <th class="py-3.5 px-6 text-right">Aksi</th>
           </tr>
         </thead>
-        <tbody id="hosts_list" class="divide-y divide-slate-100 dark:divide-slate-800">
+        <tbody id="hosts_list" class="divide-y divide-slate-100 dark:divide-slate-800/80">
           <% if @hosts.empty? %>
             <tr>
-              <td colspan="5" class="py-8 px-6 text-center text-slate-400 dark:text-slate-500">
-                Tidak ada data host.
+              <td colspan="5" class="py-12 px-6 text-center text-slate-400 dark:text-slate-500 text-sm">
+                Tidak ada data host yang cocok dengan kriteria filter.
               </td>
             </tr>
           <% else %>
@@ -182,7 +205,10 @@
   <!-- Section 2: Service List with Search & Filters -->
   <div class="space-y-4" data-controller="filter">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">Service Status</h2>
+      <div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Monitored Services</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Status layanan aktif pada seluruh mesin host</p>
+      </div>
 
       <!-- Search & Filter Controls -->
       <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -190,45 +216,46 @@
                placeholder="Cari service / host..."
                data-filter-target="input"
                data-action="input->filter#search"
-               class="px-3.5 py-2 text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64">
+               class="px-3.5 py-2 text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64">
 
-        <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+        <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700/60 text-xs font-semibold">
           <button type="button"
                   data-filter-target="filterBtn"
                   data-action="click->filter#filterByStatus"
                   data-status="ALL"
-                  class="px-3 py-1.5 rounded-md bg-slate-900 text-white dark:bg-indigo-600 transition">
+                  class="px-3 py-1.5 rounded-lg bg-slate-900 text-white dark:bg-indigo-600 transition cursor-pointer">
             ALL
           </button>
           <button type="button"
                   data-filter-target="filterBtn"
                   data-action="click->filter#filterByStatus"
                   data-status="OK"
-                  class="px-3 py-1.5 rounded-md bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">
+                  class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer">
             OK
           </button>
           <button type="button"
                   data-filter-target="filterBtn"
                   data-action="click->filter#filterByStatus"
                   data-status="WARNING"
-                  class="px-3 py-1.5 rounded-md bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">
+                  class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer">
             WARNING
           </button>
           <button type="button"
                   data-filter-target="filterBtn"
                   data-action="click->filter#filterByStatus"
                   data-status="CRITICAL"
-                  class="px-3 py-1.5 rounded-md bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition">
+                  class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer">
             CRITICAL
           </button>
         </div>
       </div>
     </div>
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <!-- Service Table Card -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+          <tr class="bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             <th class="py-3.5 px-6">Host</th>
             <th class="py-3.5 px-6">Service</th>
             <th class="py-3.5 px-6">Status</th>
@@ -237,11 +264,11 @@
             <th class="py-3.5 px-6 text-right">Aksi</th>
           </tr>
         </thead>
-        <tbody id="services_list" class="divide-y divide-slate-100 dark:divide-slate-800">
+        <tbody id="services_list" class="divide-y divide-slate-100 dark:divide-slate-800/80">
           <% if @services.empty? %>
             <tr>
-              <td colspan="6" class="py-8 px-6 text-center text-slate-400 dark:text-slate-500">
-                Tidak ada data service.
+              <td colspan="6" class="py-12 px-6 text-center text-slate-400 dark:text-slate-500 text-sm">
+                Tidak ada data service yang cocok.
               </td>
             </tr>
           <% else %>

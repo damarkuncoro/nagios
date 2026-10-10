@@ -1,48 +1,57 @@
-<div class="max-w-6xl mx-auto p-6 space-y-8">
-  <div class="flex justify-between items-center">
+<div class="max-w-7xl mx-auto space-y-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Nagios Core Process Info</h1>
+      <div class="flex items-center gap-3">
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Nagios Core Process Info</h1>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20 shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <span>Daemon Core Status</span>
+        </span>
+      </div>
       <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Status internal daemon, kontrol fitur, dan tes notifikasi Nagios Engine</p>
     </div>
   </div>
 
   <% if notice.present? %>
-    <div class="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-lg text-sm font-medium">
+    <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 rounded-xl text-sm font-medium">
       <%= notice %>
     </div>
   <% end %>
 
   <% if alert.present? %>
-    <div class="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-lg text-sm font-medium">
+    <div class="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-800 dark:text-rose-300 rounded-xl text-sm font-medium">
       <%= alert %>
     </div>
   <% end %>
 
   <% if @program_status %>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Engine Version</p>
-        <p class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-2">v<%= @program_status[:version] %></p>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Nagios Core C Engine</p>
+      <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Engine Version</p>
+        <p class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-2 font-mono">v<%= @program_status[:version] %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Nagios Core C Engine</p>
       </div>
 
-      <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Process PID</p>
-        <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2">PID <%= @program_status[:pid] %></p>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Running in Docker Container</p>
+      <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Process PID</p>
+        <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 font-mono">PID <%= @program_status[:pid] %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Running in Docker Container</p>
       </div>
 
-      <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Start Time</p>
-        <p class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-2"><%= @program_status[:program_start]&.strftime("%H:%M:%S") %></p>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1"><%= @program_status[:program_start]&.strftime("%d %b %Y") %></p>
+      <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-400"></div>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Start Time</p>
+        <p class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-2 font-mono"><%= @program_status[:program_start]&.strftime("%H:%M:%S") %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium"><%= @program_status[:program_start]&.strftime("%d %b %Y") %></p>
       </div>
     </div>
 
     <!-- Feature Matrix & Commands Panel -->
-    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
-        <h3 class="font-bold text-slate-800 dark:text-white text-lg">Engine Features & Control Panel</h3>
+    <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-hidden">
+      <div class="px-6 py-4.5 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800/80">
+        <h3 class="font-bold text-slate-800 dark:text-white text-base">Engine Features & Control Panel</h3>
       </div>
 
       <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">

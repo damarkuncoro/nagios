@@ -1,85 +1,89 @@
-<div class="max-w-6xl mx-auto space-y-8">
+<div class="max-w-7xl mx-auto space-y-8">
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Network Outages</h1>
-        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/80 text-rose-700 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800">
-          Root Cause Analysis (*outages.cgi*)
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+          <span>Root Cause Analysis (*outages.cgi*)</span>
         </span>
       </div>
       <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Analisis host yang mengalami kegagalan struktural (DOWN/UNREACHABLE) dan dampaknya pada downstream services</p>
     </div>
 
-    <%= link_to outages_path, class: "flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs rounded-lg shadow-xs transition" do %>
+    <%= link_to outages_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer" do %>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-      Refresh Outages
+      <span>Refresh Outages</span>
     <% end %>
   </div>
 
   <!-- Outage Metric Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Blocking Outages</p>
-      <p class="text-3xl font-bold mt-2 <%= @total_outages > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400' %>">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 <%= @total_outages > 0 ? 'bg-gradient-to-r from-rose-600 to-rose-400' : 'bg-gradient-to-r from-emerald-500 to-teal-400' %>"></div>
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Blocking Outages</p>
+      <p class="text-3xl font-extrabold mt-2 font-mono <%= @total_outages > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400' %>">
         <%= @total_outages %>
       </p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Host berstatus DOWN / UNREACHABLE</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Host berstatus DOWN / UNREACHABLE</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Impacted Services</p>
-      <p class="text-3xl font-bold mt-2 <%= @total_impacted_services > 0 ? 'text-amber-500 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300' %>">
+    <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 <%= @total_impacted_services > 0 ? 'bg-gradient-to-r from-amber-500 to-amber-300' : 'bg-gradient-to-r from-slate-400 to-slate-300' %>"></div>
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Impacted Services</p>
+      <p class="text-3xl font-extrabold mt-2 font-mono <%= @total_impacted_services > 0 ? 'text-amber-500 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300' %>">
         <%= @total_impacted_services %>
       </p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Total layanan terisolasi akibat outage</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Total layanan terisolasi akibat outage</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Network Health Index</p>
-      <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
+    <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Network Health Index</p>
+      <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2 font-mono">
         <%= @total_outages == 0 ? "100%" : "#{((1.0 - (@total_outages.to_f / 5)) * 100).clamp(0, 100).round}%" %>
       </p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Ketersediaan transmisi jaringan</p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Ketersediaan transmisi jaringan</p>
     </div>
   </div>
 
   <!-- Outage Reports List -->
   <div class="space-y-4">
-    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">Daftar Insiden Outage</h2>
+    <h2 class="text-lg font-bold text-slate-800 dark:text-slate-200">Daftar Insiden Outage</h2>
 
     <% if @outage_reports.empty? %>
-      <div class="p-12 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-center shadow-xs">
-        <div class="w-12 h-12 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-3 text-xl">
+      <div class="p-12 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 text-center shadow-xs">
+        <div class="w-12 h-12 mx-auto rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-3 text-xl font-bold">
           ✓
         </div>
         <h3 class="text-base font-bold text-slate-900 dark:text-white">Tidak Ada Network Outage Aktif</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">Semua parent host dan simpul jaringan beroperasi normal. Tidak ada pemblokiran rute monitoring yang terdeteksi.</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto leading-relaxed">Semua parent host dan simpul jaringan beroperasi normal. Tidak ada pemblokiran rute monitoring yang terdeteksi.</p>
       </div>
     <% else %>
       <div class="space-y-4">
         <% @outage_reports.each do |report| %>
-          <div class="p-6 bg-white dark:bg-slate-900 rounded-xl border border-rose-200 dark:border-rose-900/60 shadow-xs space-y-4">
+          <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-rose-200/80 dark:border-rose-900/60 shadow-xs space-y-4 card-hover">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
               <div class="flex items-center gap-3">
-                <span class="px-2.5 py-1 rounded text-xs font-black bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 font-mono">
                   <%= report[:host][:status] %>
                 </span>
                 <% if report[:root_cause] %>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-500/20">
                     Root Blocker (Score: <%= report[:severity] %>)
                   </span>
                 <% elsif report[:reachability]&.unreachable? %>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
                     Upstream Path Blocked
                   </span>
                 <% elsif report[:reachability]&.down? %>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20">
                     Direct Node Outage
                   </span>
                 <% end %>
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">
-                  <%= link_to report[:host][:name], host_path(report[:host][:name]), class: "hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline" %>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                  <%= link_to report[:host][:name], host_path(report[:host][:name]), class: "hover:text-indigo-600 dark:hover:text-indigo-400 transition" %>
                 </h3>
               </div>
               <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">
@@ -88,21 +92,21 @@
             </div>
 
             <% if report[:reachability]&.blocking_parents&.any? %>
-              <div class="flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 p-2.5 rounded border border-amber-200 dark:border-amber-800 font-mono">
+              <div class="flex items-center gap-2 text-xs text-amber-800 dark:text-amber-300 bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 font-mono">
                 <span class="font-bold">⚠️ Parent Pemblokir Rute:</span>
                 <span><%= report[:reachability].blocking_parents.join(', ') %></span>
               </div>
             <% end %>
 
-            <p class="text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded border border-slate-200 dark:border-slate-700">
+            <p class="text-xs font-mono text-slate-600 dark:text-slate-300 bg-slate-50/70 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200/60 dark:border-slate-800/60">
               <%= report[:host][:plugin_output].presence || "No check output recorded." %>
             </p>
 
             <div>
-              <p class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Downstream Services Terkena Dampak (<%= report[:impacted_services].size %>)</p>
+              <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Downstream Services Terkena Dampak (<%= report[:impacted_services].size %>)</p>
               <div class="flex flex-wrap gap-2">
                 <% report[:impacted_services].each do |svc| %>
-                  <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 rounded text-xs font-medium text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/80">
                     <%= svc[:description] %> (<%= svc[:status] %>)
                   </span>
                 <% end %>

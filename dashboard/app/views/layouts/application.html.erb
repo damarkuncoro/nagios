@@ -5,9 +5,29 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+
+    <!-- Modern Typography: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
     <script>
-      // Tailor Tailwind to use class-based dark mode
-      tailwind = { config: { darkMode: 'class' } };
+      // Tailor Tailwind to use class-based dark mode & modern font families
+      tailwind = {
+        config: {
+          darkMode: 'class',
+          theme: {
+            extend: {
+              fontFamily: {
+                sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+              }
+            }
+          }
+        }
+      };
       // Preload theme to prevent flash of unstyled content
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
@@ -19,28 +39,30 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col md:flex-row transition-colors duration-150" data-controller="quick-search">
-    <!-- Sidebar Navigation (Matching Nagios side.php) -->
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 min-h-screen">
-      <!-- Logo Header -->
-      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
-        <%= link_to root_path, class: "flex items-center gap-3 font-extrabold text-white tracking-tight" do %>
-          <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-base shadow-sm">N</div>
+  <body class="bg-slate-50/90 dark:bg-[#0B0F19] text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col md:flex-row transition-colors duration-200" data-controller="quick-search">
+    <!-- Sidebar Navigation (Matching Nagios side.php with Ultra-Modern SaaS Polish) -->
+    <aside class="w-64 bg-slate-900/95 dark:bg-[#0E1322]/95 backdrop-blur-xl text-slate-300 flex flex-col shrink-0 border-r border-slate-800/80 min-h-screen select-none">
+      <!-- Logo Header with Glowing Badge -->
+      <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
+        <%= link_to root_path, class: "flex items-center gap-3 font-extrabold text-white tracking-tight group" do %>
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-indigo-500/25 ring-1 ring-white/20 group-hover:scale-105 transition-transform duration-200">
+            N
+          </div>
           <div>
-            <span class="text-base leading-none block">Nagios Core</span>
-            <span class="text-[10px] text-slate-400 font-normal">Modern Rails Dashboard</span>
+            <span class="text-base font-extrabold tracking-tight block text-white group-hover:text-indigo-400 transition-colors">Nagios Core</span>
+            <span class="text-[10px] text-slate-400 font-medium tracking-wide">Modern Observability</span>
           </div>
         <% end %>
       </div>
 
       <!-- Quick Search Trigger in Sidebar -->
       <div class="px-4 pt-4">
-        <button type="button" data-action="click->quick-search#open" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium bg-slate-800/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg border border-slate-700/60 transition group">
-          <span class="flex items-center gap-2">
-            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            Quick Search...
+        <button type="button" data-action="click->quick-search#open" class="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-medium bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-xl border border-slate-700/60 hover:border-slate-600 transition shadow-inner group cursor-pointer">
+          <span class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <span>Command Palette...</span>
           </span>
-          <kbd class="px-1.5 py-0.5 text-[10px] bg-slate-900 text-slate-400 rounded border border-slate-700 font-mono">⌘K</kbd>
+          <kbd class="px-1.5 py-0.5 text-[10px] bg-slate-900/90 text-slate-400 rounded-md border border-slate-700 font-mono shadow-xs">⌘K</kbd>
         </button>
       </div>
 
@@ -48,18 +70,18 @@
       <div class="flex-1 overflow-y-auto p-4 space-y-6 text-xs">
         <!-- Section: General -->
         <div>
-          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">General</p>
+          <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Overview</p>
           <ul class="space-y-1">
             <li>
-              <%= link_to root_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(root_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to root_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(root_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 00-1 1m-6 0h6"></path></svg>
-                Home / Dashboard
+                <span>Dashboard Home</span>
               <% end %>
             </li>
             <li>
-              <a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/" target="_blank" class="flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition">
+              <a href="https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/" target="_blank" class="flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:translate-x-0.5 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                Documentation
+                <span>Documentation</span>
               </a>
             </li>
           </ul>
@@ -67,42 +89,42 @@
 
         <!-- Section: Current Status -->
         <div>
-          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">Current Status</p>
+          <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Current Status</p>
           <ul class="space-y-1">
             <li>
-              <%= link_to tactical_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(tactical_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to tactical_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(tactical_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Tactical Overview
+                <span>Tactical Overview</span>
               <% end %>
             </li>
             <li>
-              <%= link_to statusmap_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(statusmap_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to statusmap_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(statusmap_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                Network Map
+                <span>Network Topology Map</span>
               <% end %>
             </li>
             <li>
-              <%= link_to problems_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(problems_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to problems_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(problems_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                Unhandled Problems
+                <span>Unhandled Problems</span>
               <% end %>
             </li>
             <li>
-              <%= link_to outages_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(outages_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to outages_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(outages_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 4.243a9 9 0 01-2.829-2.829m0 0l2.829-2.829m-2.829 2.829L3 21"></path></svg>
-                Network Outages
+                <span>Network Outages (RCA)</span>
               <% end %>
             </li>
             <li>
-              <%= link_to hostgroups_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(hostgroups_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to hostgroups_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(hostgroups_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                Host Groups
+                <span>Host Groups</span>
               <% end %>
             </li>
             <li>
-              <%= link_to servicegroups_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(servicegroups_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to servicegroups_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(servicegroups_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
-                Service Groups
+                <span>Service Groups</span>
               <% end %>
             </li>
           </ul>
@@ -110,42 +132,42 @@
 
         <!-- Section: Reports -->
         <div>
-          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">Reports & History</p>
+          <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Reports & History</p>
           <ul class="space-y-1">
             <li>
-              <%= link_to availability_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(availability_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to availability_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(availability_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Availability SLA
+                <span>Availability SLA</span>
               <% end %>
             </li>
             <li>
-              <%= link_to trends_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(trends_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to trends_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(trends_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
-                Trends & Daily Health
+                <span>Trends & Daily Health</span>
               <% end %>
             </li>
             <li>
-              <%= link_to summary_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(summary_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to summary_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(summary_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Alert Totals Summary
+                <span>Alert Totals Summary</span>
               <% end %>
             </li>
             <li>
-              <%= link_to alerts_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(alerts_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to alerts_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(alerts_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Alert History
+                <span>Alert History</span>
               <% end %>
             </li>
             <li>
-              <%= link_to notifications_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(notifications_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to notifications_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(notifications_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                Notifications History
+                <span>Notifications History</span>
               <% end %>
             </li>
             <li>
-              <%= link_to logs_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(logs_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to logs_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(logs_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h7"></path></svg>
-                Live Event Log
+                <span>Live Event Log</span>
               <% end %>
             </li>
           </ul>
@@ -153,51 +175,51 @@
 
         <!-- Section: System -->
         <div>
-          <p class="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-2">System Admin</p>
+          <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">System Admin</p>
           <ul class="space-y-1">
             <li>
-              <%= link_to queue_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(queue_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to queue_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(queue_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Scheduling Queue
+                <span>Scheduling Queue</span>
               <% end %>
             </li>
             <li>
-              <%= link_to comments_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(comments_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to comments_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(comments_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
-                Comments Manager
+                <span>Comments Manager</span>
               <% end %>
             </li>
             <li>
-              <%= link_to downtimes_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(downtimes_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to downtimes_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(downtimes_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Downtimes Manager
+                <span>Downtimes Manager</span>
               <% end %>
             </li>
             <li>
-              <%= link_to process_info_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(process_info_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to process_info_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(process_info_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                Process Info
+                <span>Process Info</span>
               <% end %>
             </li>
             <li>
-              <%= link_to perf_info_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(perf_info_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to perf_info_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(perf_info_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Performance Info
+                <span>Performance Info</span>
               <% end %>
             </li>
             <li>
-              <%= link_to configuration_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(configuration_path) ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 text-slate-300'}" do %>
+              <%= link_to configuration_path, class: "flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium transition #{current_page?(configuration_path) ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/25 font-semibold' : 'hover:bg-slate-800/80 text-slate-300 hover:text-white hover:translate-x-0.5'}" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                Configuration Viewer
+                <span>Configuration Viewer</span>
               <% end %>
             </li>
             <li>
-              <%= link_to prometheus_metrics_path, target: "_blank", class: "flex items-center justify-between px-3 py-2 rounded-lg font-medium hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition" do %>
+              <%= link_to prometheus_metrics_path, target: "_blank", class: "flex items-center justify-between px-3 py-2 rounded-lg font-medium hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:translate-x-0.5 transition group" do %>
                 <span class="flex items-center gap-2.5">
-                  <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                  Prometheus Scraper
+                  <svg class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                  <span>Prometheus Scraper</span>
                 </span>
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono">/metrics</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-400 border border-amber-800/60 font-mono">/metrics</span>
               <% end %>
             </li>
           </ul>
@@ -205,26 +227,26 @@
       </div>
 
       <!-- Footer Info -->
-      <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500">
-        <a href="http://localhost:8080" target="_blank" class="flex items-center justify-between hover:text-slate-300 transition">
-          <span>Legacy CGI Interface</span>
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+      <div class="p-4 border-t border-slate-800/80 text-[11px] text-slate-500">
+        <a href="http://localhost:8080" target="_blank" class="flex items-center justify-between hover:text-slate-300 transition group">
+          <span class="group-hover:text-indigo-400 transition-colors">Legacy CGI Interface</span>
+          <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
         </a>
       </div>
     </aside>
 
     <!-- Main Content Container with Top Navbar -->
     <div class="flex-1 min-w-0 flex flex-col justify-between overflow-y-auto min-h-screen">
-      <!-- Top Navigation Bar (Header) -->
-      <header class="h-16 px-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between sticky top-0 z-30 transition-colors">
+      <!-- Top Navigation Bar (Glassmorphic Header) -->
+      <header class="h-16 px-6 bg-white/80 dark:bg-[#0E1322]/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between sticky top-0 z-30 transition-colors">
         <!-- Quick Search Bar Trigger -->
         <div class="flex-1 max-w-md">
-          <button type="button" data-action="click->quick-search#open" class="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700/60 shadow-xs transition group">
-            <span class="flex items-center gap-2">
+          <button type="button" data-action="click->quick-search#open" class="w-full flex items-center justify-between px-3.5 py-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-100/70 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700/60 shadow-xs hover:border-indigo-400/50 dark:hover:border-indigo-500/50 transition group cursor-pointer">
+            <span class="flex items-center gap-2.5">
               <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              <span>Quick search hosts, services, or pages...</span>
+              <span>Quick search hosts, services, or commands...</span>
             </span>
-            <kbd class="px-2 py-0.5 text-[10px] bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded border border-slate-200 dark:border-slate-700 font-mono shadow-2xs">⌘K</kbd>
+            <kbd class="px-2 py-0.5 text-[10px] bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded-md border border-slate-200 dark:border-slate-700 font-mono shadow-xs">⌘K</kbd>
           </button>
         </div>
 
@@ -233,14 +255,17 @@
       </header>
 
       <!-- Main Body Yield -->
-      <main class="p-6">
+      <main class="p-6 md:p-8 max-w-7xl w-full mx-auto">
         <%= yield %>
       </main>
 
       <!-- Footer matching main.php -->
-      <footer class="mt-12 p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 space-y-2 text-center transition-colors">
-        <p>Copyright &copy; 2010-2026 Nagios Core Development Team and Community Contributors. Copyright &copy; 1999-2009 Ethan Galstad.</p>
-        <p class="max-w-4xl mx-auto text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">Nagios Core is licensed under the GNU General Public License and is provided AS IS with NO WARRANTY OF ANY KIND. Nagios, Nagios Core and the Nagios logo are trademarks owned by Nagios Enterprises, LLC.</p>
+      <footer class="mt-16 p-6 bg-white/70 dark:bg-[#0E1322]/70 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 space-y-2 text-center transition-colors">
+        <div class="flex items-center justify-center gap-2 font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <p>Nagios Core Modern Engine • Rails 7, Hotwire & Clean Architecture</p>
+        </div>
+        <p class="max-w-4xl mx-auto text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">Copyright &copy; 2010-2026 Nagios Core Development Team and Community Contributors. Copyright &copy; 1999-2009 Ethan Galstad.</p>
       </footer>
     </div>
 

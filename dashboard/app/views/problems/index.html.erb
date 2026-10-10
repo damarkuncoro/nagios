@@ -1,83 +1,90 @@
-<div class="max-w-6xl mx-auto space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
+<div class="max-w-7xl mx-auto space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
       <div class="flex items-center gap-3">
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Unhandled Problems Center</h1>
         <% if @problems[:total_unhandled] > 0 %>
-          <span class="px-3 py-1 rounded-full text-xs font-black bg-rose-600 text-white animate-bounce">
-            <%= @problems[:total_unhandled] %> INSIDEN
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-rose-600 text-white shadow-lg shadow-rose-600/30 animate-pulse">
+            <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+            <%= @problems[:total_unhandled] %> ACTIVE INCIDENTS
           </span>
         <% else %>
-          <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-            ALL CLEAR
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>ALL SYSTEMS CLEAR</span>
           </span>
         <% end %>
       </div>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Pusat penanganan masalah host & service yang belum di-acknowledge</p>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Pusat mitigasi insiden host & service yang belum di-acknowledge (status.cgi)</p>
     </div>
 
-    <%= link_to problems_path, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-xs rounded-lg shadow-xs transition" do %>
+    <%= link_to problems_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer" do %>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-      Refresh
+      <span>Refresh</span>
     <% end %>
   </div>
 
   <!-- Filter Pills -->
-  <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
+  <div class="flex items-center gap-2 border-b border-slate-200/80 dark:border-slate-800/80 pb-3 overflow-x-auto">
     <%= link_to "Semua Masalah", problems_path,
-                class: "px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter.blank? ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" %>
+                class: "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter.blank? ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" %>
     <%= link_to problems_path(filter: 'critical'),
-                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter == 'critical' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" do %>
-      <span>🔥 Critical / Down</span>
-      <span class="px-1.5 py-0.2 rounded-full text-[10px] <%= @filter == 'critical' ? 'bg-rose-700 text-white' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' %>">
+                class: "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter == 'critical' ? 'bg-rose-600 text-white shadow-md shadow-rose-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" do %>
+      <span>Critical / Down</span>
+      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-mono <%= @filter == 'critical' ? 'bg-rose-700 text-white' : 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300' %>">
         <%= @problems[:total_critical] %>
       </span>
     <% end %>
     <%= link_to problems_path(filter: 'hard'),
-                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter == 'hard' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" do %>
-      <span>⚠️ Hard State</span>
-      <span class="px-1.5 py-0.2 rounded-full text-[10px] <%= @filter == 'hard' ? 'bg-amber-700 text-white' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' %>">
+                class: "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter == 'hard' ? 'bg-amber-600 text-white shadow-md shadow-amber-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" do %>
+      <span>Hard State</span>
+      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-mono <%= @filter == 'hard' ? 'bg-amber-700 text-white' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300' %>">
         <%= @problems[:total_hard] %>
       </span>
     <% end %>
     <%= link_to problems_path(filter: 'flapping'),
-                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition #{ @filter == 'flapping' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }" do %>
-      <span>🔀 Flapping Objects</span>
-      <span class="px-1.5 py-0.2 rounded-full text-[10px] <%= @filter == 'flapping' ? 'bg-purple-700 text-white' : 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300' %>">
+                class: "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter == 'flapping' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" do %>
+      <span>Flapping Objects</span>
+      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-mono <%= @filter == 'flapping' ? 'bg-purple-700 text-white' : 'bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300' %>">
         <%= @problems[:total_flapping] %>
       </span>
     <% end %>
   </div>
 
   <% if notice.present? %>
-    <div class="p-4 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-lg text-sm font-medium">
+    <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-200 rounded-xl text-sm font-medium">
       <%= notice %>
     </div>
   <% end %>
 
   <!-- Unhandled Host Problems -->
   <div class="space-y-4">
-    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-      <span>Unhandled Hosts</span>
-      <span class="text-xs px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono"><%= @problems[:hosts].size %></span>
-    </h2>
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+        <span>Unhandled Hosts</span>
+        <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono font-bold"><%= @problems[:hosts].size %></span>
+      </h2>
+    </div>
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <div class="bg-white dark:bg-[#111827] rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800/80 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            <th class="py-3.5 px-6">Host Name</th>
-            <th class="py-3.5 px-6">Status</th>
-            <th class="py-3.5 px-6">Plugin Output</th>
-            <th class="py-3.5 px-6">Terakhir Dicek</th>
-            <th class="py-3.5 px-6 text-right">Aksi</th>
+          <tr class="bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800/80 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <th class="py-4 px-6">Host Name</th>
+            <th class="py-4 px-6">Status</th>
+            <th class="py-4 px-6">Plugin Output</th>
+            <th class="py-4 px-6">Terakhir Dicek</th>
+            <th class="py-4 px-6 text-right">Aksi</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
           <% if @problems[:hosts].empty? %>
             <tr>
-              <td colspan="5" class="py-8 px-6 text-center text-slate-400 dark:text-slate-500">
-                <p class="font-medium text-emerald-600 dark:text-emerald-400">✓ Seluruh Host berstatus normal atau telah di-acknowledge.</p>
+              <td colspan="5" class="py-10 px-6 text-center text-slate-400 dark:text-slate-500">
+                <div class="flex flex-col items-center justify-center space-y-1">
+                  <div class="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-lg">✓</div>
+                  <p class="font-semibold text-emerald-600 dark:text-emerald-400 text-sm">Seluruh Host berstatus normal atau telah di-acknowledge</p>
+                </div>
               </td>
             </tr>
           <% else %>
@@ -92,28 +99,33 @@
 
   <!-- Unhandled Service Problems -->
   <div class="space-y-4">
-    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-      <span>Unhandled Services</span>
-      <span class="text-xs px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono"><%= @problems[:services].size %></span>
-    </h2>
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+        <span>Unhandled Services</span>
+        <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono font-bold"><%= @problems[:services].size %></span>
+      </h2>
+    </div>
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <div class="bg-white dark:bg-[#111827] rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800/80 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            <th class="py-3.5 px-6">Host</th>
-            <th class="py-3.5 px-6">Service</th>
-            <th class="py-3.5 px-6">Status</th>
-            <th class="py-3.5 px-6">Plugin Output</th>
-            <th class="py-3.5 px-6">Terakhir Dicek</th>
-            <th class="py-3.5 px-6 text-right">Aksi</th>
+          <tr class="bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800/80 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <th class="py-4 px-6">Host</th>
+            <th class="py-4 px-6">Service</th>
+            <th class="py-4 px-6">Status</th>
+            <th class="py-4 px-6">Plugin Output</th>
+            <th class="py-4 px-6">Terakhir Dicek</th>
+            <th class="py-4 px-6 text-right">Aksi</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
           <% if @problems[:services].empty? %>
             <tr>
-              <td colspan="6" class="py-8 px-6 text-center text-slate-400 dark:text-slate-500">
-                <p class="font-medium text-emerald-600 dark:text-emerald-400">✓ Seluruh Service berstatus normal atau telah di-acknowledge.</p>
+              <td colspan="6" class="py-10 px-6 text-center text-slate-400 dark:text-slate-500">
+                <div class="flex flex-col items-center justify-center space-y-1">
+                  <div class="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-lg">✓</div>
+                  <p class="font-semibold text-emerald-600 dark:text-emerald-400 text-sm">Seluruh Service berstatus normal atau telah di-acknowledge</p>
+                </div>
               </td>
             </tr>
           <% else %>

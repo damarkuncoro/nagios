@@ -1,66 +1,85 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="max-w-6xl mx-auto space-y-8">
+<div class="max-w-7xl mx-auto space-y-8">
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Trends & Historical Health</h1>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Grafik tren riwayat insiden dan kesehatan infrastruktur 7 hari terakhir (*trends.cgi* & *histogram.cgi*)</p>
+      <div class="flex items-center gap-3">
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Trends & Historical Health</h1>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20 shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <span>trends.cgi & histogram.cgi</span>
+        </span>
+      </div>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Grafik tren riwayat insiden dan kesehatan infrastruktur 7 hari terakhir</p>
     </div>
 
-    <span class="px-3.5 py-1.5 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-400 text-xs font-bold rounded-lg border border-indigo-100 dark:border-indigo-900">
+    <span class="px-3.5 py-1.5 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-xs font-bold rounded-xl border border-indigo-200/60 dark:border-indigo-800 shadow-xs">
       7 Days Metrics Window
     </span>
   </div>
 
-  <!-- Alert Histogram Card (Adopsi histogram.cgi) -->
-  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 space-y-4">
-    <div class="flex justify-between items-center">
+  <!-- Alert Histogram Card (histogram.cgi) -->
+  <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 space-y-4 card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500"></div>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
       <div>
-        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg flex items-center gap-2">
-          <span>📊 Alert Histogram (Distribusi Per Jam)</span>
-          <span class="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-mono">histogram.cgi</span>
+        <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base flex items-center gap-2">
+          <span>Alert Histogram (Distribusi Per Jam)</span>
+          <span class="text-xs px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-mono">histogram.cgi</span>
         </h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Analisis frekuensi alert berdasarkan waktu dalam sehari (00:00 - 23:00) untuk mendeteksi pola insiden puncak</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Analisis frekuensi alert berdasarkan waktu dalam sehari (00:00 - 23:00) untuk mendeteksi pola insiden puncak</p>
       </div>
-      <span class="px-2.5 py-1 bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-full border border-amber-200/60 dark:border-amber-800">
+      <span class="px-3 py-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-lg border border-amber-500/20 font-mono">
         Peak: <%= @trends.dig(:histogram, :peak_hour_label) || '12:00' %> (<%= @trends.dig(:histogram, :peak_hour_count) || 0 %> alerts)
       </span>
     </div>
 
-    <div class="h-64 w-full">
+    <div class="h-64 w-full pt-2">
       <canvas id="histogramChart"></canvas>
     </div>
   </div>
 
   <!-- Daily Trends Bars Grid -->
-  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 space-y-6">
-    <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Distribution of State Transition Events (Daily)</h3>
+  <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 space-y-6 card-hover">
+    <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 pb-4">
+      <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base">Distribution of State Transition Events (Daily)</h3>
+      <span class="text-xs text-slate-400 dark:text-slate-500 font-medium">Daily Transition Breakdown</span>
+    </div>
 
-    <div class="space-y-5">
+    <div class="space-y-6">
       <% @trends[:daily_stats].each do |stat| %>
-        <div class="space-y-2">
+        <div class="space-y-2.5">
           <div class="flex justify-between items-center text-xs font-semibold">
-            <span class="text-slate-800 dark:text-slate-200 font-bold"><%= stat[:date_str] %></span>
-            <div class="flex gap-3">
-              <span class="text-emerald-600 dark:text-emerald-400"><%= stat[:ok_count] %> Recovery / OK</span>
-              <span class="text-amber-600 dark:text-amber-400"><%= stat[:warning_count] %> Warnings</span>
-              <span class="text-rose-600 dark:text-rose-400"><%= stat[:critical_count] %> Criticals</span>
-              <span class="text-slate-400 dark:text-slate-500 font-mono">Total: <%= stat[:total_alerts] %></span>
+            <span class="text-slate-800 dark:text-slate-200 font-bold font-mono"><%= stat[:date_str] %></span>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span><%= stat[:ok_count] %> OK</span>
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span><%= stat[:warning_count] %> Warning</span>
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span><%= stat[:critical_count] %> Critical</span>
+              </span>
+              <span class="text-slate-400 dark:text-slate-500 font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">Total: <%= stat[:total_alerts] %></span>
             </div>
           </div>
 
-          <!-- Stacked Bar -->
-          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden border border-slate-200 dark:border-slate-700 flex">
+          <!-- Stacked Bar with Modern Rounded Edges -->
+          <div class="w-full bg-slate-100 dark:bg-slate-800/80 rounded-full h-3.5 overflow-hidden border border-slate-200/60 dark:border-slate-700/60 flex shadow-inner">
             <% if stat[:total_alerts] > 0 %>
               <% ok_pct = (stat[:ok_count].to_f / stat[:total_alerts] * 100).round(1) %>
               <% warn_pct = (stat[:warning_count].to_f / stat[:total_alerts] * 100).round(1) %>
               <% crit_pct = (stat[:critical_count].to_f / stat[:total_alerts] * 100).round(1) %>
 
-              <div class="bg-emerald-500 h-full" style="width: <%= ok_pct %>%" title="OK: <%= ok_pct %>%"></div>
-              <div class="bg-amber-500 h-full" style="width: <%= warn_pct %>%" title="Warning: <%= warn_pct %>%"></div>
-              <div class="bg-rose-500 h-full" style="width: <%= crit_pct %>%" title="Critical: <%= crit_pct %>%"></div>
+              <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full" style="width: <%= ok_pct %>%" title="OK: <%= ok_pct %>%"></div>
+              <div class="bg-gradient-to-r from-amber-500 to-orange-400 h-full" style="width: <%= warn_pct %>%" title="Warning: <%= warn_pct %>%"></div>
+              <div class="bg-gradient-to-r from-rose-600 to-rose-400 h-full" style="width: <%= crit_pct %>%" title="Critical: <%= crit_pct %>%"></div>
             <% else %>
-              <div class="bg-emerald-500 h-full w-full" title="100% Operational (No Incidents)"></div>
+              <div class="bg-emerald-500/80 h-full w-full" title="100% Operational (No Incidents)"></div>
             <% end %>
           </div>
         </div>
@@ -97,19 +116,19 @@
             label: 'Recovery / OK',
             data: recoveryData,
             backgroundColor: '#10B981',
-            borderRadius: 4
+            borderRadius: 6
           },
           {
             label: 'Warning Alerts',
             data: warningData,
             backgroundColor: '#F59E0B',
-            borderRadius: 4
+            borderRadius: 6
           },
           {
             label: 'Critical Alerts',
             data: criticalData,
             backgroundColor: '#EF4444',
-            borderRadius: 4
+            borderRadius: 6
           }
         ]
       },
@@ -117,11 +136,11 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom' }
+          legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans', size: 11 } } }
         },
         scales: {
-          x: { stacked: true },
-          y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+          x: { stacked: true, grid: { display: false } },
+          y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(148, 163, 184, 0.1)' } }
         }
       }
     });
