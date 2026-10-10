@@ -124,11 +124,14 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  function initHostPerfChart() {
     var canvas = document.getElementById('perfChart');
     if (!canvas) return;
+    if (window._hostPerfChart) {
+      window._hostPerfChart.destroy();
+    }
     var ctx = canvas.getContext('2d');
-    new Chart(ctx, {
+    window._hostPerfChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: ['09:00', '09:05', '09:10', '09:15', '09:20', '09:25', '09:30'],
@@ -159,5 +162,8 @@
         }
       }
     });
-  });
+  }
+
+  document.addEventListener("turbo:load", initHostPerfChart);
+  document.addEventListener("DOMContentLoaded", initHostPerfChart);
 </script>

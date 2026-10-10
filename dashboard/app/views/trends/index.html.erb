@@ -70,9 +70,12 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  function initTrendsHistogramChart() {
     var canvas = document.getElementById('histogramChart');
     if (!canvas) return;
+    if (window._trendsHistogramChart) {
+      window._trendsHistogramChart.destroy();
+    }
     var ctx = canvas.getContext('2d');
 
     // 24-hour slots
@@ -85,7 +88,7 @@
     var criticalData = <%= raw (@trends.dig(:histogram, :critical_series) || Array.new(24, 0)).to_json %>;
     var recoveryData = <%= raw (@trends.dig(:histogram, :recovery_series) || Array.new(24, 0)).to_json %>;
 
-    new Chart(ctx, {
+    window._trendsHistogramChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: hours,
@@ -122,5 +125,8 @@
         }
       }
     });
-  });
+  }
+
+  document.addEventListener("turbo:load", initTrendsHistogramChart);
+  document.addEventListener("DOMContentLoaded", initTrendsHistogramChart);
 </script>
