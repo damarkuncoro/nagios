@@ -57,6 +57,8 @@ module Engines
       def toggle_service_checks(h, s, e); new.toggle_service_checks(h, s, e); end
       def toggle_host_notifications(h, e); new.toggle_host_notifications(h, e); end
       def toggle_host_checks(h, e); new.toggle_host_checks(h, e); end
+      def toggle_host_flap_detection(h, e); new.toggle_host_flap_detection(h, e); end
+      def toggle_service_flap_detection(h, s, e); new.toggle_service_flap_detection(h, s, e); end
       def submit_passive_check(h, s, code, out); new.submit_passive_check(h, s, code, out); end
     end
 
@@ -87,7 +89,9 @@ module Engines
             current_attempt: h['current_attempt'] || 1, max_attempts: h['max_attempts'] || 1,
             acknowledged: h['problem_has_been_acknowledged'],
             notifications_enabled: h['notifications_enabled'], checks_enabled: h['checks_enabled'],
-            is_flapping: h['is_flapping']
+            is_flapping: h['is_flapping'],
+            flap_detection_enabled: h['flap_detection_enabled'] != false,
+            percent_state_change: h['percent_state_change'] || 0.0
           )
         end
       end
@@ -108,7 +112,9 @@ module Engines
               latency: h['latency'] || 0.0, execution_time: h['execution_time'] || 0.0,
               acknowledged: h['problem_has_been_acknowledged'],
               notifications_enabled: h['notifications_enabled'], checks_enabled: h['checks_enabled'],
-              is_flapping: h['is_flapping']
+              is_flapping: h['is_flapping'],
+              flap_detection_enabled: h['flap_detection_enabled'] != false,
+              percent_state_change: h['percent_state_change'] || 0.0
             )
         end
       end

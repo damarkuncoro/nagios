@@ -14,7 +14,7 @@
       <% end %>
       <% if host[:flapping] %>
         <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 animate-pulse" title="Host is flapping (sering berubah status)">
-          🔀 Flapping
+          🔀 Flapping<%= " (#{host[:percent_state_change].to_f.round(1)}%)" if host[:percent_state_change].to_f.positive? %>
         </span>
       <% end %>
       <% if host[:stale] %>

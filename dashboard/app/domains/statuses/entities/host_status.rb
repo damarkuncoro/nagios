@@ -1,9 +1,9 @@
 module Statuses
   module Entities
     class HostStatus
-      attr_reader :name, :status_code, :plugin_output, :last_check, :next_check, :current_attempt, :max_attempts, :acknowledged, :notifications_enabled, :checks_enabled, :is_flapping
+      attr_reader :name, :status_code, :plugin_output, :last_check, :next_check, :current_attempt, :max_attempts, :acknowledged, :notifications_enabled, :checks_enabled, :is_flapping, :flap_detection_enabled, :percent_state_change
 
-      def initialize(name:, status:, plugin_output: '', last_check: nil, next_check: nil, current_attempt: 1, max_attempts: 1, acknowledged: false, notifications_enabled: true, checks_enabled: true, is_flapping: false)
+      def initialize(name:, status:, plugin_output: '', last_check: nil, next_check: nil, current_attempt: 1, max_attempts: 1, acknowledged: false, notifications_enabled: true, checks_enabled: true, is_flapping: false, flap_detection_enabled: true, percent_state_change: 0.0)
         @name = name
         @status_code = ValueObjects::StatusCode.new(status, type: :host)
         @plugin_output = plugin_output.to_s
@@ -15,6 +15,8 @@ module Statuses
         @notifications_enabled = notifications_enabled != false
         @checks_enabled = checks_enabled != false
         @is_flapping = is_flapping == true || is_flapping.to_s == '1'
+        @flap_detection_enabled = flap_detection_enabled != false
+        @percent_state_change = percent_state_change.to_f
       end
 
       def status
@@ -41,6 +43,10 @@ module Statuses
         @is_flapping
       end
 
+      def flap_detection_enabled?
+        @flap_detection_enabled
+      end
+
       def attempts_formatted
         "#{current_attempt}/#{max_attempts}"
       end
@@ -62,6 +68,8 @@ module Statuses
           notifications_enabled: notifications_enabled,
           checks_enabled: checks_enabled,
           flapping: flapping?,
+          flap_detection_enabled: flap_detection_enabled?,
+          percent_state_change: percent_state_change,
           stale: stale?
         }
       end

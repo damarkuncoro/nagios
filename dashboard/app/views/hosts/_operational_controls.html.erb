@@ -34,6 +34,16 @@
             ⏸️ Pause Checks
           <% end %>
         <% end %>
+
+        <% if host[:flap_detection_enabled] == false %>
+          <%= button_to toggle_flap_detection_host_path(host[:name], enable: 'true'), method: :post, class: "text-xs px-3 py-1.5 bg-amber-50 dark:bg-amber-950/70 hover:bg-amber-100 text-amber-800 dark:text-amber-300 font-medium rounded-md border border-amber-200 dark:border-amber-800 transition cursor-pointer" do %>
+            🔀 Enable Flap Detection
+          <% end %>
+        <% else %>
+          <%= button_to toggle_flap_detection_host_path(host[:name], enable: 'false'), method: :post, class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-md border border-slate-200 dark:border-slate-700 transition cursor-pointer" do %>
+            ⏹️ Disable Flap Detection
+          <% end %>
+        <% end %>
       </div>
     </div>
 

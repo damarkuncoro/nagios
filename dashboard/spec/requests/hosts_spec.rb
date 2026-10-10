@@ -100,6 +100,22 @@ RSpec.describe "Hosts", type: :request do
     end
   end
 
+  describe "POST /hosts/:id/toggle_flap_detection" do
+    it "toggles host flap detection via turbo stream" do
+      post toggle_flap_detection_host_path("localhost", enable: 'false'), headers: headers
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("turbo-stream")
+    end
+  end
+
+  describe "POST /hosts/:id/toggle_service_flap_detection" do
+    it "toggles service flap detection via turbo stream" do
+      post toggle_service_flap_detection_host_path("localhost", service_desc: "HTTP", enable: 'false'), headers: headers
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("turbo-stream")
+    end
+  end
+
   describe "POST /hosts/:id/acknowledge" do
     it "acknowledges host problem via turbo stream" do
       post acknowledge_host_path("localhost"), headers: headers

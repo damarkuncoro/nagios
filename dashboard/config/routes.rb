@@ -16,6 +16,8 @@ Rails.application.routes.draw do
       post :toggle_checks
       post :toggle_service_notifications
       post :toggle_service_checks
+      post :toggle_flap_detection
+      post :toggle_service_flap_detection
       post :submit_passive_check
     end
   end

@@ -1,5 +1,6 @@
 class ProblemsController < ApplicationController
   def index
-    @problems = Statuses::UseCases::FetchUnhandledProblems.call
+    @filter = params[:filter]
+    @problems = Statuses::UseCases::FetchUnhandledProblems.call(filter: @filter)
   end
 end

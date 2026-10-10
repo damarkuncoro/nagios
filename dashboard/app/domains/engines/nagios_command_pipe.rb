@@ -142,6 +142,18 @@ module Engines
       write_cmd("[#{timestamp}] #{cmd_name};#{host_name}\n")
     end
 
+    def toggle_host_flap_detection(host_name, enable_flag)
+      timestamp = Time.now.to_i
+      cmd_name = enable_flag ? 'ENABLE_HOST_FLAP_DETECTION' : 'DISABLE_HOST_FLAP_DETECTION'
+      write_cmd("[#{timestamp}] #{cmd_name};#{host_name}\n")
+    end
+
+    def toggle_service_flap_detection(host_name, service_desc, enable_flag)
+      timestamp = Time.now.to_i
+      cmd_name = enable_flag ? 'ENABLE_SVC_FLAP_DETECTION' : 'DISABLE_SVC_FLAP_DETECTION'
+      write_cmd("[#{timestamp}] #{cmd_name};#{host_name};#{service_desc}\n")
+    end
+
     def submit_passive_check(host_name, service_desc, status_code, output)
       timestamp = Time.now.to_i
       if service_desc.present?

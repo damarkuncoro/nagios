@@ -42,6 +42,15 @@ RSpec.describe Statuses::Entities::HostStatus do
       expect(host_stable.flapping?).to be false
       expect(host_stable.to_h[:flapping]).to be false
     end
+
+    it 'supports flap_detection_enabled and percent_state_change' do
+      host = described_class.new(name: 'server1', status: 2, is_flapping: true, flap_detection_enabled: false, percent_state_change: 24.5)
+      expect(host.flapping?).to be true
+      expect(host.flap_detection_enabled?).to be false
+      expect(host.percent_state_change).to eq(24.5)
+      expect(host.to_h[:flap_detection_enabled]).to be false
+      expect(host.to_h[:percent_state_change]).to eq(24.5)
+    end
   end
 
   describe '#to_h' do

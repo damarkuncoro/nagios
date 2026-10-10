@@ -25,7 +25,7 @@
       <% end %>
       <% if service[:flapping] %>
         <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800 animate-pulse" title="Service is flapping (sering berubah status)">
-          🔀 Flapping
+          🔀 Flapping<%= " (#{service[:percent_state_change].to_f.round(1)}%)" if service[:percent_state_change].to_f.positive? %>
         </span>
       <% end %>
       <% if service[:stale] %>

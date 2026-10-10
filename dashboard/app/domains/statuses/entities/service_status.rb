@@ -1,9 +1,9 @@
 module Statuses
   module Entities
     class ServiceStatus
-      attr_reader :host_name, :description, :status_code, :plugin_output, :performance_data, :last_check, :next_check, :state_type, :attempts, :latency, :execution_time, :acknowledged, :notifications_enabled, :checks_enabled, :is_flapping
+      attr_reader :host_name, :description, :status_code, :plugin_output, :performance_data, :last_check, :next_check, :state_type, :attempts, :latency, :execution_time, :acknowledged, :notifications_enabled, :checks_enabled, :is_flapping, :flap_detection_enabled, :percent_state_change
 
-      def initialize(host_name:, description:, status:, plugin_output: '', perf_data: '', last_check: nil, next_check: nil, state_type: 'HARD', attempts: '1/1', latency: 0.0, execution_time: 0.0, acknowledged: false, notifications_enabled: true, checks_enabled: true, is_flapping: false)
+      def initialize(host_name:, description:, status:, plugin_output: '', perf_data: '', last_check: nil, next_check: nil, state_type: 'HARD', attempts: '1/1', latency: 0.0, execution_time: 0.0, acknowledged: false, notifications_enabled: true, checks_enabled: true, is_flapping: false, flap_detection_enabled: true, percent_state_change: 0.0)
         @host_name = host_name
         @description = description
         @status_code = ValueObjects::StatusCode.new(status, type: :service)
@@ -19,6 +19,8 @@ module Statuses
         @notifications_enabled = notifications_enabled != false
         @checks_enabled = checks_enabled != false
         @is_flapping = is_flapping == true || is_flapping.to_s == '1'
+        @flap_detection_enabled = flap_detection_enabled != false
+        @percent_state_change = percent_state_change.to_f
       end
 
       def status
@@ -47,6 +49,10 @@ module Statuses
 
       def flapping?
         @is_flapping
+      end
+
+      def flap_detection_enabled?
+        @flap_detection_enabled
       end
 
       def hard_state?
@@ -86,6 +92,8 @@ module Statuses
           notifications_enabled: notifications_enabled,
           checks_enabled: checks_enabled,
           flapping: flapping?,
+          flap_detection_enabled: flap_detection_enabled?,
+          percent_state_change: percent_state_change,
           stale: stale?
         }
       end

@@ -35,6 +35,15 @@ RSpec.describe Statuses::Entities::ServiceStatus do
       expect(svc_stable.flapping?).to be false
       expect(svc_stable.to_h[:flapping]).to be false
     end
+
+    it 'supports flap_detection_enabled and percent_state_change' do
+      svc = described_class.new(host_name: 'localhost', description: 'HTTP', status: 2, is_flapping: true, flap_detection_enabled: false, percent_state_change: 18.2)
+      expect(svc.flapping?).to be true
+      expect(svc.flap_detection_enabled?).to be false
+      expect(svc.percent_state_change).to eq(18.2)
+      expect(svc.to_h[:flap_detection_enabled]).to be false
+      expect(svc.to_h[:percent_state_change]).to eq(18.2)
+    end
   end
 
   describe '#to_h' do
