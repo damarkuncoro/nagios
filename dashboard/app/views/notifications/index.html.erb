@@ -1,22 +1,22 @@
-<div class="max-w-6xl mx-auto space-y-8">
+<div class="max-w-7xl mx-auto space-y-8">
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
       <div class="flex items-center gap-2">
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Notification History</h1>
-        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20">
           Audit Trail
         </span>
       </div>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Riwayat lengkap alert yang dikirimkan Nagios ke kontak admin & on-call (*notifications.cgi*)</p>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Riwayat lengkap alert yang dikirimkan Nagios ke kontak admin & on-call (<span class="font-mono text-xs">notifications.cgi</span>)</p>
     </div>
 
     <div class="flex items-center gap-3">
-      <%= link_to notifications_path(format: :csv, contact: params[:contact], host: params[:host], reason: params[:reason]), class: "flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-sm rounded-lg border border-slate-200 dark:border-slate-700 transition shadow-2xs", title: "Download Notifications as CSV" do %>
-        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      <%= link_to notifications_path(format: :csv, contact: params[:contact], host: params[:host], reason: params[:reason]), class: "flex items-center gap-2 px-3.5 py-2 glass-panel hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-xs rounded-xl border border-slate-200/80 dark:border-slate-800 transition shadow-2xs", title: "Download Notifications as CSV" do %>
+        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <span>Export CSV</span>
       <% end %>
-      <%= link_to notifications_path, class: "flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium text-sm rounded-lg shadow-xs transition" do %>
+      <%= link_to notifications_path, class: "flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:from-indigo-700 active:to-violet-700 text-white font-medium text-xs rounded-xl shadow-xs transition" do %>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         <span>Refresh Log</span>
       <% end %>
@@ -26,44 +26,44 @@
   <% if @stats %>
     <!-- Notification Metrics Overview -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div class="glass-panel p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover">
         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Notifications</p>
-        <p class="text-2xl font-black text-slate-800 dark:text-slate-200 mt-1"><%= @stats.total %></p>
-        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"><%= @stats.host_total %> Host / <%= @stats.service_total %> Service</p>
+        <p class="text-3xl font-black text-slate-800 dark:text-slate-100 mt-1"><%= @stats.total %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono"><%= @stats.host_total %> Host / <%= @stats.service_total %> Service</p>
       </div>
 
-      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div class="glass-panel p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover">
         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Problem Dispatched</p>
-        <p class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1"><%= @stats.problem_total %></p>
-        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Critical & Down alerts</p>
+        <p class="text-3xl font-black text-rose-500 mt-1"><%= @stats.problem_total %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Critical & Down alerts</p>
       </div>
 
-      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div class="glass-panel p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover">
         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Recoveries</p>
-        <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1"><%= @stats.recovery_total %></p>
-        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Resolved alerts</p>
+        <p class="text-3xl font-black text-emerald-500 mt-1"><%= @stats.recovery_total %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Resolved alerts</p>
       </div>
 
-      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div class="glass-panel p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover">
         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Acknowledgments</p>
-        <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1"><%= @stats.ack_total %></p>
-        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">User acknowledgments</p>
+        <p class="text-3xl font-black text-indigo-500 mt-1"><%= @stats.ack_total %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">User acknowledgments</p>
       </div>
     </div>
   <% end %>
 
   <!-- Filter & Search Bar -->
-  <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+  <div class="glass-panel p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
     <form method="get" action="<%= notifications_path %>" class="flex flex-wrap items-center gap-3">
       <div class="relative">
-        <input type="text" name="host" value="<%= params[:host] %>" placeholder="Filter host..." class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+        <input type="text" name="host" value="<%= params[:host] %>" placeholder="Filter host..." class="px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40">
       </div>
       <div class="relative">
-        <input type="text" name="contact" value="<%= params[:contact] %>" placeholder="Filter contact..." class="px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+        <input type="text" name="contact" value="<%= params[:contact] %>" placeholder="Filter contact..." class="px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40">
       </div>
-      <button type="submit" class="px-3.5 py-1.5 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition">Filter</button>
+      <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition cursor-pointer">Filter</button>
       <% if params[:host].present? || params[:contact].present? || params[:reason].present? %>
-        <%= link_to "Reset", notifications_path, class: "text-xs text-rose-600 dark:text-rose-400 hover:underline font-medium" %>
+        <%= link_to "Reset", notifications_path, class: "text-xs text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 hover:underline font-medium" %>
       <% end %>
     </form>
 
@@ -73,66 +73,69 @@
   </div>
 
   <!-- Notification Table Card -->
-  <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xs border border-slate-200 dark:border-slate-800 overflow-hidden">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          <th class="py-3.5 px-6">Waktu</th>
-          <th class="py-3.5 px-6">Host / Service</th>
-          <th class="py-3.5 px-6">Kontak Penerima</th>
-          <th class="py-3.5 px-6">Tipe / State</th>
-          <th class="py-3.5 px-6">Pesan Output</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-        <% if @notifications.empty? %>
-          <tr>
-            <td colspan="5" class="py-12 px-6 text-center text-slate-400 dark:text-slate-500">
-              <svg class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-              Belum ada riwayat notifikasi yang sesuai filter.
-            </td>
+  <div class="glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-200/80 dark:border-slate-800/80 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <th class="py-3.5 px-6">Waktu</th>
+            <th class="py-3.5 px-6">Host / Service</th>
+            <th class="py-3.5 px-6">Kontak Penerima</th>
+            <th class="py-3.5 px-6">Tipe / State</th>
+            <th class="py-3.5 px-6">Pesan Output</th>
           </tr>
-        <% else %>
-          <% @notifications.each do |n| %>
-            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-              <td class="py-4 px-6 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap font-mono text-xs">
-                <%= n[:timestamp]&.strftime("%Y-%m-%d %H:%M:%S") %>
-              </td>
-              <td class="py-4 px-6 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                <%= link_to n[:host_name], host_path(n[:host_name]), class: "text-indigo-600 dark:text-indigo-400 hover:underline" %>
-                <% if n[:service_desc].present? %>
-                  <span class="text-slate-400 dark:text-slate-500 text-xs block font-normal"><%= n[:service_desc] %></span>
-                <% end %>
-              </td>
-              <td class="py-4 px-6 text-sm text-slate-700 dark:text-slate-300">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 font-mono text-xs">
-                  👤 <%= n[:contact_name] %>
-                </span>
-              </td>
-              <td class="py-4 px-6 text-sm">
-                <% 
-                  st = n[:state].to_s.upcase
-                  badge_class = case st
-                                when 'DOWN', 'CRITICAL' then 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-                                when 'WARNING' then 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                                when 'UP', 'OK', 'RECOVERY' then 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                                else 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
-                                end
-                %>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold <%= badge_class %>">
-                  <%= n[:state] %>
-                </span>
-                <% if n[:reason].present? %>
-                  <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5 font-mono uppercase"><%= n[:reason] %></span>
-                <% end %>
-              </td>
-              <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate" title="<%= n[:output] %>">
-                <%= n[:output] %>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+          <% if @notifications.empty? %>
+            <tr>
+              <td colspan="5" class="py-14 px-6 text-center text-slate-400 dark:text-slate-500">
+                <svg class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                <p class="font-semibold text-sm">Belum ada riwayat notifikasi yang sesuai filter.</p>
+                <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Notifikasi dikirim otomatis ketika state transisi atau alarm dipicu.</p>
               </td>
             </tr>
+          <% else %>
+            <% @notifications.each do |n| %>
+              <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap font-mono">
+                  <%= n[:timestamp]&.strftime("%Y-%m-%d %H:%M:%S") %>
+                </td>
+                <td class="py-4 px-6 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                  <%= link_to n[:host_name], host_path(n[:host_name]), class: "text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline transition" %>
+                  <% if n[:service_desc].present? %>
+                    <span class="text-slate-400 dark:text-slate-500 text-xs block font-normal mt-0.5"><%= n[:service_desc] %></span>
+                  <% end %>
+                </td>
+                <td class="py-4 px-6 text-sm text-slate-700 dark:text-slate-300">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 font-mono text-xs text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-slate-700/50">
+                    👤 <%= n[:contact_name] %>
+                  </span>
+                </td>
+                <td class="py-4 px-6 text-sm">
+                  <% 
+                    st = n[:state].to_s.upcase
+                    badge_class = case st
+                                  when 'DOWN', 'CRITICAL' then 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30'
+                                  when 'WARNING' then 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30'
+                                  when 'UP', 'OK', 'RECOVERY' then 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30'
+                                  else 'bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-500/30'
+                                  end
+                  %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border <%= badge_class %>">
+                    <%= n[:state] %>
+                  </span>
+                  <% if n[:reason].present? %>
+                    <span class="text-[10px] text-slate-400 dark:text-slate-500 block mt-0.5 font-mono uppercase"><%= n[:reason] %></span>
+                  <% end %>
+                </td>
+                <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate font-mono text-xs" title="<%= n[:output] %>">
+                  <%= n[:output] %>
+                </td>
+              </tr>
+            <% end %>
           <% end %>
-        <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
