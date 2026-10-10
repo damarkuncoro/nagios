@@ -53,6 +53,8 @@ Rails.application.routes.draw do
       get "/status", to: "statuses#index"
       get "/tactical", to: "statuses#tactical"
       get "/problems", to: "statuses#problems"
+      get "/objects", to: "objects#index"
+      get "/archives", to: "archives#index"
     end
   end
 end
