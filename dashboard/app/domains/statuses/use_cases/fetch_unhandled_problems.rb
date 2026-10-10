@@ -2,33 +2,25 @@ module Statuses
   module UseCases
     class FetchUnhandledProblems
       def self.call(filter: nil)
-        hosts = Engines::NagiosEngine.hosts.map(&:to_h)
-        services = Engines::NagiosEngine.services.map(&:to_h)
-
-        flapping_hosts = hosts.select { |h| h[:flapping] }
-        flapping_services = services.select { |s| s[:flapping] }
-        total_flapping = flapping_hosts.size + flapping_services.size
+        hosts = Engines::NagiosEngine.hosts.map(&:to_h) rescue []
+        services = Engines::NagiosEngine.services.map(&:to_h) rescue []
 
         if filter.to_s == 'flapping'
-          unhandled_hosts = flapping_hosts
-          unhandled_services = flapping_services
+          unhandled_hosts = Services::StatusQueryEngine.filter_hosts(hosts, flapping: true).items
+          unhandled_services = Services::StatusQueryEngine.filter_services(services, flapping: true).items
         else
-          unhandled_hosts = hosts.select do |h|
-            %w[DOWN UNREACHABLE].include?(h[:status]) && !h[:acknowledged]
-          end
-
-          unhandled_services = services.select do |s|
-            %w[WARNING CRITICAL UNKNOWN].include?(s[:status]) && !s[:acknowledged]
-          end
+          unhandled_hosts = Services::StatusQueryEngine.filter_hosts(hosts, unhandled_only: true).items
+          unhandled_services = Services::StatusQueryEngine.filter_services(services, unhandled_only: true).items
         end
 
-        total_unhandled = unhandled_hosts.size + unhandled_services.size
+        host_totals = Services::StatusQueryEngine.calculate_host_totals(hosts)
+        service_totals = Services::StatusQueryEngine.calculate_service_totals(services)
 
         {
           hosts: unhandled_hosts,
           services: unhandled_services,
-          total_unhandled: total_unhandled,
-          total_flapping: total_flapping
+          total_unhandled: unhandled_hosts.size + unhandled_services.size,
+          total_flapping: host_totals.flapping + service_totals.flapping
         }
       end
     end

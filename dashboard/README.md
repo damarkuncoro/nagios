@@ -60,6 +60,7 @@ Berjalan berdampingan (*side-by-side*) dengan Nagios Core Engine klasik melalui 
 | **Check Scheduling Queue** | **Check Scheduling Queue (`CheckSchedulingQueue`)** antrean eksekusi host/service check, sorting multi-kriteria, metrik sebaran waktu & deteksi check storm | `cgi/extinfo.c` & `base/events.c` |
 | **Alert Summary & Producers** | **Alert Summary Aggregator (`AlertSummaryAggregator`)** top incident producers, agregasi HARD vs SOFT, rasio share insiden & ringkasan 24 jam | `cgi/summary.c` |
 | **Telemetry & Metrics Export** | **Performance Data Processor (`PerformanceDataProcessor`)** serialisasi template perfdata, ekspor Carbon/Graphite & OpenMetrics/Prometheus, serta rotasi spool | `xdata/xpddefault.c` |
+| **Status Query & Filter Engine** | **Status Query Engine (`StatusQueryEngine`)** multi-flag property filtering, supresi ACK & downtime pada unhandled problem, sorting & paginasi | `cgi/status.c` |
 | **Integrasi 2 Arah** | **Bidirectional Bridge Navigation** (Akses cepat antar Dashboard & Classic UI) | Sidebar link di `side.php` & Navbar |
 
 ---
