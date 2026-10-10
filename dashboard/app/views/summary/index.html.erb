@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center">
     <div>
       <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Top Incidents & Alert Totals</h1>
-      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ringkasan statistik host & service dengan frekuensi kegagalan/alert tertinggi (*summary.cgi*)</p>
+      <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ringkasan analitik host & service bermasalah beserta histogram distribusi insiden 24 jam (*summary.cgi* & *histogram.cgi*)</p>
     </div>
   </div>
 
@@ -32,6 +32,81 @@
         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Recoveries</p>
         <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1"><%= totals.recovery_total %></p>
         <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"><%= totals.hard_total %> Hard state alerts</p>
+      </div>
+    </div>
+  <% end %>
+
+  <% histogram = @summary[:histogram] %>
+  <% if histogram && histogram.hourly_slots.any? %>
+    <% max_hourly = histogram.hourly_slots.map(&:total).max || 1 %>
+    <% max_hourly = 1 if max_hourly.zero? %>
+    
+    <!-- 24-Hour Failure Histogram (histogram.cgi) -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex flex-wrap justify-between items-center gap-2">
+        <div class="flex items-center gap-3">
+          <h3 class="font-bold text-slate-800 dark:text-slate-200 text-lg">24-Hour Alert Distribution Timeline</h3>
+          <span class="text-xs text-slate-400 dark:text-slate-500 font-mono">(histogram.cgi)</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <% if histogram.peak_hour_count > 0 %>
+            <span class="px-3 py-1 bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 text-xs font-semibold rounded-full border border-rose-200/60 dark:border-rose-800">
+              ⚡ Peak: <%= histogram.peak_hour_label %> (<%= histogram.peak_hour_count %> alerts)
+            </span>
+          <% end %>
+          <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-rose-500"></span> Critical
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400"></span> Warning
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span> OK
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <!-- Visual Bars -->
+        <div class="h-44 flex items-end gap-1.5 sm:gap-2 pt-6 pb-2 border-b border-slate-100 dark:border-slate-800">
+          <% histogram.hourly_slots.each do |slot| %>
+            <% 
+              crit_pct = (slot.critical_count.to_f / max_hourly * 100).round
+              warn_pct = (slot.warning_count.to_f / max_hourly * 100).round
+              ok_pct = (slot.ok_count.to_f / max_hourly * 100).round
+              total_pct = [((slot.total.to_f / max_hourly) * 100).round, 4].max if slot.total > 0
+            %>
+            <div class="flex-1 flex flex-col justify-end items-center h-full group relative" title="<%= slot.hour_label %>: <%= slot.total %> alerts (Crit: <%= slot.critical_count %>, Warn: <%= slot.warning_count %>, OK: <%= slot.ok_count %>)">
+              <!-- Tooltip popup on hover -->
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 z-10 px-2 py-1 text-[11px] font-medium bg-slate-800 text-white rounded shadow-md pointer-events-none whitespace-nowrap">
+                <%= slot.hour_label %>: <%= slot.total %> alerts
+              </div>
+
+              <% if slot.total > 0 %>
+                <div class="w-full rounded-t flex flex-col justify-end overflow-hidden" style="height: <%= total_pct %>%;">
+                  <% if slot.critical_count > 0 %>
+                    <div class="bg-rose-500 hover:bg-rose-400 transition-colors w-full" style="height: <%= (slot.critical_count.to_f / slot.total * 100).round %>%;"></div>
+                  <% end %>
+                  <% if slot.warning_count > 0 %>
+                    <div class="bg-amber-400 hover:bg-amber-300 transition-colors w-full" style="height: <%= (slot.warning_count.to_f / slot.total * 100).round %>%;"></div>
+                  <% end %>
+                  <% if slot.ok_count > 0 %>
+                    <div class="bg-emerald-500 hover:bg-emerald-400 transition-colors w-full" style="height: <%= (slot.ok_count.to_f / slot.total * 100).round %>%;"></div>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="w-full h-1 bg-slate-100 dark:bg-slate-800/80 rounded"></div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Hourly Labels -->
+        <div class="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 pt-2 font-mono">
+          <span>00:00</span>
+          <span>04:00</span>
+          <span>08:00</span>
+          <span>12:00</span>
+          <span>16:00</span>
+          <span>20:00</span>
+          <span>23:00</span>
+        </div>
       </div>
     </div>
   <% end %>

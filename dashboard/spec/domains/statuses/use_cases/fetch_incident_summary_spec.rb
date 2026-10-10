@@ -16,6 +16,8 @@ RSpec.describe Statuses::UseCases::FetchIncidentSummary do
       expect(summary[:total_alerts]).to eq(3)
       expect(summary[:top_hosts].first).to eq(['host1', 2])
       expect(summary[:top_services].first).to eq(['host1 / HTTP', 2])
+      expect(summary[:histogram]).not_to be_nil
+      expect(summary[:histogram].hourly_slots.size).to eq(24)
     end
   end
 end

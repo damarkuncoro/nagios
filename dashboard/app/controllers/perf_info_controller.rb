@@ -7,7 +7,7 @@ class PerfInfoController < ApplicationController
 
     @parsed_metrics = services.map do |s|
       perf_raw = s[:performance_data] || s['perf_data'] || s['performance_data']
-      next if perf_raw.blank?
+      next if perf_raw.nil? || perf_raw.to_s.strip.empty?
 
       parsed = Statuses::Services::PerfdataParser.parse("#{s[:plugin_output]} | #{perf_raw}")
       next unless parsed.has_metrics?
