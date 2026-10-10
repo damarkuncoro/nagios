@@ -82,7 +82,9 @@ export default class extends Controller {
       { type: "Page", title: "Downtimes Manager", subtitle: "Scheduled maintenance windows", url: "/downtimes", icon: "🛑" },
       { type: "Page", title: "Process Info", subtitle: "Nagios daemon statistics and options", url: "/process_info", icon: "⚙️" },
       { type: "Page", title: "Performance Info", subtitle: "Check execution latency metrics", url: "/perf_info", icon: "⚡" },
-      { type: "Page", title: "Configuration Viewer", subtitle: "Parsed commands and contacts", url: "/configuration", icon: "🔧" },
+      { type: "Page", title: "Configuration Viewer", subtitle: "Parsed commands, contacts, and macros", url: "/configuration", icon: "🔧" },
+      { type: "Page", title: "Daemon Directives (nagios.cfg)", subtitle: "Engine timeouts, spools, and flap settings", url: "/configuration?tab=daemon", icon: "⚙️" },
+      { type: "Page", title: "CGI & Web Directives (cgi.cfg)", subtitle: "Web access control, contact auth, and UI parameters", url: "/configuration?tab=cgi", icon: "🔐" },
       { type: "API", title: "Prometheus Metrics (/metrics)", subtitle: "OpenMetrics scrape stream", url: "/metrics", icon: "⚡" },
       { type: "API", title: "Objects JSON API", subtitle: "objectjson.cgi configuration endpoints", url: "/api/v1/objects", icon: "🔌" },
       { type: "API", title: "Archives JSON API", subtitle: "archivejson.cgi audit & log endpoints", url: "/api/v1/archives", icon: "📁" }

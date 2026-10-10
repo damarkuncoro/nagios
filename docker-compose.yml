@@ -21,6 +21,7 @@ services:
 
   nagios:
     image: jasonrivers/nagios:latest
+    entrypoint: ["/bin/bash", "-c", "rm -f /run/nsca.pid /var/run/nsca.pid 2>/dev/null; exec /usr/local/bin/start_nagios"]
     ports:
       - "8080:80"
     environment:
