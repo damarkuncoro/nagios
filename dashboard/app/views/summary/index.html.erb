@@ -6,6 +6,36 @@
     </div>
   </div>
 
+  <% totals = @summary[:totals] %>
+  <% if totals %>
+    <!-- Alert Totals Metrics Overview (summary.cgi display_alert_totals) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total 24h Alerts</p>
+        <p class="text-2xl font-black text-slate-800 dark:text-slate-200 mt-1"><%= totals.total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"><%= totals.host_total %> Host / <%= totals.service_total %> Service</p>
+      </div>
+
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Critical / Down</p>
+        <p class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1"><%= totals.critical_total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">High severity events</p>
+      </div>
+
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Warnings & Soft</p>
+        <p class="text-2xl font-black text-amber-500 dark:text-amber-400 mt-1"><%= totals.warning_total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"><%= totals.soft_total %> Soft state retries</p>
+      </div>
+
+      <div class="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Recoveries</p>
+        <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1"><%= totals.recovery_total %></p>
+        <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"><%= totals.hard_total %> Hard state alerts</p>
+      </div>
+    </div>
+  <% end %>
+
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Top Monitored Services Failures -->
     <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
