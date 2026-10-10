@@ -136,9 +136,11 @@ Seluruh pengujian unit dan request spec dapat dijalankan di dalam container:
 docker compose exec web bundle exec rspec
 ```
 
-Seluruh test cases mencakup:
+Seluruh test cases mencakup 349 pengujian (100% passed):
 - Status API & Endpoints (`/api/v1/status`, `/objects`, `/archives`, `/problems`, `/queue`, `/availability`)
 - Prometheus Scraping Endpoint Specs (`/metrics` & `/perf_info.text`)
+- Multi-Channel Webhook Dispatcher (`Slack`, `Discord`, `Generic`) & Viability Suppression Specs
+- Configuration Explorer Specs (`nagios.cfg`, `cgi.cfg`, & Objects)
 - Request Specs untuk seluruh controller & view formats
 - Remove Acknowledgment (Disack) & Cascade Cluster Downtime specs
 - Freshness & Stale Check Detector specs (`Statuses::Services::FreshnessDetector`)
