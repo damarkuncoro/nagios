@@ -1,6 +1,8 @@
 <% if downtimes.any? %>
+  <% can_execute = defined?(current_user_profile) && current_user_profile ? current_user_profile.can_execute_commands? : true %>
+
   <!-- Active Downtimes for this Host -->
-  <div class="bg-indigo-50/70 dark:bg-indigo-950/30 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/60 p-6 space-y-3 card-hover">
+  <div class="glass-panel bg-indigo-50/70 dark:bg-indigo-950/20 rounded-2xl border border-indigo-200/80 dark:border-indigo-800/60 p-6 space-y-3 card-hover">
     <div class="flex items-center justify-between">
       <h3 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm flex items-center gap-2">
         <span>Jadwal Downtime Aktif</span>
@@ -9,14 +11,16 @@
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
       <% downtimes.each do |d| %>
-        <div class="p-3.5 bg-white dark:bg-[#111827] rounded-xl border border-indigo-100 dark:border-slate-800 flex justify-between items-center text-xs shadow-xs">
+        <div class="p-3.5 glass-panel bg-white/90 dark:bg-slate-900/90 rounded-xl border border-indigo-100 dark:border-slate-800 flex justify-between items-center text-xs shadow-xs">
           <div>
             <p class="font-semibold text-slate-800 dark:text-slate-200"><%= d[:service_description].presence || "HOST DOWNTIME" %></p>
             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">"<%= d[:comment] %>" • By <%= d[:author] %></p>
             <p class="text-[10px] font-mono text-slate-400 dark:text-slate-500">Berakhir: <%= d[:end_time]&.strftime("%H:%M:%S (%d %b)") %></p>
           </div>
-          <%= button_to downtime_path(d[:id]), method: :delete, data: { turbo_confirm: "Batalkan downtime ini?" }, class: "text-xs px-2.5 py-1 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950 font-medium rounded-lg transition cursor-pointer" do %>
-            Batalkan
+          <% if can_execute %>
+            <%= button_to downtime_path(d[:id]), method: :delete, data: { turbo_confirm: "Batalkan downtime ini?" }, class: "text-xs px-2.5 py-1 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950 font-medium rounded-lg transition cursor-pointer" do %>
+              Batalkan
+            <% end %>
           <% end %>
         </div>
       <% end %>

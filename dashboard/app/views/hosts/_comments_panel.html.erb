@@ -1,5 +1,5 @@
 <!-- Comments & Notes Section for this host -->
-<div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 space-y-4 card-hover">
+<div class="glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 space-y-4 card-hover">
   <div class="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800/60 pb-3">
     <div>
       <h3 class="font-bold text-slate-800 dark:text-slate-200 text-base flex items-center gap-2">
@@ -10,12 +10,16 @@
     </div>
   </div>
 
-  <!-- Inline Add Comment Form -->
-  <%= form_with url: comments_path, method: :post, class: "flex flex-col sm:flex-row gap-2.5 pt-1" do |f| %>
-    <%= f.hidden_field :host_name, value: host[:name] %>
-    <%= f.select :service_desc, [["(Komentar Host Ini)", ""]] + services.map { |s| [s[:description], s[:description]] }, {}, class: "px-3.5 py-2 bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-    <%= f.text_field :comment, placeholder: "Tuliskan catatan insiden baru...", class: "flex-1 px-3.5 py-2 bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-    <%= f.submit "+ Tambah Catatan", class: "py-2 px-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl transition cursor-pointer shrink-0 shadow-sm" %>
+  <% can_execute = defined?(current_user_profile) && current_user_profile ? current_user_profile.can_execute_commands? : true %>
+
+  <% if can_execute %>
+    <!-- Inline Add Comment Form -->
+    <%= form_with url: comments_path, method: :post, class: "flex flex-col sm:flex-row gap-2.5 pt-1" do |f| %>
+      <%= f.hidden_field :host_name, value: host[:name] %>
+      <%= f.select :service_desc, [["(Komentar Host Ini)", ""]] + services.map { |s| [s[:description], s[:description]] }, {}, class: "px-3.5 py-2 bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+      <%= f.text_field :comment, placeholder: "Tuliskan catatan insiden baru...", class: "flex-1 px-3.5 py-2 bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+      <%= f.submit "+ Tambah Catatan", class: "py-2 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs rounded-xl transition cursor-pointer shrink-0 shadow-sm" %>
+    <% end %>
   <% end %>
 
   <% if comments.any? %>
@@ -24,21 +28,25 @@
         <div class="py-3 flex justify-between items-center text-xs">
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-bold text-slate-800 dark:text-slate-200"><%= c[:author] %></span>
+              <span class="font-bold text-slate-800 dark:text-slate-200">👤 <%= c[:author] %></span>
               <% if c[:service_description].present? %>
                 <span class="px-2 py-0.5 rounded-md text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"><%= c[:service_description] %></span>
               <% else %>
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-mono bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-semibold">HOST</span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-mono bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-semibold border border-indigo-500/20">HOST</span>
               <% end %>
               <span class="text-[11px] text-slate-400 font-mono"><%= c[:entry_time].strftime("%H:%M:%S (%d %b)") %></span>
             </div>
-            <p class="text-slate-700 dark:text-slate-300 mt-1">"<%= c[:comment] %>"</p>
+            <p class="text-slate-700 dark:text-slate-300 mt-1 italic">"<%= c[:comment] %>"</p>
           </div>
-          <%= button_to comment_path(c[:id]), method: :delete, data: { turbo_confirm: "Hapus catatan ini?" }, class: "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 text-xs px-2.5 py-1 rounded-lg transition cursor-pointer font-medium" do %>
-            Hapus
+          <% if can_execute %>
+            <%= button_to comment_path(c[:id]), method: :delete, data: { turbo_confirm: "Hapus catatan ini?" }, class: "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 text-xs px-2.5 py-1 rounded-lg transition cursor-pointer font-medium" do %>
+              Hapus
+            <% end %>
           <% end %>
         </div>
       <% end %>
     </div>
+  <% else %>
+    <p class="text-xs text-slate-400 italic pt-1">Belum ada catatan insiden untuk host ini.</p>
   <% end %>
 </div>
