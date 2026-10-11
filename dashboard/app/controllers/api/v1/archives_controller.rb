@@ -18,7 +18,7 @@ module Api
           hosts: Engines::NagiosEngine.hosts.map(&:to_h),
           services: Engines::NagiosEngine.services.map(&:to_h),
           program_status: Engines::NagiosEngine.program_status.to_h,
-          user: 'nagiosadmin'
+          user: current_user
         }
 
         response_json = Statuses::Services::ArchiveJsonSerializer.serialize_query(

@@ -11,7 +11,7 @@ module Api
             program_status: Engines::NagiosEngine.program_status,
             downtimes: Engines::NagiosEngine.downtimes,
             comments: Engines::NagiosEngine.comments,
-            user: 'nagiosadmin'
+            user: current_user
           }
           response_json = Statuses::Services::StatusJsonSerializer.serialize_query(
             params[:query],

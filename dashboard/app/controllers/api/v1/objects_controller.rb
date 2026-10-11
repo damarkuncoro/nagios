@@ -20,7 +20,7 @@ module Api
           contactgroups: Engines::NagiosEngine.contactgroups,
           timeperiods: Engines::NagiosEngine.timeperiods,
           commands: Engines::NagiosEngine.commands,
-          user: 'nagiosadmin'
+          user: current_user
         }
 
         response_json = Statuses::Services::ObjectJsonSerializer.serialize_query(
