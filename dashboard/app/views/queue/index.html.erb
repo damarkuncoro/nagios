@@ -1,4 +1,5 @@
 <div class="max-w-7xl mx-auto space-y-8" data-controller="auto-refresh" data-auto-refresh-interval-value="15000">
+  <!-- Header -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
       <div class="flex items-center gap-3">
@@ -11,7 +12,7 @@
       <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Antrean eksekusi check dan analisis pemerataan waktu (extinfo.cgi?type=7)</p>
     </div>
 
-    <%= link_to queue_path(filter: @filter), class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer" do %>
+    <%= link_to queue_path(filter: @filter), class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer card-hover" do %>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
       <span>Refresh Queue</span>
     <% end %>
@@ -19,14 +20,14 @@
 
   <!-- Check Spread Distribution Metrics (base/events.c display_scheduling_info) -->
   <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
-    <div class="p-5 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
       <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total in Queue</p>
       <p class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 font-mono"><%= @metrics[:total] %></p>
       <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1"><%= @metrics[:host_checks] %> Hosts / <%= @metrics[:service_checks] %> Svcs</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-[#111827] rounded-2xl border <%= @metrics[:due_in_1m].positive? ? 'border-amber-400/80 dark:border-amber-800/80 bg-amber-500/5' : 'border-slate-200/80 dark:border-slate-800/80' %> shadow-xs card-hover relative overflow-hidden">
+    <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border <%= @metrics[:due_in_1m].positive? ? 'border-amber-400/80 dark:border-amber-800/80 bg-amber-500/5' : 'border-slate-200/80 dark:border-slate-800/80' %> shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-400"></div>
       <div class="flex items-center justify-between">
         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due in ≤ 1 Min</p>
@@ -40,21 +41,21 @@
       <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Realtime execution</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-indigo-500"></div>
       <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due in 1–5 Min</p>
       <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-2 font-mono"><%= @metrics[:due_in_5m] %></p>
       <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Upcoming cycle</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
       <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due in 5–15 Min</p>
       <p class="text-2xl font-black text-sky-600 dark:text-sky-400 mt-2 font-mono"><%= @metrics[:due_in_15m] %></p>
       <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Mid-term window</p>
     </div>
 
-    <div class="p-5 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs col-span-2 sm:col-span-1 card-hover relative overflow-hidden">
+    <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs col-span-2 sm:col-span-1 card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-slate-400 to-slate-500"></div>
       <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due > 15 Min</p>
       <p class="text-2xl font-black text-slate-600 dark:text-slate-300 mt-2 font-mono"><%= @metrics[:due_later] %></p>
@@ -62,17 +63,24 @@
     </div>
   </div>
 
-  <!-- Filter Pills -->
-  <div class="flex items-center gap-2 border-b border-slate-200/80 dark:border-slate-800/80 pb-3 overflow-x-auto">
-    <%= link_to "All Events (#{@metrics[:total]})", queue_path,
-                class: "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter.blank? ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" %>
-    <%= link_to "Host Checks (#{@metrics[:host_checks]})", queue_path(filter: 'host'),
-                class: "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter == 'host' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" %>
-    <%= link_to "Service Checks (#{@metrics[:service_checks]})", queue_path(filter: 'service'),
-                class: "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter == 'service' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" %>
+  <!-- Filter Pills & Search Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-800/80 pb-3">
+    <div class="flex items-center gap-2 overflow-x-auto">
+      <%= link_to "All Events (#{@metrics[:total]})", queue_path,
+                  class: "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter.blank? ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" %>
+      <%= link_to "Host Checks (#{@metrics[:host_checks]})", queue_path(filter: 'host'),
+                  class: "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter == 'host' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" %>
+      <%= link_to "Service Checks (#{@metrics[:service_checks]})", queue_path(filter: 'service'),
+                  class: "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer #{ @filter == 'service' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/60' }" %>
+    </div>
+
+    <div class="relative w-full sm:w-64">
+      <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <input type="text" id="queue-filter-input" placeholder="Quick search in queue..." class="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" oninput="filterQueue(this.value)">
+    </div>
   </div>
 
-  <div class="bg-white dark:bg-[#111827] rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800/80 overflow-hidden">
+  <div class="glass-panel bg-white dark:bg-[#111827] rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800/80 overflow-hidden card-hover">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse min-w-[700px]">
         <thead>
@@ -100,17 +108,20 @@
             <th class="py-4 px-6 text-right">Aksi</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+        <tbody id="queue-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/60">
           <% if @queue.empty? %>
             <tr>
               <td colspan="6" class="py-12 px-6 text-center text-slate-400 dark:text-slate-500">
-                Tidak ada antrean check terdaftar sesuai filter saat ini.
+                <div class="flex flex-col items-center justify-center gap-2">
+                  <svg class="w-8 h-8 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <p>Tidak ada antrean check terdaftar sesuai filter saat ini.</p>
+                </div>
               </td>
             </tr>
           <% else %>
             <% @queue.each do |item| %>
               <% is_due_soon = item.respond_to?(:due_soon?) ? item.due_soon? : (item[:next_check] && (item[:next_check].to_time - Time.now) <= 60) %>
-              <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition <%= 'bg-amber-500/5 dark:bg-amber-950/20' if is_due_soon %>">
+              <tr class="queue-row hover:bg-slate-50 dark:hover:bg-slate-800/50 transition <%= 'bg-amber-500/5 dark:bg-amber-950/20' if is_due_soon %>" data-search="<%= "#{item[:host_name]} #{item[:description]} #{item[:status]} #{item[:type]}".downcase %>">
                 <td class="py-4 px-6 text-sm font-mono text-indigo-600 dark:text-indigo-400 font-bold whitespace-nowrap">
                   <%= item[:next_check]&.strftime("%H:%M:%S (%d %b)") %>
                   <% if is_due_soon %>
@@ -146,18 +157,22 @@
                   <%= item[:attempts].presence || "1/1" %>
                 </td>
                 <td class="py-4 px-6 text-right whitespace-nowrap">
-                  <% if item[:type] == :host_check %>
-                    <%= button_to recheck_host_path(item[:host_name]),
-                                  method: :post,
-                                  class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl border border-slate-200/80 dark:border-slate-700 transition cursor-pointer" do %>
-                      Force Check
+                  <% if current_user_profile&.can_execute_commands? %>
+                    <% if item[:type] == :host_check %>
+                      <%= button_to recheck_host_path(item[:host_name]),
+                                    method: :post,
+                                    class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl border border-slate-200/80 dark:border-slate-700 transition cursor-pointer" do %>
+                        Force Check
+                      <% end %>
+                    <% else %>
+                      <%= button_to recheck_service_host_path(item[:host_name], service_desc: item[:description]),
+                                    method: :post,
+                                    class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl border border-slate-200/80 dark:border-slate-700 transition cursor-pointer" do %>
+                        Force Check
+                      <% end %>
                     <% end %>
                   <% else %>
-                    <%= button_to recheck_service_host_path(item[:host_name], service_desc: item[:description]),
-                                  method: :post,
-                                  class: "text-xs px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl border border-slate-200/80 dark:border-slate-700 transition cursor-pointer" do %>
-                      Force Check
-                    <% end %>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500 italic">Read-only</span>
                   <% end %>
                 </td>
               </tr>
@@ -168,3 +183,17 @@
     </div>
   </div>
 </div>
+
+<script>
+  function filterQueue(query) {
+    const q = (query || '').toLowerCase().trim();
+    document.querySelectorAll('.queue-row').forEach(row => {
+      const search = row.getAttribute('data-search') || '';
+      if (!q || search.includes(q)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
