@@ -18,28 +18,28 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-    <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="p-6 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
       <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Monitored Objects</p>
       <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 font-mono"><%= @stats[:total_services] + @stats[:total_hosts] %></p>
       <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium"><%= @stats[:total_hosts] %> Hosts • <%= @stats[:total_services] %> Services</p>
     </div>
 
-    <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="p-6 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-indigo-500"></div>
       <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Average Latency</p>
       <p class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-2 font-mono"><%= @stats[:avg_latency] %>s</p>
       <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Min: <%= @stats[:min_latency] %>s • Max: <%= @stats[:max_latency] %>s</p>
     </div>
 
-    <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="p-6 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
       <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Avg Execution Time</p>
       <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2 font-mono"><%= @stats[:avg_execution_time] %>s</p>
       <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Min: <%= @stats[:min_execution_time] %>s • Max: <%= @stats[:max_execution_time] %>s</p>
     </div>
 
-    <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="p-6 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
       <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Cluster Health Index</p>
       <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2 font-mono"><%= @stats[:health_percentage] %>%</p>
@@ -49,7 +49,7 @@
 
   <% if @stats[:summary] %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-4 card-hover">
+      <div class="p-6 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-4 card-hover">
         <h3 class="font-bold text-slate-900 dark:text-white text-base">Host Execution Distribution</h3>
         <div class="grid grid-cols-3 gap-3 text-center text-xs">
           <div class="p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/20 font-bold text-emerald-700 dark:text-emerald-300">
@@ -67,7 +67,7 @@
         </div>
       </div>
 
-      <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-4 card-hover">
+      <div class="p-6 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-4 card-hover">
         <h3 class="font-bold text-slate-900 dark:text-white text-base">Service Execution Distribution</h3>
         <div class="grid grid-cols-4 gap-3 text-center text-xs">
           <div class="p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/20 font-bold text-emerald-700 dark:text-emerald-300">
@@ -92,8 +92,8 @@
   <% end %>
 
   <!-- Performance Data Telemetry Explorer (base/perfdata.c) -->
-  <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 space-y-4 card-hover">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+  <div class="glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 space-y-4 card-hover">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div>
         <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
           <span>Live Performance Telemetry Explorer</span>
@@ -101,15 +101,21 @@
         </h3>
         <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Ekstraksi metrik terstruktur (UOM, threshold warn/crit, rasio persentase batas) dari plugin output</p>
       </div>
-      <span class="text-xs font-mono px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg font-semibold text-slate-600 dark:text-slate-300">
-        <%= @parsed_metrics.sum { |m| m[:metrics].size } %> Total Metrik Aktif
-      </span>
+      <div class="flex items-center gap-2.5 w-full sm:w-auto">
+        <div class="relative w-full sm:w-60">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input type="text" id="telemetry-filter-input" placeholder="Filter host, service, metric..." class="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" oninput="filterTelemetry(this.value)">
+        </div>
+        <span class="text-xs font-mono px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-semibold text-slate-600 dark:text-slate-300 shrink-0">
+          <%= @parsed_metrics.sum { |m| m[:metrics].size } %> Total Metrik
+        </span>
+      </div>
     </div>
 
     <% if @parsed_metrics.any? %>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+      <div id="telemetry-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
         <% @parsed_metrics.each do |item| %>
-          <div class="p-4 bg-slate-50/70 dark:bg-slate-900/60 rounded-xl border border-slate-200/70 dark:border-slate-800/70 space-y-3">
+          <div class="p-4 bg-slate-50/70 dark:bg-slate-900/60 rounded-xl border border-slate-200/70 dark:border-slate-800/70 space-y-3 telemetry-item" data-search="<%= "#{item[:host_name]} #{item[:description]} #{item[:metrics].map(&:label).join(' ')}".downcase %>">
             <div class="flex justify-between items-center text-xs">
               <span class="font-bold text-slate-800 dark:text-white">
                 <%= item[:host_name] %> • <span class="text-indigo-600 dark:text-indigo-400"><%= item[:description] %></span>
@@ -152,3 +158,17 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  function filterTelemetry(query) {
+    const q = (query || '').toLowerCase().trim();
+    document.querySelectorAll('.telemetry-item').forEach(el => {
+      const search = el.getAttribute('data-search') || '';
+      if (!q || search.includes(q)) {
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+</script>
