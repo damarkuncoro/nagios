@@ -13,14 +13,14 @@
     </div>
 
     <div class="flex items-center gap-2.5">
-      <%= link_to hosts_path(format: :csv), class: "inline-flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition shadow-xs cursor-pointer", title: "Export Host Status to CSV" do %>
+      <%= link_to hosts_path(format: :csv), class: "inline-flex items-center gap-2 px-3.5 py-2 glass-panel hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition shadow-xs cursor-pointer", title: "Export Host Status to CSV" do %>
         <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <span>Export CSV</span>
       <% end %>
-      <a href="http://localhost:8080" target="_blank" class="px-3.5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition shadow-xs">
+      <a href="http://localhost:8080" target="_blank" class="px-3.5 py-2 glass-panel hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700/80 transition shadow-xs">
         Classic Web
       </a>
-      <%= link_to hosts_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer" do %>
+      <%= link_to hosts_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer" do %>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         <span>Refresh Now</span>
       <% end %>
@@ -28,14 +28,15 @@
   </div>
 
   <% if notice.present? %>
-    <div class="p-4 bg-emerald-50/90 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl text-sm font-medium shadow-xs">
-      <%= notice %>
+    <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 rounded-2xl text-sm font-medium shadow-xs flex items-center gap-2.5">
+      <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span><%= notice %></span>
     </div>
   <% end %>
 
   <!-- Engine Status Banner with Modern Gradient Accent -->
   <% if @program_status %>
-    <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950/50 to-slate-900 text-slate-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs border border-indigo-500/20 shadow-md">
+    <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 text-slate-100 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs border border-indigo-500/20 shadow-md">
       <div class="flex items-center gap-4">
         <div class="p-2.5 bg-indigo-600/20 border border-indigo-500/30 rounded-xl">
           <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -65,8 +66,8 @@
   <!-- Summary Metric Cards with Glowing Colored Tops -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
     <!-- Card 1: Hosts -->
-    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
-      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
+    <div class="card-hover p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
       <div class="flex items-center justify-between">
         <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Hosts</p>
         <span class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs cursor-help" title="Seluruh node fisik dan virtual host yang dipantau engine.">ⓘ</span>
@@ -87,7 +88,7 @@
     </div>
 
     <!-- Card 2: Services OK -->
-    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+    <div class="card-hover p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
       <div class="flex items-center justify-between">
         <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services OK</p>
@@ -98,7 +99,7 @@
     </div>
 
     <!-- Card 3: Services Warning -->
-    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+    <div class="card-hover p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-yellow-500"></div>
       <div class="flex items-center justify-between">
         <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services Warning</p>
@@ -109,7 +110,7 @@
     </div>
 
     <!-- Card 4: Services Critical -->
-    <div class="card-hover p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
+    <div class="card-hover p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden group">
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-red-600"></div>
       <div class="flex items-center justify-between">
         <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Services Critical</p>
@@ -159,7 +160,7 @@
     </div>
 
     <!-- Host Table Card -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+    <div class="glass-panel rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -218,7 +219,7 @@
                data-action="input->filter#search"
                class="px-3.5 py-2 text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-64">
 
-        <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700/60 text-xs font-semibold">
+        <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200/80 dark:border-slate-700/60 text-xs font-semibold">
           <button type="button"
                   data-filter-target="filterBtn"
                   data-action="click->filter#filterByStatus"
@@ -252,7 +253,7 @@
     </div>
 
     <!-- Service Table Card -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+    <div class="glass-panel rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-slate-50/80 dark:bg-slate-800/50 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
