@@ -1,0 +1,44 @@
+<!-- Check Spread Distribution Metrics (base/events.c display_scheduling_info) -->
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+  <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total in Queue</p>
+    <p class="text-2xl font-black text-slate-800 dark:text-slate-100 mt-2 font-mono"><%= metrics[:total] %></p>
+    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1"><%= metrics[:host_checks] %> Hosts / <%= metrics[:service_checks] %> Svcs</p>
+  </div>
+
+  <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border <%= metrics[:due_in_1m].positive? ? 'border-amber-400/80 dark:border-amber-800/80 bg-amber-500/5' : 'border-slate-200/80 dark:border-slate-800/80' %> shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-400"></div>
+    <div class="flex items-center justify-between">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due in ≤ 1 Min</p>
+      <% if metrics[:due_in_1m].positive? %>
+        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+      <% end %>
+    </div>
+    <p class="text-2xl font-black <%= metrics[:due_in_1m].positive? ? 'text-amber-600 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300' %> mt-2 font-mono">
+      <%= metrics[:due_in_1m] %>
+    </p>
+    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Realtime execution</p>
+  </div>
+
+  <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-indigo-500"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due in 1–5 Min</p>
+    <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-2 font-mono"><%= metrics[:due_in_5m] %></p>
+    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Upcoming cycle</p>
+  </div>
+
+  <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due in 5–15 Min</p>
+    <p class="text-2xl font-black text-sky-600 dark:text-sky-400 mt-2 font-mono"><%= metrics[:due_in_15m] %></p>
+    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Mid-term window</p>
+  </div>
+
+  <div class="p-5 glass-panel bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs col-span-2 sm:col-span-1 card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-slate-400 to-slate-500"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Due > 15 Min</p>
+    <p class="text-2xl font-black text-slate-600 dark:text-slate-300 mt-2 font-mono"><%= metrics[:due_later] %></p>
+    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Long interval</p>
+  </div>
+</div>

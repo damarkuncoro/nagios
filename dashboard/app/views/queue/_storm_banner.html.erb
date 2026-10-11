@@ -1,0 +1,8 @@
+<div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-xs text-amber-800 dark:text-amber-200">
+  <div class="flex items-center gap-2">
+    <span class="text-base">⚠️</span>
+    <span class="font-bold">Check Storm Detected:</span>
+    <span>Lebih dari 25 check terjadwal dalam 1 menit ke depan (<%= metrics[:due_in_1m] %> due). Pertimbangkan evaluasi pemerataan waktu polling (<code class="font-mono text-[11px]">base/events.c</code>).</span>
+  </div>
+  <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 font-mono font-bold text-amber-900 dark:text-amber-100 uppercase tracking-wider text-[10px]">High Queue Density</span>
+</div>
