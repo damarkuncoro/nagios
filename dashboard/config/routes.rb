@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   root "hosts#index"
+  get "/up", to: "health#show", as: :rails_health_check
+  get "/healthz", to: "health#show", as: :health_check
   resources :hosts, only: [:index, :show] do
     member do
       post :recheck
