@@ -12,11 +12,28 @@
       <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Antrean eksekusi check dan analisis pemerataan waktu (extinfo.cgi?type=7)</p>
     </div>
 
-    <%= link_to queue_path(filter: @filter), class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer card-hover" do %>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-      <span>Refresh Queue</span>
-    <% end %>
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+        <span>Live 15s</span>
+      </span>
+      <%= link_to queue_path(filter: @filter), class: "inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition cursor-pointer card-hover" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <span>Refresh Queue</span>
+      <% end %>
+    </div>
   </div>
+
+  <% if @metrics[:check_storm_detected] %>
+    <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-xs text-amber-800 dark:text-amber-200">
+      <div class="flex items-center gap-2">
+        <span class="text-base">⚠️</span>
+        <span class="font-bold">Check Storm Detected:</span>
+        <span>Lebih dari 25 check terjadwal dalam 1 menit ke depan (<%= @metrics[:due_in_1m] %> due). Pertimbangkan evaluasi pemerataan waktu polling (<code class="font-mono text-[11px]">base/events.c</code>).</span>
+      </div>
+      <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 font-mono font-bold text-amber-900 dark:text-amber-100 uppercase tracking-wider text-[10px]">High Queue Density</span>
+    </div>
+  <% end %>
 
   <!-- Check Spread Distribution Metrics (base/events.c display_scheduling_info) -->
   <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
@@ -88,7 +105,7 @@
             <th class="py-4 px-6">
               <%= link_to queue_path(filter: @filter, sort_by: 'next_check', sort_order: (@sort_by == 'next_check' && @sort_order.to_s == 'asc') ? 'desc' : 'asc'), class: "hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center gap-1 font-bold" do %>
                 <span>Waktu Check Mendatang</span>
-                <span class="text-[10px]"><%= (@sort_by == 'next_check' && @sort_order.to_s == 'desc') ? '▼' : '▲' %></span>
+                <span class="text-[10px]"><%= (@sort_by == 'next_check' && @sort_order.to_s == 'desc') ? '▼' : '▲' if @sort_by == 'next_check' || @sort_by.blank? %></span>
               <% end %>
             </th>
             <th class="py-4 px-6">Event Type</th>
