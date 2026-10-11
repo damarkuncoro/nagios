@@ -20,6 +20,10 @@ module Statuses
         def admin?
           authorized_for_all_hosts && authorized_for_all_services && authorized_for_system_commands && !read_only
         end
+
+        def can_execute_commands?
+          authorized_for_system_commands && !read_only
+        end
       end
 
       class << self
