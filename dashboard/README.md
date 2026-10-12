@@ -131,20 +131,53 @@ Dashboard menyediakan antarmuka REST API lengkap dan telemetri OpenMetrics/Prome
 
 ## 🐳 Menjalankan dengan Docker Compose
 
-Pastikan Docker & Docker Compose aktif di komputer Anda:
+Tersedia dua mode deployment menggunakan Docker Compose:
 
+### Mode 1: 100% Pure-Ruby Stack (Tanpa Binary C)
+Jalankan Modern Dashboard bersama Pure-Ruby Engine:
 ```bash
-# Jalankan seluruh stack (Rails Modern Dashboard + Nagios Core)
-docker compose up -d
+docker compose up -d web ruby-engine
+```
 
-# Periksa status container
-docker compose ps
+### Mode 2: Hybrid Stack (Ruby Dashboard + Classic Nagios Core)
+Jalankan seluruh stack berdampingan (*side-by-side*):
+```bash
+docker compose up -d
 ```
 
 ### Akses Antarmuka:
 - **Modern Rails Dashboard**: [http://localhost:3000](http://localhost:3000)
 - **Prometheus Scrape Endpoint**: [http://localhost:3000/metrics](http://localhost:3000/metrics)
-- **Classic Nagios Core UI**: [http://localhost:8080/nagios/](http://localhost:8080/nagios/) (Login: `nagiosadmin` / `nagiosadmin`)
+- **Classic Nagios Core UI**: [http://localhost:8080/nagios/](http://localhost:8080/nagios/) (Hanya aktif di Mode 2, Login: `nagiosadmin` / `nagiosadmin`)
+
+---
+
+## 💎 Standalone Pure-Ruby Monitoring Engine (`bin/nagios_engine`)
+
+Selain berjalan bersama binary C klasik, sistem ini dapat berjalan **100% mandiri (Standalone Pure-Ruby Engine)** tanpa memerlukan binary C Nagios sama sekali:
+
+```bash
+cd dashboard
+
+# 1. Tampilkan opsi CLI
+bin/nagios_engine --help
+
+# 2. Verifikasi sintaks konfigurasi (.cfg)
+bin/nagios_engine -c config/nagios_sample.cfg -v
+
+# 3. Jalankan Monitoring Engine mandiri
+bin/nagios_engine -c config/nagios_sample.cfg -w 8
+```
+
+Fitur utama Ruby Engine:
+- **Priority Event Queue:** Interleaved scheduling host & service check interval.
+- **Worker Process Pool:** Non-blocking multi-thread execution dengan proteksi timeout watchdog.
+- **State Machine:** Transisi SOFT vs HARD state, `max_check_attempts`, dan notifikasi RECOVERY.
+- **Flapping Hysteresis:** Deteksi osilasi state via `FlapDetector`.
+- **Topologi Reachability:** Evaluasi otomatis status `DOWN` vs `UNREACHABLE` pada parent-child tree.
+- **Perfdata Parsing:** Ekstraksi metrik telemetri plugin untuk Prometheus scrape endpoint.
+- **Multi-channel Alerting:** Integrasi webhook Slack/Discord/Generic JSON via `NotificationService`.
+- **State Persistence:** Penulisan snapshot berkala ke `status.dat` dan penerimaan perintah interaktif via FIFO pipe `nagios.cmd`.
 
 ---
 

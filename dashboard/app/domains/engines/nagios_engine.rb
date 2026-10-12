@@ -63,59 +63,73 @@ module Engines
     end
 
     def fetch_program_status
-      info = http_get_json("#{NAGIOS_URL}?query=programstatus")&.dig('data', 'programstatus') || {}
+      info = http_get_json("#{NAGIOS_URL}?query=programstatus")&.dig('data', 'programstatus')
+      if info.nil? || info.empty?
+        snap = local_snapshot
+        info = snap&.programstatus || {}
+      end
       return nil if info.empty?
 
       Statuses::Entities::EngineStatus.new(
-        version: info['version'] || '4.x',
-        pid: info['nagios_pid'],
-        notifications_enabled: info['enable_notifications'],
-        service_checks_enabled: info['execute_service_checks'],
-        passive_service_checks_enabled: info['accept_passive_service_checks'],
-        event_handlers_enabled: info['enable_event_handlers'],
-        flap_detection_enabled: info['enable_flap_detection'],
-        perf_data_enabled: info['process_performance_data'],
-        program_start: info['program_start']
+        version: info['version'] || '4.5.14-Ruby',
+        pid: info['nagios_pid'] || Process.pid,
+        notifications_enabled: info['enable_notifications'] || 1,
+        service_checks_enabled: info['execute_service_checks'] || 1,
+        passive_service_checks_enabled: info['accept_passive_service_checks'] || 1,
+        event_handlers_enabled: info['enable_event_handlers'] || 1,
+        flap_detection_enabled: info['enable_flap_detection'] || 1,
+        perf_data_enabled: info['process_performance_data'] || 1,
+        program_start: info['program_start'] || Time.now.to_i
       ).to_h
     end
 
     def fetch_hosts
-      data = http_get_json("#{NAGIOS_URL}?query=hostlist&details=true")&.dig('data', 'hostlist') || {}
+      data = http_get_json("#{NAGIOS_URL}?query=hostlist&details=true")&.dig('data', 'hostlist')
+      if data.nil? || data.empty?
+        snap = local_snapshot
+        data = snap&.hosts || {}
+      end
+
       data.map do |name, info|
         h = info.is_a?(Hash) ? info : {}
-          Statuses::Entities::HostStatus.new(
-            name: name, status: h['status'] || info, plugin_output: h['plugin_output'],
+        Statuses::Entities::HostStatus.new(
+          name: name, status: h['current_state'] || h['status'] || info, plugin_output: h['plugin_output'],
+          last_check: h['last_check'], next_check: h['next_check'],
+          current_attempt: h['current_attempt'] || 1, max_attempts: h['max_attempts'] || 1,
+          acknowledged: h['problem_has_been_acknowledged'],
+          notifications_enabled: h['notifications_enabled'], checks_enabled: h['checks_enabled'],
+          is_flapping: h['is_flapping'],
+          flap_detection_enabled: h['flap_detection_enabled'] != false,
+          percent_state_change: h['percent_state_change'] || 0.0
+        )
+      end
+    end
+
+    def fetch_services
+      data = http_get_json("#{NAGIOS_URL}?query=servicelist&details=true")&.dig('data', 'servicelist')
+      if data.nil? || data.empty?
+        snap = local_snapshot
+        data = snap&.services || {}
+      end
+
+      list = []
+      data.each do |host_name, s_hash|
+        next unless s_hash.is_a?(Hash)
+        s_hash.each do |description, info|
+          h = info.is_a?(Hash) ? info : {}
+          list << Statuses::Entities::ServiceStatus.new(
+            host_name: host_name, description: description, status: h['current_state'] || h['status'] || info,
+            plugin_output: h['plugin_output'], perf_data: h['perf_data'],
             last_check: h['last_check'], next_check: h['next_check'],
-            current_attempt: h['current_attempt'] || 1, max_attempts: h['max_attempts'] || 1,
+            state_type: h['state_type'].to_i == 1 ? 'HARD' : 'SOFT',
+            attempts: "#{h['current_attempt'] || 1}/#{h['max_attempts'] || 1}",
+            latency: h['latency'] || 0.0, execution_time: h['execution_time'] || 0.0,
             acknowledged: h['problem_has_been_acknowledged'],
             notifications_enabled: h['notifications_enabled'], checks_enabled: h['checks_enabled'],
             is_flapping: h['is_flapping'],
             flap_detection_enabled: h['flap_detection_enabled'] != false,
             percent_state_change: h['percent_state_change'] || 0.0
           )
-        end
-      end
-
-      def fetch_services
-        data = http_get_json("#{NAGIOS_URL}?query=servicelist&details=true")&.dig('data', 'servicelist') || {}
-        list = []
-        data.each do |host_name, s_hash|
-          next unless s_hash.is_a?(Hash)
-          s_hash.each do |description, info|
-            h = info.is_a?(Hash) ? info : {}
-            list << Statuses::Entities::ServiceStatus.new(
-              host_name: host_name, description: description, status: h['status'] || info,
-              plugin_output: h['plugin_output'], perf_data: h['perf_data'],
-              last_check: h['last_check'], next_check: h['next_check'],
-              state_type: h['state_type'] == 1 ? 'HARD' : 'SOFT',
-              attempts: "#{h['current_attempt'] || 1}/#{h['max_attempts'] || 1}",
-              latency: h['latency'] || 0.0, execution_time: h['execution_time'] || 0.0,
-              acknowledged: h['problem_has_been_acknowledged'],
-              notifications_enabled: h['notifications_enabled'], checks_enabled: h['checks_enabled'],
-              is_flapping: h['is_flapping'],
-              flap_detection_enabled: h['flap_detection_enabled'] != false,
-              percent_state_change: h['percent_state_change'] || 0.0
-            )
         end
       end
       list
@@ -240,8 +254,21 @@ module Engines
       res = Net::HTTP.start(uri.hostname, uri.port, open_timeout: 3, read_timeout: 3) { |http| http.request(req) }
       res.is_a?(Net::HTTPSuccess) ? JSON.parse(res.body) : nil
     rescue StandardError => e
-      Rails.logger.error("HTTP GET error [#{url_string}]: #{e.message}")
+      Rails.logger.debug("HTTP GET fallback to local [#{url_string}]: #{e.message}")
       nil
+    end
+
+    def local_snapshot
+      candidates = [
+        ENV['NAGIOS_STATUS_FILE'],
+        '/nagios_var/status.dat',
+        Rails.root.join('tmp/status.dat').to_s
+      ].compact
+
+      path = candidates.find { |f| File.exist?(f) }
+      return nil unless path
+
+      Statuses::Services::StatusDataParser.parse_file(path)
     end
   end
 end

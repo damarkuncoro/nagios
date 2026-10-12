@@ -10,14 +10,13 @@ services:
       - RAILS_ENV=development
       - NAGIOS_URL=http://nagios/nagios/cgi-bin/statusjson.cgi
       - NAGIOS_CMD_PIPE=/nagios_var/rw/nagios.cmd
+      - NAGIOS_STATUS_FILE=/nagios_var/status.dat
       - NAGIOS_AUTH_USER=nagiosadmin
       - NAGIOS_AUTH_PASS=nagiosadmin
       - SECRET_KEY_BASE=development_secret_key_base_for_nagios_dashboard
     volumes:
       - ./dashboard:/app
       - nagios-var:/nagios_var
-    depends_on:
-      - nagios
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/healthz || exit 1"]
       interval: 15s
@@ -25,6 +24,19 @@ services:
       retries: 3
       start_period: 10s
 
+  # 100% Pure-Ruby Standalone Monitoring Engine
+  ruby-engine:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    command: bin/nagios_engine -c config/nagios_sample.cfg -s /nagios_var/status.dat -p /nagios_var/rw/nagios.cmd -w 8
+    environment:
+      - RAILS_ENV=development
+    volumes:
+      - ./dashboard:/app
+      - nagios-var:/nagios_var
+
+  # Classic C-based Nagios Core Container (Optional / Hybrid)
   nagios:
     image: jasonrivers/nagios:latest
     entrypoint: ["/bin/bash", "-c", "rm -f /run/nsca.pid /var/run/nsca.pid 2>/dev/null; exec /usr/local/bin/start_nagios"]

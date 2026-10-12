@@ -27,17 +27,17 @@
   <% if @program_status %>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+        <div class="absolute top-0 left-0 right-0 h-1 <%= @program_status[:version].to_s.include?('Ruby') ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500' : 'bg-gradient-to-r from-indigo-500 to-violet-500' %>"></div>
         <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Engine Version</p>
-        <p class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-2 font-mono">v<%= @program_status[:version] %></p>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Nagios Core C Engine</p>
+        <p class="text-3xl font-extrabold <%= @program_status[:version].to_s.include?('Ruby') ? 'text-violet-600 dark:text-violet-400' : 'text-indigo-600 dark:text-indigo-400' %> mt-2 font-mono">v<%= @program_status[:version] %></p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium"><%= @program_status[:version].to_s.include?('Ruby') ? '💎 Pure-Ruby Monitoring Engine' : 'Nagios Core C Engine' %></p>
       </div>
 
       <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
         <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Process PID</p>
         <p class="text-3xl font-extrabold text-slate-900 dark:text-white mt-2 font-mono">PID <%= @program_status[:pid] %></p>
-        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Running in Docker Container</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium"><%= @program_status[:version].to_s.include?('Ruby') ? 'Ruby Daemon Subsystem' : 'Running in Docker Container' %></p>
       </div>
 
       <div class="p-6 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">

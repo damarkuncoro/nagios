@@ -39,4 +39,12 @@ module NagiosHelper
 
     nil
   end
+
+  def engine_runtime_info
+    @engine_runtime_info ||= (Engines::NagiosEngine.program_status || {})
+  end
+
+  def pure_ruby_engine?
+    engine_runtime_info[:version].to_s.include?("Ruby")
+  end
 end
