@@ -91,4 +91,33 @@ namespace :nagios do
     Engines::NagiosEngine.submit_passive_check(host, service, code, output)
     puts "✅ Passive check berhasil disuntikkan ke command pipe: [#{host}#{service ? "/#{service}" : ""}] Code=#{code}"
   end
+
+  desc "Reload konfigurasi Pure-Ruby Engine tanpa mematikan proses (SIGHUP)"
+  task reload: :environment do
+    pid_files = ['/nagios_var/nagios.pid', Rails.root.join('tmp/nagios.pid').to_s]
+    pid = nil
+    pid_files.each do |f|
+      if File.exist?(f)
+        p_val = File.read(f).strip.to_i rescue nil
+        if p_val && p_val > 0
+          pid = p_val
+          break
+        end
+      end
+    end
+    pid ||= Engines::NagiosEngine.program_status&.dig(:pid)
+
+    if pid && pid > 0
+      begin
+        Process.kill('HUP', pid)
+        puts "✅ Signal SIGHUP berhasil dikirim ke Ruby Engine (PID: #{pid}). Konfigurasi di-reload tanpa restart!"
+      rescue Errno::ESRCH
+        puts "❌ Proses dengan PID #{pid} tidak aktif."
+      rescue => e
+        puts "❌ Gagal mengirim signal SIGHUP: #{e.message}"
+      end
+    else
+      puts "❌ PID daemon tidak ditemukan. Pastikan daemon sedang berjalan."
+    end
+  end
 end

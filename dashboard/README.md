@@ -180,11 +180,25 @@ Fitur utama Ruby Engine:
 - **State Persistence:** Penulisan snapshot berkala ke `status.dat` dan penerimaan perintah interaktif via FIFO pipe `nagios.cmd`.
 
 ### 🔌 Pure-Ruby Nagios Plugins (`libexec/`)
-Tersedia plugin bawaan standar Nagios berkinerja tinggi yang ditulis 100% dalam bahasa Ruby:
+Tersedia suite plugin bawaan standar Nagios berkinerja tinggi yang ditulis 100% dalam bahasa Ruby:
 - `libexec/check_http.rb`: Mengecek status code HTTP, latensi respons, dan timeout.
 - `libexec/check_disk.rb`: Mengecek penggunaan disk, sisa kuota, dan ambang batas warning/critical.
 - `libexec/check_tcp.rb`: Mengetes konektivitas TCP socket dan durasi sambungan port.
 - `libexec/check_memory.rb`: Membaca konsumsi RAM dan persentase penggunaan memori.
+- `libexec/check_load.rb`: Memonitor load average CPU (1m, 5m, 15m) dengan dukungan ambang batas multi-nilai.
+- `libexec/check_process.rb`: Memonitor kuantitas proses berjalan sistem berdasarkan nama perintah atau regex.
+- `libexec/check_dns.rb`: Mengetes resolusi hostname DNS, verifikasi record A/AAAA, dan latensi query ms via stdlib Resolv.
+- `libexec/check_ssl_cert.rb`: Mengetes validitas dan masa kedaluwarsa sertifikat TLS/SSL (SNI support, hari tersisa, handshake timing).
+
+### 🧩 Nagios Macro & Command Definition Resolver
+- Mengimplementasikan `Statuses::Services::MacroResolver` dengan dukungan ekspansi `$USER1$`, `$HOSTADDRESS$`, `$HOSTNAME$`, `$SERVICEDESC$`, dan parameter argumentasi bang (`!`) seperti `check_http!3000!/healthz`.
+- Mendukung pemetaan dinamis ke blok `define command { ... }` dari katalog objek Nagios.
+- Reaktif terhadap perintah interaktif dari UI/CLI melalui FIFO pipe `nagios.cmd` (`SCHEDULE_SVC_CHECK`, `PROCESS_SERVICE_CHECK_RESULT`, `ACKNOWLEDGE_SVC_PROBLEM`, `SCHEDULE_SVC_DOWNTIME`, `ADD_SVC_COMMENT`, dll).
+
+### 🔄 Zero-Downtime Hot Reload & Event Logging
+- **Asynchronous Hot Reload:** Daemon mendukung reload konfigurasi tanpa downtime via signal `SIGHUP` maupun perintah FIFO `RELOAD_CONFIG`. Antrean event dibersihkan secara aman, file objek `.cfg` di-parse ulang, dan pemeriksaan dijadwalkan ulang tanpa mematikan proses monitoring.
+- **Web UI & CLI Integration:** Tombol `🔄 Reload Config (SIGHUP)` terintegrasi langsung pada menu Process Info (`/process_info`) dan command-line via Rake task `bin/rails nagios:reload`.
+- **Standardized Event Logging:** Seluruh event transisi state, eksekusi eksternal, dan rotasi log dicatat ke `/nagios_var/nagios.log` sesuai format resmi Nagios Core, yang langsung dikonsumsi oleh view `/logs`, `/alerts`, dan `/notifications`.
 
 ---
 
@@ -196,7 +210,7 @@ Seluruh pengujian unit dan request spec dapat dijalankan di dalam container:
 docker compose exec web bundle exec rspec
 ```
 
-Seluruh test cases mencakup 349 pengujian (100% passed):
+Seluruh test cases mencakup 369 pengujian (**100% passed, 0 failures**):
 - Status API & Endpoints (`/api/v1/status`, `/objects`, `/archives`, `/problems`, `/queue`, `/availability`)
 - Prometheus Scraping Endpoint Specs (`/metrics` & `/perf_info.text`)
 - Multi-Channel Webhook Dispatcher (`Slack`, `Discord`, `Generic`) & Viability Suppression Specs

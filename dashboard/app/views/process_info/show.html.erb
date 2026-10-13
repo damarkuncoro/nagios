@@ -146,6 +146,10 @@
               Mulai Daemon
             <% end %>
           <% end %>
+
+          <%= button_to reload_process_info_engine_path, method: :post, class: "px-3.5 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs" do %>
+            <span>🔄 Reload Config (SIGHUP)</span>
+          <% end %>
         </div>
       </div>
 

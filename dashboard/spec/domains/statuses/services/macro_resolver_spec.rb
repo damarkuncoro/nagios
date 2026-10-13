@@ -68,4 +68,44 @@ RSpec.describe Statuses::Services::MacroResolver do
       expect(resolved).not_to include('$TIME$')
     end
   end
+
+  describe '.resolve_command' do
+    let(:catalog) do
+      double(
+        commands: {
+          'check_tcp_port' => {
+            'command_line' => '$USER1$/check_tcp.rb -H $HOSTADDRESS$ -p $ARG1$'
+          },
+          'check_http_custom' => {
+            'command_line' => '$USER1$/check_http.rb -u http://$HOSTADDRESS$:$ARG1$$ARG2$'
+          }
+        }
+      )
+    end
+
+    it 'resolves command from catalog with bang arguments and host address' do
+      host = { 'name' => 'web-server', 'address' => '10.0.0.2' }
+      resolved = described_class.resolve_command('check_tcp_port!8080', catalog: catalog, host: host)
+
+      expect(resolved).to include('-H 10.0.0.2 -p 8080')
+      expect(resolved).not_to include('$HOSTADDRESS$')
+      expect(resolved).not_to include('$ARG1$')
+    end
+
+    it 'resolves multiple bang arguments' do
+      host = { 'name' => 'api-server', 'address' => '127.0.0.1' }
+      resolved = described_class.resolve_command('check_http_custom!3000!/api/v1/health', catalog: catalog, host: host)
+
+      expect(resolved).to include('http://127.0.0.1:3000/api/v1/health')
+      expect(resolved).not_to include('$ARG1$')
+      expect(resolved).not_to include('$ARG2$')
+    end
+
+    it 'resolves raw commands directly when not found in catalog' do
+      host = { 'name' => 'db', 'address' => '192.168.1.50' }
+      resolved = described_class.resolve_command('/custom/ping -H $HOSTADDRESS$', catalog: catalog, host: host)
+
+      expect(resolved).to eq('/custom/ping -H 192.168.1.50')
+    end
+  end
 end

@@ -167,5 +167,10 @@ module Engines
         write_cmd("[#{timestamp}] PROCESS_HOST_CHECK_RESULT;#{host_name};#{status_code};#{output}\n")
       end
     end
+
+    def reload_config
+      timestamp = Time.now.to_i
+      write_cmd("[#{timestamp}] RELOAD_CONFIG\n")
+    end
   end
 end

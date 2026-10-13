@@ -39,6 +39,15 @@ class ProcessInfoController < ApplicationController
     redirect_to process_info_path, notice: msg
   end
 
+  def reload_engine
+    ok = Engines::NagiosEngine.reload_config
+    if ok
+      redirect_to process_info_path, notice: "Perintah RELOAD_CONFIG berhasil dikirim ke Ruby Engine via FIFO pipe! Konfigurasi objek di-reload secara zero-downtime."
+    else
+      redirect_to process_info_path, alert: "Gagal mengirimkan perintah reload ke command pipe (daemon mungkin offline)."
+    end
+  end
+
   def test_tcp_probe
     host = params[:host].presence || '127.0.0.1'
     port = params[:port].presence || 80

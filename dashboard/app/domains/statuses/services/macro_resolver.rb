@@ -30,6 +30,25 @@ module Statuses
           @macros = load_resource_file
         end
 
+        # Resolves command string with command definitions lookup and bang arguments (e.g., check_http!80!/health)
+        def resolve_command(command_spec, catalog: nil, host: nil, service: nil)
+          return '' if command_spec.nil? || command_spec.to_s.strip.empty?
+
+          raw = command_spec.to_s.strip
+          parts = raw.split('!')
+          cmd_name = parts.first.to_s.strip
+          bang_args = parts.size > 1 ? parts[1..] : []
+
+          cmd_def = catalog&.commands&.[](cmd_name) if catalog&.respond_to?(:commands)
+          template = if cmd_def && (cmd_def['command_line'] || cmd_def[:command_line])
+                       cmd_def['command_line'] || cmd_def[:command_line]
+                     else
+                       bang_args.empty? ? raw : cmd_name
+                     end
+
+          resolve(template, host: host, service: service, bang_args: bang_args)
+        end
+
         # Resolves template string replacing Nagios macros (common/macros.c: process_macros)
         def resolve(template, host: nil, service: nil, bang_args: [], notification: {}, contact: {})
           return '' if template.nil? || template.to_s.strip.empty?
@@ -145,7 +164,18 @@ module Statuses
         end
 
         def load_resource_file
-          macro_map = { '$USER1$' => DEFAULT_PLUGINS_PATH }
+          detected_path = if ENV['NAGIOS_PLUGINS_PATH'].to_s.strip.length > 0
+                            ENV['NAGIOS_PLUGINS_PATH']
+                          elsif File.directory?('/app/libexec')
+                            '/app/libexec'
+                          elsif defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present? && File.directory?(Rails.root.join('libexec'))
+                            Rails.root.join('libexec').to_s
+                          elsif File.directory?(File.expand_path('../../../../libexec', __dir__))
+                            File.expand_path('../../../../libexec', __dir__)
+                          else
+                            DEFAULT_PLUGINS_PATH
+                          end
+          macro_map = { '$USER1$' => detected_path }
 
           file_path = [DEFAULT_RESOURCE_PATH, '/opt/nagios/etc/resource.cfg'].find { |p| File.exist?(p) }
           return macro_map unless file_path

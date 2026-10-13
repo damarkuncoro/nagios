@@ -60,6 +60,7 @@ module Engines
       def toggle_host_flap_detection(h, e); new.toggle_host_flap_detection(h, e); end
       def toggle_service_flap_detection(h, s, e); new.toggle_service_flap_detection(h, s, e); end
       def submit_passive_check(h, s, code, out); new.submit_passive_check(h, s, code, out); end
+      def reload_config; new.reload_config; end
     end
 
     def fetch_program_status
@@ -174,7 +175,17 @@ module Engines
     end
 
     def fetch_commands
-      data = http_get_json("#{NAGIOS_OBJECT_URL}?query=commandlist&details=true")&.dig('data', 'commandlist') || {}
+      data = http_get_json("#{NAGIOS_OBJECT_URL}?query=commandlist&details=true")&.dig('data', 'commandlist')
+      if data.nil? || (data.respond_to?(:empty?) && data.empty?)
+        cfg_path = ENV.fetch('NAGIOS_CONFIG_FILE', Rails.root.join('config/nagios_sample.cfg').to_s)
+        catalog = Statuses::Services::ObjectConfigParser.parse_file(cfg_path) rescue nil
+        if catalog&.commands&.any?
+          return catalog.commands.map do |name, info|
+            { 'name' => name, 'command_line' => info['command_line'] || '' }
+          end
+        end
+      end
+
       if data.is_a?(Hash)
         data.map { |name, info| info.is_a?(Hash) ? info : { 'name' => name, 'command_line' => '' } }
       elsif data.is_a?(Array)
@@ -222,6 +233,47 @@ module Engines
 
     def fetch_alerts(duration_seconds: 86400)
       list = http_get_json("#{NAGIOS_ARCHIVE_URL}?query=alertlist&starttime=-#{duration_seconds}&endtime=0")&.dig('data', 'alertlist') || []
+      if list.empty?
+        log_path = [
+          ENV['NAGIOS_LOG_FILE'],
+          '/nagios_var/nagios.log',
+          Rails.root.join('tmp/nagios.log').to_s
+        ].compact.find { |f| File.exist?(f) }
+
+        if log_path && File.exist?(log_path)
+          now_ts = Time.now.to_i
+          cutoff = now_ts - duration_seconds
+          parsed = []
+          File.foreach(log_path) do |line|
+            if line =~ /^\[(\d+)\]\s+(SERVICE|HOST) ALERT:\s+(.+)$/
+              ts = Regexp.last_match(1).to_i
+              next if ts < cutoff
+              type = Regexp.last_match(2)
+              tokens = Regexp.last_match(3).split(';')
+              if type == 'SERVICE' && tokens.size >= 5
+                parsed << {
+                  timestamp: Time.at(ts),
+                  host_name: tokens[0],
+                  service_description: tokens[1],
+                  state: tokens[2],
+                  plugin_output: tokens[4..].join(';')
+                }
+              elsif type == 'HOST' && tokens.size >= 4
+                parsed << {
+                  timestamp: Time.at(ts),
+                  host_name: tokens[0],
+                  service_description: nil,
+                  state: tokens[1],
+                  plugin_output: tokens[3..].join(';')
+                }
+              end
+            end
+          end
+          return parsed.reverse
+        end
+        return []
+      end
+
       list.map do |item|
         state_str = case item['state']
                     when 0 then 'OK'
@@ -243,6 +295,22 @@ module Engines
     def fetch_downtimes
       data = http_get_json("#{NAGIOS_URL}?query=downtimelist&details=true")&.dig('data', 'downtimelist') || {}
       list = []
+      if data.empty?
+        snap = local_snapshot
+        (snap&.downtimes || []).each do |dt|
+          list << {
+            id: dt['downtime_id'] || dt[:downtime_id],
+            host_name: dt['host_name'] || dt[:host_name],
+            service_description: dt['service_description'] || dt[:service_description],
+            author: dt['author'] || dt[:author],
+            comment: dt['comment'] || dt[:comment],
+            start_time: Time.at((dt['start_time'] || dt[:start_time]).to_i),
+            end_time: Time.at((dt['end_time'] || dt[:end_time]).to_i)
+          }
+        end
+        return list
+      end
+
       data.each do |id, info|
         next unless info.is_a?(Hash)
         list << {
@@ -257,6 +325,21 @@ module Engines
     def fetch_comments
       data = http_get_json("#{NAGIOS_URL}?query=commentlist&details=true")&.dig('data', 'commentlist') || {}
       list = []
+      if data.empty?
+        snap = local_snapshot
+        (snap&.comments || []).each do |cm|
+          list << {
+            id: cm['comment_id'] || cm[:comment_id],
+            host_name: cm['host_name'] || cm[:host_name],
+            service_description: cm['service_description'] || cm[:service_description],
+            author: cm['author'] || cm[:author],
+            comment: cm['comment_data'] || cm['comment'] || cm[:comment],
+            entry_time: Time.at((cm['entry_time'] || cm[:entry_time]).to_i)
+          }
+        end
+        return list
+      end
+
       data.each do |id, info|
         next unless info.is_a?(Hash)
         list << {

@@ -80,16 +80,21 @@ module Statuses
           false
         end
 
+        # Formats and appends general system event log
+        def log_system_event(message, timestamp: nil, log_path: DEFAULT_LOG_PATH)
+          line = format_entry(message, timestamp: timestamp)
+          append_log(line, log_path)
+          line
+        end
+
         # Formats standard line with [epoch_timestamp] prefix
         def format_entry(message, timestamp: nil)
           ts = timestamp ? timestamp.to_i : (Time.respond_to?(:current) ? Time.current : Time.now).to_i
           "[#{ts}] #{message.to_s.strip}"
         end
 
-        private
-
         def append_log(line, path)
-          return if path.blank?
+          return if path.to_s.strip.empty?
 
           dir = File.dirname(path)
           FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
@@ -98,7 +103,7 @@ module Statuses
             f.puts(line)
           end
         rescue StandardError => e
-          Rails.logger.error("[DaemonLogger] Gagal menulis log: #{e.message}")
+          Rails.logger.error("[DaemonLogger] Gagal menulis log: #{e.message}") if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
         end
       end
     end

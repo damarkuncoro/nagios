@@ -9,7 +9,9 @@ module Engines
       res = Net::HTTP.start(uri.hostname, uri.port, open_timeout: 3, read_timeout: 3) { |http| http.request(req) }
       return [] unless res.is_a?(Net::HTTPSuccess)
 
-      list = JSON.parse(res.body).dig('data', 'notificationlist') || []
+      list = (JSON.parse(res.body).dig('data', 'notificationlist') rescue nil) || []
+      return parse_local_notifications(duration_seconds) if list.empty?
+
       list.map do |notif|
         {
           timestamp: Time.at((notif['timestamp'] || 0) / 1000),
@@ -22,7 +24,56 @@ module Engines
         }
       end
     rescue StandardError => e
-      Rails.logger.error("Gagal fetch notificationlist: #{e.message}")
+      Rails.logger.debug("CGI notificationlist fallback: #{e.message}")
+      parse_local_notifications(duration_seconds)
+    end
+
+    def parse_local_notifications(duration_seconds = 86400)
+      log_path = [
+        ENV['NAGIOS_LOG_FILE'],
+        '/nagios_var/nagios.log',
+        Rails.root.join('tmp/nagios.log').to_s
+      ].compact.find { |f| File.exist?(f) }
+
+      return [] unless log_path && File.exist?(log_path)
+
+      now_ts = Time.now.to_i
+      cutoff = now_ts - duration_seconds
+      parsed = []
+
+      File.foreach(log_path) do |line|
+        if line =~ /^\[(\d+)\]\s+(SERVICE|HOST) NOTIFICATION:\s+(.+)$/
+          ts = Regexp.last_match(1).to_i
+          next if ts < cutoff
+          type = Regexp.last_match(2)
+          tokens = Regexp.last_match(3).split(';')
+
+          if type == 'SERVICE' && tokens.size >= 5
+            parsed << {
+              timestamp: Time.at(ts),
+              contact_name: tokens[0],
+              host_name: tokens[1],
+              service_desc: tokens[2],
+              notification_type: tokens[3],
+              state: tokens[3],
+              output: tokens[4..].join(';')
+            }
+          elsif type == 'HOST' && tokens.size >= 4
+            parsed << {
+              timestamp: Time.at(ts),
+              contact_name: tokens[0],
+              host_name: tokens[1],
+              service_desc: nil,
+              notification_type: tokens[2],
+              state: tokens[2],
+              output: tokens[3..].join(';')
+            }
+          end
+        end
+      end
+
+      parsed.reverse
+    rescue StandardError
       []
     end
 

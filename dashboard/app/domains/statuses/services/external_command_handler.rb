@@ -58,7 +58,8 @@ module Statuses
         'ADD_HOST_COMMENT' => :add_host_comment,
         'DEL_HOST_COMMENT' => :del_host_comment,
         'SAVE_STATE_INFORMATION' => :save_state_information,
-        'READ_STATE_INFORMATION' => :read_state_information
+        'READ_STATE_INFORMATION' => :read_state_information,
+        'RELOAD_CONFIG' => :reload_config
       }.freeze
 
       class << self
@@ -488,6 +489,10 @@ module Statuses
 
       def read_state_information(entry_time, args)
         success_result('READ_STATE_INFORMATION', entry_time, args, 'Loaded runtime retention state')
+      end
+
+      def reload_config(entry_time, args)
+        success_result('RELOAD_CONFIG', entry_time, args, 'Object configuration reload requested')
       end
 
       # Helpers

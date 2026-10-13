@@ -12,7 +12,8 @@ RSpec.describe 'NagiosPureRubyEngine' do
       catalog = Statuses::Services::ObjectConfigParser.parse(sample_cfg)
 
       expect(catalog.hosts.keys).to include('localhost', 'gateway')
-      expect(catalog.services.size).to eq(4)
+      expect(catalog.services.size).to eq(7)
+      expect(catalog.commands.size).to eq(7)
       expect(catalog.hosts['gateway']['parents']).to eq('localhost')
     end
   end
