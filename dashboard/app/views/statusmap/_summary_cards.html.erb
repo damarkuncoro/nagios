@@ -1,0 +1,43 @@
+<!-- Summary Cards Bar -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <div class="p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Root Master Engine</p>
+    <p class="text-xl font-black text-slate-900 dark:text-white mt-1.5 font-mono truncate"><%= @map[:root][:name] %></p>
+    <p class="text-xs text-indigo-500 dark:text-indigo-400 mt-1 font-medium">Core Coordinator Tier 0</p>
+  </div>
+
+  <div class="p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Host Nodes</p>
+    <p class="text-xl font-black text-slate-900 dark:text-white mt-1.5 font-mono">
+      <%= @map[:nodes].size %> <span class="text-sm font-normal text-slate-400">Nodes</span>
+    </p>
+    <% up_count = @map[:nodes].count { |n| n[:status] == 'UP' } %>
+    <p class="text-xs text-emerald-500 dark:text-emerald-400 mt-1 font-semibold">
+      <%= up_count %> Online (<%= (@map[:nodes].any? ? (up_count.to_f / @map[:nodes].size * 100).round : 100) %>%)
+    </p>
+  </div>
+
+  <div class="p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-blue-500"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Topology Depth & Links</p>
+    <p class="text-xl font-black text-slate-900 dark:text-white mt-1.5 font-mono">
+      Tier <%= @map[:max_depth] || 1 %> <span class="text-sm font-normal text-slate-400">(<%= @map[:links]&.size || 0 %> Links)</span>
+    </p>
+    <p class="text-xs text-sky-500 dark:text-sky-400 mt-1 font-medium">DAG Hierarchy Path</p>
+  </div>
+
+  <div class="p-5 glass-panel rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs card-hover relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-400 to-emerald-500"></div>
+    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Sub-Services Health</p>
+    <% total_svc = @map[:nodes].sum { |n| n[:total_services] } %>
+    <% ok_svc = @map[:nodes].sum { |n| n[:ok_services] } %>
+    <p class="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1.5 font-mono">
+      <%= ok_svc %> / <%= total_svc %> <span class="text-sm font-normal text-slate-400">OK</span>
+    </p>
+    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono">
+      <%= total_svc > 0 ? ((ok_svc.to_f / total_svc) * 100).round(1) : 100 %>% Service Availability
+    </p>
+  </div>
+</div>

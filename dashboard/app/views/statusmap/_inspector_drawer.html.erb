@@ -1,0 +1,204 @@
+<!-- SLIDE-OVER NODE INSPECTOR DRAWER -->
+<div id="nodeInspectorBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 transition-opacity opacity-0 pointer-events-none" onclick="closeNodeInspector()"></div>
+<div id="nodeInspectorDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+  <!-- Drawer Header -->
+  <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/60">
+    <div class="flex items-center gap-3">
+      <div id="drawerIcon" class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg font-bold border border-indigo-500/20">
+        🖥️
+      </div>
+      <div>
+        <h3 id="drawerTitle" class="font-bold text-base text-slate-900 dark:text-white font-mono">Host Inspector</h3>
+        <p id="drawerSubtitle" class="text-xs text-slate-500 dark:text-slate-400 font-mono">127.0.0.1</p>
+      </div>
+    </div>
+    <button type="button" onclick="closeNodeInspector()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+  </div>
+
+  <!-- Drawer Content Scrollable Area -->
+  <div class="flex-1 overflow-y-auto p-6 space-y-6">
+    <!-- Status & Health Pill Bar -->
+    <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Node Status</p>
+        <div id="drawerStatusBadge" class="mt-1 inline-flex items-center gap-1.5 text-xs font-bold font-mono">
+          ● UP
+        </div>
+      </div>
+      <div class="text-right">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Topology Tier</p>
+        <p id="drawerTier" class="text-xs font-bold font-mono text-slate-700 dark:text-slate-300 mt-1">Tier 1</p>
+      </div>
+    </div>
+
+    <!-- Plugin Output -->
+    <div class="space-y-1.5">
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Plugin Check Output</p>
+      <p id="drawerPluginOutput" class="text-xs font-mono p-3 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 break-words">
+        OK - 127.0.0.1: rta 0.040ms, lost 0%
+      </p>
+    </div>
+
+    <!-- Hierarchy Relationship -->
+    <div class="space-y-2">
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Topology Dependencies</p>
+      <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-slate-400 block text-[10px] uppercase">Parent Gateway</span>
+          <span id="drawerParent" class="font-bold text-slate-700 dark:text-slate-300 mt-0.5 block truncate">Core Gateway</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
+          <span class="text-slate-400 block text-[10px] uppercase">Child Dependents</span>
+          <span id="drawerChildrenCount" class="font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">0 Nodes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monitored Services List -->
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Monitored Services</p>
+        <span id="drawerServicesCount" class="text-xs font-mono text-slate-400">0 Services</span>
+      </div>
+      <div id="drawerServicesList" class="space-y-2">
+        <!-- Dynamic Services Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer Footer Actions -->
+  <div class="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between gap-3">
+    <a id="drawerFullDetailLink" href="#" class="flex-1 py-2.5 px-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-xl text-center transition">
+      Full Host Page ↗
+    </a>
+    <form id="drawerRecheckForm" method="post" action="#" class="flex-1">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+      <button type="submit" class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-semibold rounded-xl text-center transition shadow-xs cursor-pointer">
+        Re-check Host
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openNodeInspector(nodeIndex) {
+    const drawer = document.getElementById('nodeInspectorDrawer');
+    const backdrop = document.getElementById('nodeInspectorBackdrop');
+
+    let node;
+    if (nodeIndex === 'root') {
+      node = {
+        name: topologyData.root.name,
+        alias: 'Nagios Core Master Coordinator',
+        address: '127.0.0.1 (Local Daemon)',
+        status: topologyData.root.status || 'UP',
+        tier: 0,
+        parent: 'None (Root Master Engine)',
+        children: topologyData.nodes.map(n => n.name),
+        plugin_output: 'Nagios Core Process Coordinator Active & Healthy',
+        services: []
+      };
+    } else if (nodeIndex === 'gateway') {
+      node = {
+        name: 'Core Gateway Switch',
+        alias: 'Local Gateway / Switch Layer',
+        address: '127.0.0.1 (Loopback Gateway)',
+        status: 'UP',
+        tier: 1,
+        parent: topologyData.root.name,
+        children: topologyData.nodes.map(n => n.name),
+        plugin_output: 'Network gateway link active with 0% packet loss',
+        services: []
+      };
+    } else {
+      node = topologyData.nodes[nodeIndex];
+    }
+
+    if (!node) return;
+
+    document.getElementById('drawerTitle').textContent = node.name;
+    document.getElementById('drawerSubtitle').textContent = node.address || node.alias || '-';
+
+    const statusBadge = document.getElementById('drawerStatusBadge');
+    if (node.status === 'UP') {
+      statusBadge.className = "mt-1 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30";
+      statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> UP';
+    } else {
+      statusBadge.className = "mt-1 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/30";
+      statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> ' + node.status;
+    }
+
+    document.getElementById('drawerTier').textContent = `Tier ${node.tier !== undefined ? node.tier : 1}`;
+    document.getElementById('drawerPluginOutput').textContent = node.plugin_output || '-';
+    document.getElementById('drawerParent').textContent = node.parent || 'Core Gateway';
+    document.getElementById('drawerChildrenCount').textContent = `${(node.children || []).length} Nodes`;
+
+    // Services list injection
+    const servicesList = document.getElementById('drawerServicesList');
+    const servicesCount = document.getElementById('drawerServicesCount');
+    servicesList.innerHTML = '';
+
+    const services = node.services || [];
+    servicesCount.textContent = `${services.length} Services`;
+
+    if (services.length === 0) {
+      servicesList.innerHTML = '<p class="text-xs text-slate-400 font-mono italic p-3 text-center bg-slate-50 dark:bg-slate-800/40 rounded-xl">Tidak ada service spesifik.</p>';
+    } else {
+      services.forEach(svc => {
+        const item = document.createElement('div');
+        item.className = "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between text-xs";
+        
+        const isOk = svc.status === 'OK';
+        const badgeClass = isOk 
+          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+          : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30";
+
+        item.innerHTML = `
+          <div class="min-w-0 pr-2">
+            <p class="font-bold text-slate-800 dark:text-slate-200 font-mono truncate">${svc.description}</p>
+            <p class="text-[11px] text-slate-400 truncate mt-0.5 font-mono">${svc.plugin_output || '-'}</p>
+          </div>
+          <span class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold border font-mono ${badgeClass}">
+            ${svc.status}
+          </span>
+        `;
+        servicesList.appendChild(item);
+      });
+    }
+
+    // Action links
+    if (nodeIndex === 'root' || nodeIndex === 'gateway') {
+      document.getElementById('drawerFullDetailLink').href = '/process_info';
+      document.getElementById('drawerFullDetailLink').textContent = 'Process Info ↗';
+      document.getElementById('drawerRecheckForm').action = '/process_info';
+    } else {
+      document.getElementById('drawerFullDetailLink').href = `/hosts/${encodeURIComponent(node.name)}`;
+      document.getElementById('drawerFullDetailLink').textContent = 'Full Host Page ↗';
+      document.getElementById('drawerRecheckForm').action = `/hosts/${encodeURIComponent(node.name)}/recheck`;
+    }
+
+    // Show Drawer
+    drawer.classList.remove('translate-x-full');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100');
+  }
+
+  function closeNodeInspector() {
+    const drawer = document.getElementById('nodeInspectorDrawer');
+    const backdrop = document.getElementById('nodeInspectorBackdrop');
+    if (drawer && backdrop) {
+      drawer.classList.add('translate-x-full');
+      backdrop.classList.remove('opacity-100');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+    }
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeNodeInspector();
+    }
+  });
+</script>

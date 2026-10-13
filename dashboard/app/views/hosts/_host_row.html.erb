@@ -1,7 +1,17 @@
 <tr id="host_<%= host[:name].parameterize %>" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
   <td class="py-4 px-6 font-semibold text-slate-800 dark:text-slate-200">
-    <div class="flex items-center gap-2">
-      <%= link_to host[:name], host_path(host[:name]), class: "text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline transition" %>
+    <div class="flex items-center gap-2 flex-wrap">
+      <%= link_to host[:name], host_path(host[:name]), class: "text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:underline transition font-mono" %>
+      <% if host[:address].present? %>
+        <span class="text-[11px] text-slate-400 dark:text-slate-500 font-mono font-normal">
+          (<%= host[:address] %>)
+        </span>
+      <% end %>
+      <% if host[:parents].present? && host[:parents] != '-' %>
+        <span class="text-[10px] px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 font-mono font-normal" title="Uplink Parent Node">
+          ↳ <%= host[:parents] %>
+        </span>
+      <% end %>
       <% if host[:notifications_enabled] == false %>
         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20" title="Notifikasi host dimatikan">
           🔕 Muted

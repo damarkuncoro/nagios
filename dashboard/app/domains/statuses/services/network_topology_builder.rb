@@ -74,9 +74,9 @@ module Statuses
 
           nodes_map[h_name] = TopologyNode.new(
             name: h_name,
-            alias: get_attr(host, :alias) || h_name,
+            alias: get_attr(cfg, :alias) || get_attr(host, :alias) || h_name,
             status: (get_attr(host, :status) || 'UP').to_s.upcase,
-            address: get_attr(host, :address) || '127.0.0.1',
+            address: get_attr(cfg, :address) || get_attr(host, :address) || '127.0.0.1',
             parents: parents,
             children: [],
             tier: 1,

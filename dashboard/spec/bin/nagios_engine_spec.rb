@@ -11,10 +11,13 @@ RSpec.describe 'NagiosPureRubyEngine' do
     it 'successfully parses sample configuration with hosts and services' do
       catalog = Statuses::Services::ObjectConfigParser.parse(sample_cfg)
 
-      expect(catalog.hosts.keys).to include('localhost', 'gateway')
-      expect(catalog.services.size).to eq(7)
-      expect(catalog.commands.size).to eq(7)
+      expect(catalog.hosts.keys).to include('localhost', 'gateway', 'mikrotik_core_router', 'ruijie_reyee_router')
+      expect(catalog.services.size).to eq(13)
+      expect(catalog.commands.size).to eq(10)
+      expect(catalog.commands.keys).to include('check_ping', 'check_snmp', 'check_snmp_interface')
       expect(catalog.hosts['gateway']['parents']).to eq('localhost')
+      expect(catalog.hosts['mikrotik_core_router']['parents']).to eq('gateway')
+      expect(catalog.hosts['ruijie_reyee_router']['parents']).to eq('mikrotik_core_router')
     end
   end
 

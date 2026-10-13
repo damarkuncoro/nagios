@@ -50,22 +50,33 @@
   </div>
 
   <!-- Host Overview Card -->
-  <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 grid grid-cols-1 md:grid-cols-3 gap-6 card-hover relative overflow-hidden">
+  <div class="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs p-6 grid grid-cols-1 md:grid-cols-4 gap-6 card-hover relative overflow-hidden">
     <div class="absolute top-0 left-0 right-0 h-1 <%= @host[:status] == 'UP' ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-rose-600 to-rose-400' %>"></div>
     <div>
+      <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Jaringan & Alamat IP</p>
+      <p class="text-base font-extrabold text-slate-900 dark:text-white mt-1.5 font-mono"><%= @host[:address] %></p>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate" title="<%= @host[:alias] %>"><%= @host[:alias] %></p>
+      <% if @host[:parents].present? && @host[:parents] != '-' %>
+        <p class="text-[11px] text-indigo-600 dark:text-indigo-400 mt-1 font-mono">
+          Parent: <%= link_to @host[:parents], host_path(@host[:parents]), class: "hover:underline font-semibold" %>
+        </p>
+      <% end %>
+    </div>
+
+    <div>
       <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Plugin Output</p>
-      <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-2 font-mono text-xs bg-slate-50/70 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/60"><%= @host[:plugin_output].presence || "-" %></p>
+      <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1.5 font-mono text-xs bg-slate-50/70 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/60 truncate" title="<%= @host[:plugin_output] %>"><%= @host[:plugin_output].presence || "-" %></p>
     </div>
 
     <div>
       <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Terakhir Dicek</p>
-      <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-2 font-mono"><%= @host[:last_check] ? @host[:last_check].strftime("%H:%M:%S (%d %b %Y)") : "-" %></p>
-      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono">Interval check: <%= @host[:check_interval] || 5 %> min</p>
+      <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1.5 font-mono"><%= @host[:last_check] ? @host[:last_check].strftime("%H:%M:%S (%d %b %Y)") : "-" %></p>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono">Interval check: <%= @host[:check_interval] || 10 %>s</p>
     </div>
 
     <div>
       <p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Check Attempt</p>
-      <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 mt-2 font-mono text-base"><%= @host[:current_attempt] %> / <%= @host[:max_attempts] %></p>
+      <p class="text-sm font-extrabold text-slate-800 dark:text-slate-200 mt-1.5 font-mono text-base"><%= @host[:current_attempt] || 1 %> / <%= @host[:max_attempts] || 3 %></p>
       <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">State type: <%= @host[:state_type] || 'HARD' %></p>
     </div>
   </div>

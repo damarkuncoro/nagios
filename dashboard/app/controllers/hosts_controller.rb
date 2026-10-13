@@ -32,7 +32,12 @@ class HostsController < ApplicationController
   def show
     host_name = params[:id]
     hosts = Engines::NagiosEngine.hosts.map(&:to_h)
+    host_objs = Engines::NagiosEngine.host_objects rescue {}
+    cfg = host_objs[host_name] || host_objs[host_name.to_s] || {}
     @host = hosts.find { |h| h[:name] == host_name } || { name: host_name, status: 'UP', plugin_output: 'Host active' }
+    @host[:address] = cfg['address'] || cfg[:address] || @host[:address] || '127.0.0.1'
+    @host[:alias] = cfg['alias'] || cfg[:alias] || @host[:alias] || host_name
+    @host[:parents] = cfg['parents'] || cfg[:parents] || '-'
 
     all_services = Engines::NagiosEngine.services.map(&:to_h)
     @services = all_services.select { |s| s[:host_name] == host_name }

@@ -1,0 +1,99 @@
+<!-- Toolbar Controls -->
+<div class="px-6 py-4 bg-slate-50/70 dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-800/80 flex flex-wrap justify-between items-center gap-4">
+  <div class="flex items-center flex-wrap gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50"></span>
+      <h2 class="text-sm font-bold text-slate-800 dark:text-slate-100">Live Hierarchy Graph</h2>
+    </div>
+
+    <!-- Layout Mode Switcher -->
+    <div class="flex items-center bg-slate-200/70 dark:bg-slate-800/80 p-0.5 rounded-xl text-xs font-semibold">
+      <button type="button" id="layoutTreeBtn" onclick="setLayoutMode('tree')" class="px-3 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition flex items-center gap-1.5 cursor-pointer">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        <span>Tree</span>
+      </button>
+      <button type="button" id="layoutRadialBtn" onclick="setLayoutMode('radial')" class="px-3 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1.5 cursor-pointer">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span>Radial</span>
+      </button>
+    </div>
+
+    <!-- Tier Filter Dropdown -->
+    <div class="flex items-center gap-1.5">
+      <label for="tierFilterSelect" class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 font-mono">Tier:</label>
+      <select id="tierFilterSelect"
+              onchange="filterTier(this.value)"
+              class="px-2.5 py-1 text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-mono cursor-pointer transition">
+        <option value="ALL">All Layers (Tiers 0-<%= @map[:max_depth] || 4 %>)</option>
+        <option value="0">Tier 0 - Master Coordinator</option>
+        <% (1..(@map[:max_depth] || 1)).each do |tier_level| %>
+          <% tier_desc = case tier_level
+                         when 1 then "Engine Monitoring"
+                         when 2 then "Internal Gateway"
+                         when 3 then "Core Physical Router"
+                         when 4 then "Edge Wireless APs"
+                         else "Layer #{tier_level}"
+                         end %>
+          <option value="<%= tier_level %>">Tier <%= tier_level %> - <%= tier_desc %></option>
+        <% end %>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex items-center flex-wrap gap-3">
+    <!-- Search filter -->
+    <div class="relative flex items-center">
+      <input type="text"
+             id="topologySearchInput"
+             placeholder="Cari host atau IP..."
+             onkeyup="onSearchInput(this.value)"
+             class="px-3 py-1.5 pl-8 pr-7 text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/40 w-44 transition">
+      <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <button type="button"
+              id="clearSearchBtn"
+              onclick="clearSearchFilter()"
+              class="hidden absolute right-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold cursor-pointer"
+              title="Clear search">✕</button>
+    </div>
+
+    <!-- Filter Status Switcher with Live Counts -->
+    <% up_count = @map[:nodes].count { |n| n[:status] == 'UP' } %>
+    <% down_count = @map[:nodes].count { |n| n[:status] == 'DOWN' } %>
+    <% unreachable_count = @map[:nodes].count { |n| n[:status] == 'UNREACHABLE' } %>
+    <div class="flex items-center bg-slate-200/60 dark:bg-slate-800/60 p-0.5 rounded-xl text-xs font-semibold font-mono">
+      <button type="button" onclick="filterStatus('ALL')" id="filterBtnAll" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-2xs transition cursor-pointer flex items-center gap-1">
+        <span>All</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200"><%= @map[:nodes].size %></span>
+      </button>
+      <button type="button" onclick="filterStatus('UP')" id="filterBtnUp" class="px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer flex items-center gap-1">
+        <span>UP</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold"><%= up_count %></span>
+      </button>
+      <button type="button" onclick="filterStatus('DOWN')" id="filterBtnDown" class="px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer flex items-center gap-1">
+        <span>DOWN</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded-full <%= down_count > 0 ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold' : 'bg-slate-200 dark:bg-slate-700 text-slate-400' %>"><%= down_count %></span>
+      </button>
+      <% if unreachable_count > 0 %>
+        <button type="button" onclick="filterStatus('UNREACHABLE')" id="filterBtnUnreachable" class="px-2.5 py-1 rounded-lg text-amber-500 hover:text-amber-600 transition cursor-pointer flex items-center gap-1">
+          <span>UNREACHABLE</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-500 font-bold"><%= unreachable_count %></span>
+        </button>
+      <% end %>
+    </div>
+
+    <!-- Zoom Controls -->
+    <div class="flex items-center bg-slate-200/60 dark:bg-slate-800/60 p-0.5 rounded-xl text-xs font-mono">
+      <button type="button" onclick="adjustZoom(-0.1)" title="Zoom Out" class="px-2 py-1 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition cursor-pointer">-</button>
+      <button type="button" onclick="resetZoom()" title="Reset Zoom" id="zoomLevelIndicator" class="px-2 py-1 text-[11px] font-bold text-slate-600 dark:text-slate-400 hover:text-indigo-500 transition cursor-pointer">100%</button>
+      <button type="button" onclick="adjustZoom(0.1)" title="Zoom In" class="px-2 py-1 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition cursor-pointer">+</button>
+    </div>
+
+    <!-- Fullscreen / Expand Canvas Toggle -->
+    <button type="button"
+            onclick="toggleTopologyFullscreen()"
+            title="Toggle NOC Fullscreen Mode"
+            class="p-1.5 bg-slate-200/60 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl transition cursor-pointer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+    </button>
+  </div>
+</div>

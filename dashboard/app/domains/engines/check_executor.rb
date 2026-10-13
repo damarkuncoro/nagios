@@ -233,6 +233,11 @@ module Engines
     end
 
     def dispatch_alert(host_name:, service_desc:, status:, output:)
+      if service_desc && dependency_failing?(host_name, service_desc)
+        puts "🛡️ [Alert Suppressed] Upstream dependency failing for #{host_name}/#{service_desc}"
+        return
+      end
+
       Thread.new do
         target_obj = { notifications_enabled: 1 }
         viability = Statuses::Services::NotificationViability.check(target_obj)
@@ -253,6 +258,25 @@ module Engines
             plugin_output: output
           )
         end
+      end
+    end
+
+    private
+
+    def period_active?(period)
+      return true if period.blank?
+      all_tp = @config_catalog.respond_to?(:timeperiods) ? @config_catalog.timeperiods : {}
+      Statuses::Services::TimeperiodEvaluator.active?(period, all_periods: all_tp)
+    end
+
+    def dependency_failing?(host, svc)
+      return false unless @config_catalog.respond_to?(:servicedependencies)
+      deps = Array(@config_catalog.servicedependencies)
+      matching = deps.select { |d| d['dependent_host_name'] == host && d['dependent_service_description'] == svc }
+      matching.any? do |dep|
+        p_host = dep['host_name'] || host
+        p_svc = dep['service_description']
+        @service_states.dig(p_host, p_svc, 'current_state').to_i > 0
       end
     end
   end

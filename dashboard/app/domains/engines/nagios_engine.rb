@@ -86,7 +86,7 @@ module Engines
 
     def fetch_hosts
       data = http_get_json("#{NAGIOS_URL}?query=hostlist&details=true")&.dig('data', 'hostlist')
-      if data.nil? || data.empty?
+      if data.nil? || (data.respond_to?(:empty?) && data.empty?)
         snap = local_snapshot
         data = snap&.hosts || {}
       end
@@ -119,7 +119,7 @@ module Engines
 
     def fetch_services
       data = http_get_json("#{NAGIOS_URL}?query=servicelist&details=true")&.dig('data', 'servicelist')
-      if data.nil? || data.empty?
+      if data.nil? || (data.respond_to?(:empty?) && data.empty?)
         snap = local_snapshot
         data = snap&.services || {}
       end
@@ -224,11 +224,21 @@ module Engines
     end
 
     def fetch_host_objects
-      http_get_json("#{NAGIOS_OBJECT_URL}?query=hostlist&details=true")&.dig('data', 'hostlist') || {}
+      data = http_get_json("#{NAGIOS_OBJECT_URL}?query=hostlist&details=true")&.dig('data', 'hostlist')
+      return data if data.is_a?(Hash) && data.any?
+
+      cfg_path = ENV.fetch('NAGIOS_CONFIG_FILE', Rails.root.join('config/nagios_sample.cfg').to_s)
+      catalog = Statuses::Services::ObjectConfigParser.parse_file(cfg_path) rescue nil
+      catalog&.hosts || {}
     end
 
     def fetch_service_objects
-      http_get_json("#{NAGIOS_OBJECT_URL}?query=servicelist&details=true")&.dig('data', 'servicelist') || {}
+      data = http_get_json("#{NAGIOS_OBJECT_URL}?query=servicelist&details=true")&.dig('data', 'servicelist')
+      return data if data.is_a?(Hash) && data.any?
+
+      cfg_path = ENV.fetch('NAGIOS_CONFIG_FILE', Rails.root.join('config/nagios_sample.cfg').to_s)
+      catalog = Statuses::Services::ObjectConfigParser.parse_file(cfg_path) rescue nil
+      catalog&.services || {}
     end
 
     def fetch_alerts(duration_seconds: 86400)

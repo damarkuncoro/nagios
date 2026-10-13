@@ -107,4 +107,81 @@ RSpec.describe 'Pure-Ruby Nagios Plugins' do
       expect(output).to match(/SSL CRITICAL/)
     end
   end
+
+  describe 'check_ping.rb' do
+    it 'executes and reports ping latency and packet loss with perfdata' do
+      output = `#{libexec_dir}/check_ping.rb -H 127.0.0.1 -w 100.0,20% -c 500.0,60%`
+      exit_code = $?.exitstatus
+
+      expect(exit_code).to eq(0)
+      expect(output).to match(/PING OK - Packet loss = \d+%, RTA = \d+\.\d+ ms/)
+      expect(output).to include('rta=')
+      expect(output).to include('pl=')
+    end
+
+    it 'reports CRITICAL when host is unreachable or times out' do
+      output = `#{libexec_dir}/check_ping.rb -H 192.0.2.1 -w 10.0,10% -c 20.0,20% -t 1 2>/dev/null`
+      exit_code = $?.exitstatus
+
+      expect(exit_code).to eq(2)
+      expect(output).to match(/PING CRITICAL/)
+    end
+  end
+
+  describe 'check_snmp.rb' do
+    it 'reports CRITICAL when SNMP agent is unreachable or closed' do
+      output = `#{libexec_dir}/check_snmp.rb -H 127.0.0.1 -p 59161 -t 1 2>/dev/null`
+      exit_code = $?.exitstatus
+
+      expect(exit_code).to eq(2)
+      expect(output).to match(/SNMP CRITICAL/)
+    end
+
+    it 'queries an SNMP agent successfully and parses output' do
+      server = UDPSocket.new
+      server.bind('127.0.0.1', 0)
+      port = server.addr[1]
+
+      thread = Thread.new do
+        req, client = server.recvfrom(2048)
+        decoded = OpenSSL::ASN1.decode(req)
+        req_id = decoded.value[2].value[0]
+        varbind = OpenSSL::ASN1::Sequence.new([
+          OpenSSL::ASN1::ObjectId.new('1.3.6.1.2.1.1.1.0'),
+          OpenSSL::ASN1::OctetString.new('PureRuby SNMP Daemon')
+        ])
+        pdu = OpenSSL::ASN1::ASN1Data.new([
+          req_id,
+          OpenSSL::ASN1::Integer.new(0),
+          OpenSSL::ASN1::Integer.new(0),
+          OpenSSL::ASN1::Sequence.new([varbind])
+        ], 2, :CONTEXT_SPECIFIC)
+        msg = OpenSSL::ASN1::Sequence.new([
+          OpenSSL::ASN1::Integer.new(1),
+          OpenSSL::ASN1::OctetString.new('public'),
+          pdu
+        ])
+        server.send(msg.to_der, 0, client[3], client[1])
+        server.close
+      end
+
+      output = `#{libexec_dir}/check_snmp.rb -H 127.0.0.1 -p #{port} -o 1.3.6.1.2.1.1.1.0 -t 2`
+      exit_code = $?.exitstatus
+      thread.join
+
+      expect(exit_code).to eq(0)
+      expect(output).to match(/SNMP OK - PureRuby SNMP Daemon/)
+    end
+  end
+
+  describe 'check_snmp_interface.rb' do
+    it 'reports CRITICAL when port is closed' do
+      output = `#{libexec_dir}/check_snmp_interface.rb -H 127.0.0.1 -p 59162 -i 1 -t 1 2>/dev/null`
+      exit_code = $?.exitstatus
+
+      expect(exit_code).to eq(2)
+      expect(output).to match(/INTERFACE CRITICAL/)
+    end
+  end
 end
+

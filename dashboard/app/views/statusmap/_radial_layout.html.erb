@@ -1,0 +1,35 @@
+<!-- RADIAL HUB LAYOUT MODE (Hidden by default) -->
+<div id="radialLayoutContainer" class="hidden flex-col items-center justify-center min-h-[500px] w-full max-w-4xl py-8 relative">
+  <!-- Central Hub -->
+  <div class="relative z-20 flex flex-col items-center cursor-pointer" onclick="handleNodeClick('root')">
+    <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 border-4 border-indigo-400/80 flex flex-col items-center justify-center shadow-2xl shadow-indigo-500/40 transform hover:scale-110 transition duration-300">
+      <span class="text-2xl font-black text-white">N</span>
+      <span class="text-[9px] font-mono font-bold text-indigo-100 uppercase mt-0.5">Master</span>
+    </div>
+  </div>
+
+  <!-- Orbit Circles -->
+  <div class="absolute w-[420px] h-[420px] rounded-full border border-indigo-500/20 pointer-events-none animate-[spin_60s_linear_infinite]"></div>
+  <div class="absolute w-[320px] h-[320px] rounded-full border border-slate-700/40 pointer-events-none"></div>
+
+  <!-- Nodes Arranged Along Radial Orbit -->
+  <div class="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-3 gap-6 pt-12 z-20">
+    <% @map[:nodes].each_with_index do |node, idx| %>
+      <div class="topology-radial-node p-4 bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-800 shadow-xl flex flex-col items-center text-center space-y-2 hover:border-indigo-500 transition-all card-hover cursor-pointer"
+           onclick="handleNodeClick(<%= idx %>)">
+        <div class="w-10 h-10 rounded-full <%= node[:status] == 'UP' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border border-rose-500/40' %> flex items-center justify-center font-bold text-xs">
+          🖥️
+        </div>
+        <p class="font-bold text-xs text-white font-mono truncate w-full"><%= node[:name] %></p>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400' %>">
+          <%= node[:status] %>
+        </span>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Empty search filter state -->
+<div id="noMatchMessage" class="hidden py-14 text-center text-slate-500 text-xs font-mono">
+  Tidak ada host yang cocok dengan filter pencarian.
+</div>

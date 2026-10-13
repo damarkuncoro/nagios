@@ -6,6 +6,56 @@ module Statuses
         services = (Engines::NagiosEngine.services rescue []).map(&:to_h)
         host_objs = (Engines::NagiosEngine.host_objects rescue {})
 
+        # If runtime engine only returns standalone default localhost, enrich with configured network topology
+        host_names = hosts.map { |h| (h[:name] || h['name'] || h[:host_name] || h['host_name']).to_s }
+        if host_names == ['localhost']
+          cfg_path = ENV.fetch('NAGIOS_CONFIG_FILE', Rails.root.join('config/nagios_sample.cfg').to_s)
+          catalog = Statuses::Services::ObjectConfigParser.parse_file(cfg_path) rescue nil
+          if catalog&.hosts&.any?
+            host_objs = catalog.hosts.merge(host_objs)
+            snap_path = [ENV['NAGIOS_STATUS_FILE'], '/nagios_var/status.dat', Rails.root.join('tmp/status.dat').to_s].compact.find { |f| File.exist?(f) }
+            snap = Statuses::Services::StatusDataParser.parse_file(snap_path) if snap_path rescue nil
+
+            catalog.hosts.each do |h_name, h_cfg|
+              next if h_name == 'localhost'
+
+              h_cfg_hash = h_cfg.is_a?(Hash) ? h_cfg : (h_cfg.respond_to?(:to_h) ? h_cfg.to_h : {})
+              snap_h = snap&.hosts&.dig(h_name) || {}
+              st = case snap_h['current_state'].to_i
+                   when 0 then 'UP'
+                   when 1 then 'DOWN'
+                   when 2 then 'UNREACHABLE'
+                   else 'UP'
+                   end
+
+              hosts << {
+                name: h_name,
+                alias: h_cfg_hash['alias'] || h_cfg_hash[:alias] || h_name,
+                status: st,
+                address: h_cfg_hash['address'] || h_cfg_hash[:address] || '127.0.0.1',
+                plugin_output: snap_h['plugin_output'].presence || 'Active network node'
+              }
+
+              # Enrich child services from snapshot
+              snap_services = snap&.services&.dig(h_name) || {}
+              snap_services.each do |s_desc, s_info|
+                s_st = case s_info['current_state'].to_i
+                       when 0 then 'OK'
+                       when 1 then 'WARNING'
+                       when 2 then 'CRITICAL'
+                       else 'UNKNOWN'
+                       end
+                services << {
+                  host_name: h_name,
+                  description: s_desc,
+                  status: s_st,
+                  plugin_output: s_info['plugin_output'] || ''
+                }
+              end
+            end
+          end
+        end
+
         graph = Statuses::Services::NetworkTopologyBuilder.build(
           hosts: hosts,
           services: services,

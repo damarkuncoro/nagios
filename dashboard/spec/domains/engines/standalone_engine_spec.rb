@@ -198,8 +198,8 @@ RSpec.describe 'Standalone Pure-Ruby Engine Architecture' do
 
     it 'performs configuration verification run without exceptions' do
       expect { daemon.run! }.not_to raise_error
-      expect(daemon.config_catalog.hosts.size).to eq(2)
-      expect(daemon.config_catalog.services.size).to eq(7)
+      expect(daemon.config_catalog.hosts.size).to eq(4)
+      expect(daemon.config_catalog.services.size).to eq(13)
     end
   end
 end

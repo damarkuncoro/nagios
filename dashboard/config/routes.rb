@@ -43,6 +43,10 @@ Rails.application.routes.draw do
   post "/configuration/verify", to: "configuration#verify", as: :verify_configuration
   get "/perf_info", to: "perf_info#show", as: :perf_info
   get "/metrics", to: "perf_info#metrics", as: :prometheus_metrics
+  get "/discovery", to: "discovery#index", as: :discovery
+  post "/discovery/scan", to: "discovery#scan", as: :scan_discovery
+  post "/discovery/import", to: "discovery#import", as: :import_discovery
+  get "/discovery/interfaces", to: "discovery#interfaces", as: :interfaces_discovery
 
   resources :hostgroups, only: [:index]
   resources :servicegroups, only: [:index]

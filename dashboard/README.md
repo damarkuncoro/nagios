@@ -189,6 +189,8 @@ Tersedia suite plugin bawaan standar Nagios berkinerja tinggi yang ditulis 100% 
 - `libexec/check_process.rb`: Memonitor kuantitas proses berjalan sistem berdasarkan nama perintah atau regex.
 - `libexec/check_dns.rb`: Mengetes resolusi hostname DNS, verifikasi record A/AAAA, dan latensi query ms via stdlib Resolv.
 - `libexec/check_ssl_cert.rb`: Mengetes validitas dan masa kedaluwarsa sertifikat TLS/SSL (SNI support, hari tersisa, handshake timing).
+- `libexec/check_ping.rb`: Mengukur latensi RTA (ms) dan persentase packet loss ICMP/TCP probe tanpa dependensi binary eksternal ping.
+- `libexec/check_snmp.rb`: Query OID SNMP v1/v2c via pure-Ruby ASN.1 BER encoder & UDP socket dengan evaluasi ambang batas numerik/regex.
 
 ### 🧩 Nagios Macro & Command Definition Resolver
 - Mengimplementasikan `Statuses::Services::MacroResolver` dengan dukungan ekspansi `$USER1$`, `$HOSTADDRESS$`, `$HOSTNAME$`, `$SERVICEDESC$`, dan parameter argumentasi bang (`!`) seperti `check_http!3000!/healthz`.
@@ -200,6 +202,11 @@ Tersedia suite plugin bawaan standar Nagios berkinerja tinggi yang ditulis 100% 
 - **Web UI & CLI Integration:** Tombol `🔄 Reload Config (SIGHUP)` terintegrasi langsung pada menu Process Info (`/process_info`) dan command-line via Rake task `bin/rails nagios:reload`.
 - **Standardized Event Logging:** Seluruh event transisi state, eksekusi eksternal, dan rotasi log dicatat ke `/nagios_var/nagios.log` sesuai format resmi Nagios Core, yang langsung dikonsumsi oleh view `/logs`, `/alerts`, dan `/notifications`.
 
+### 🌐 Pure-Ruby Network Autodiscovery (`/discovery` & `libexec/scan_network.rb`)
+- **Subnet IP Range Sweep:** Pemindaian multi-thread non-blocking untuk memindai subnet CIDR (misal `192.168.1.0/24`).
+- **Device Fingerprinting:** Deteksi port (22, 53, 80, 161, 443, 8291) dan identifikasi vendor otomatis (**MikroTik, Cisco, Ubiquiti, Linux, Windows**) via query SNMP `sysDescr`.
+- **1-Click Nagios Import:** Tombol `➕ Tambah ke Monitoring` yang otomatis menyusun definisi objek `define host` dan `define service` serta memicu hot reload zero-downtime (`RELOAD_CONFIG`).
+
 ---
 
 ## 🧪 Menjalankan RSpec Test Suite
@@ -210,7 +217,10 @@ Seluruh pengujian unit dan request spec dapat dijalankan di dalam container:
 docker compose exec web bundle exec rspec
 ```
 
-Seluruh test cases mencakup 369 pengujian (**100% passed, 0 failures**):
+Seluruh test cases mencakup 393 pengujian (**100% passed, 0 failures**):
+- SNMP Interface Walker & Port Inspection Specs (`Discovery::Services::SnmpInterfaceWalker` & `check_snmp_interface.rb`)
+- Network Autodiscovery & Device Importer Specs (`Discovery::Services::NetworkScanner`, `DeviceImporter`, & `DiscoveryController`)
+- Standalone Pure-Ruby Engine Specs (`Engines::StandaloneDaemon`, `CheckExecutor`, `ExternalCommandApplier`, `StatusDumper`)
 - Status API & Endpoints (`/api/v1/status`, `/objects`, `/archives`, `/problems`, `/queue`, `/availability`)
 - Prometheus Scraping Endpoint Specs (`/metrics` & `/perf_info.text`)
 - Multi-Channel Webhook Dispatcher (`Slack`, `Discord`, `Generic`) & Viability Suppression Specs

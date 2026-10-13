@@ -1,0 +1,161 @@
+<!-- TREE LAYOUT MODE -->
+<div id="treeLayoutContainer" class="flex flex-col items-center space-y-10 w-full max-w-5xl py-4">
+  
+  <!-- TIER 0: Root Master Coordinator -->
+  <div id="node_root" class="flex flex-col items-center group cursor-pointer transition-all duration-300" onclick="handleNodeClick('root')">
+    <div class="p-4 px-6 bg-slate-900/95 backdrop-blur-md border-2 border-indigo-500/80 rounded-2xl flex items-center gap-4 shadow-xl shadow-indigo-500/20 hover:border-indigo-400 transition-all duration-300 transform hover:scale-105">
+      <div class="relative">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-indigo-500/30">
+          N
+        </div>
+        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900 animate-ping"></span>
+        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <p class="font-bold text-sm text-white font-mono"><%= @map[:root][:name] %></p>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">TIER 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Tier Rows (Level 1, 2, 3, etc.) -->
+  <% max_depth = @map[:max_depth] || 1 %>
+  <% (1..max_depth).each do |tier_level| %>
+    <% nodes_in_tier = @map[:nodes].select { |n| n[:tier] == tier_level } %>
+    <% next if nodes_in_tier.empty? %>
+
+    <!-- Animated Flow Connector Line Between Tiers -->
+    <div class="w-full flex justify-center -my-3 relative">
+      <svg class="w-64 h-8 text-indigo-500" viewBox="0 0 100 32" fill="none">
+        <path d="M 50 0 L 50 32" stroke="currentColor" stroke-opacity="0.3" stroke-width="2" />
+        <path d="M 50 0 L 50 32" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 12" stroke-linecap="round" class="animate-[dash_1.5s_linear_infinite]" />
+      </svg>
+    </div>
+
+    <!-- Tier Level Container -->
+    <div class="w-full space-y-4 tier-row-container" data-tier-row="<%= tier_level %>">
+      <!-- Tier Label Badge & Divider -->
+      <div class="flex items-center gap-3 px-2">
+        <span class="px-3 py-1 rounded-full text-[11px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono tracking-wider">
+          TIER <%= tier_level %>
+        </span>
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">
+          <% case tier_level %>
+          <% when 1 %>
+            Monitoring Engine Server Layer
+          <% when 2 %>
+            Internal Gateway & Application Layer
+          <% when 3 %>
+            Core Physical Gateway (MikroTik RouterOS)
+          <% when 4 %>
+            Distributed Edge & Wireless APs (Ruijie Reyee)
+          <% else %>
+            Infrastructure Layer <%= tier_level %>
+          <% end %>
+        </span>
+        <div class="flex-1 h-px bg-slate-800"></div>
+        <span class="text-[11px] text-slate-400 font-mono font-medium"><%= nodes_in_tier.size %> Node(s)</span>
+      </div>
+
+      <!-- Nodes in this Tier Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-<%= [nodes_in_tier.size, 3].min %> gap-6 w-full justify-center">
+        <% nodes_in_tier.each do |node| %>
+          <% idx = @map[:nodes].index(node) %>
+          <div id="node_card_<%= idx %>"
+               class="topology-node-card p-5 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800/90 shadow-xl flex flex-col justify-between space-y-4 hover:border-indigo-500/80 transition-all duration-300 card-hover group cursor-pointer"
+               data-name="<%= node[:name].downcase %>"
+               data-status="<%= node[:status] %>"
+               data-tier="<%= node[:tier] || tier_level %>"
+               onclick="handleNodeClick(<%= idx %>)">
+            
+            <!-- Node Header -->
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> flex items-center justify-center font-bold text-sm shrink-0 shadow-sm node-icon-box">
+                  <% if node[:name].to_s.include?('mikrotik') || node[:alias].to_s.include?('Router') %>
+                    🌐
+                  <% elsif node[:name].to_s.include?('ruijie') || node[:name].to_s.include?('reyee') %>
+                    📡
+                  <% elsif node[:name].to_s.include?('gateway') %>
+                    🖧
+                  <% else %>
+                    🖥️
+                  <% end %>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-sm text-white font-mono truncate group-hover:text-indigo-400 transition node-name-label">
+                      <%= node[:name] %>
+                    </p>
+                  </div>
+                  <p class="text-xs text-slate-400 font-mono truncate mt-0.5"><%= node[:address] %></p>
+                </div>
+              </div>
+
+              <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold <%= node[:status] == 'UP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30' %> font-mono node-status-badge">
+                ● <%= node[:status] %>
+              </span>
+            </div>
+
+            <!-- Hierarchy Parent-Child Relational Indicators -->
+            <div class="bg-slate-950/70 p-2.5 rounded-xl border border-slate-800/80 space-y-1 text-[11px] font-mono">
+              <% if node[:parents].any? %>
+                <div class="flex items-center gap-1.5 text-indigo-400">
+                  <span>↳ Uplink Parent:</span>
+                  <span class="text-white font-bold"><%= node[:parents].join(', ') %></span>
+                </div>
+              <% else %>
+                <div class="flex items-center gap-1.5 text-slate-400">
+                  <span>● Root Master Node</span>
+                </div>
+              <% end %>
+              <% if node[:children].any? %>
+                <div class="flex items-center gap-1.5 text-emerald-400">
+                  <span>↴ Downlink Children:</span>
+                  <span class="text-emerald-300 font-semibold"><%= node[:children].join(', ') %></span>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Services Health Mini Progress Bar -->
+            <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80 space-y-1.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400">Child Services Health:</span>
+                <span class="font-mono font-bold text-slate-200"><%= node[:ok_services] %> / <%= node[:total_services] %> OK</span>
+              </div>
+              <% pct = node[:total_services] > 0 ? ((node[:ok_services].to_f / node[:total_services]) * 100).round : 100 %>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div class="h-full <%= pct == 100 ? 'bg-emerald-500' : 'bg-amber-500' %> transition-all duration-500" style="width: <%= pct %>%;"></div>
+              </div>
+            </div>
+
+            <!-- Plugin Output -->
+            <p class="text-xs text-slate-400 line-clamp-2 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/50 font-mono text-[11px]" title="<%= node[:plugin_output] %>">
+              <%= node[:plugin_output].presence || "No check output recorded" %>
+            </p>
+
+            <!-- Actions Footer -->
+            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+              <div class="flex items-center gap-2">
+                <%= link_to host_path(node[:name]), class: "text-xs text-indigo-400 hover:text-indigo-300 font-medium transition" do %>
+                  Detail ↗
+                <% end %>
+                <a href="http://localhost:8080/nagios/cgi-bin/status.cgi?host=<%= node[:name] %>" target="_blank" class="text-[11px] text-slate-500 hover:text-slate-400 transition font-mono">
+                  CGI ↗
+                </a>
+              </div>
+
+              <%= button_to recheck_host_path(node[:name]),
+                            method: :post,
+                            class: "text-xs px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-600/30" do %>
+                Re-check
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

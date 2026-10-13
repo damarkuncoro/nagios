@@ -104,7 +104,15 @@ module Statuses
         visited[node] = :visiting
         path << node
 
-        parents = (hosts.dig(node, 'parent_hosts') || hosts.dig(node, 'parents') || [])
+        raw_parents = hosts.dig(node, 'parent_hosts') || hosts.dig(node, 'parents') || []
+        parents = if raw_parents.is_a?(Array)
+                    raw_parents
+                  elsif raw_parents.is_a?(String)
+                    raw_parents.split(/[,\s]+/).map(&:strip).reject(&:empty?)
+                  else
+                    []
+                  end
+
         parents.each do |parent|
           if visited[parent] == :visiting
             path << parent
