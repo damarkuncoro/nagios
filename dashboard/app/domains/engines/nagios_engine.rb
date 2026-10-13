@@ -92,8 +92,19 @@ module Engines
 
       data.map do |name, info|
         h = info.is_a?(Hash) ? info : {}
+        status_val = if h.key?('current_state')
+                       case h['current_state'].to_i
+                       when 0 then 'UP'
+                       when 1 then 'DOWN'
+                       when 2 then 'UNREACHABLE'
+                       else 'UNKNOWN'
+                       end
+                     else
+                       h['status'] || info
+                     end
+
         Statuses::Entities::HostStatus.new(
-          name: name, status: h['current_state'] || h['status'] || info, plugin_output: h['plugin_output'],
+          name: name, status: status_val, plugin_output: h['plugin_output'],
           last_check: h['last_check'], next_check: h['next_check'],
           current_attempt: h['current_attempt'] || 1, max_attempts: h['max_attempts'] || 1,
           acknowledged: h['problem_has_been_acknowledged'],
@@ -117,8 +128,20 @@ module Engines
         next unless s_hash.is_a?(Hash)
         s_hash.each do |description, info|
           h = info.is_a?(Hash) ? info : {}
+          status_val = if h.key?('current_state')
+                         case h['current_state'].to_i
+                         when 0 then 'OK'
+                         when 1 then 'WARNING'
+                         when 2 then 'CRITICAL'
+                         when 3 then 'UNKNOWN'
+                         else 'UNKNOWN'
+                         end
+                       else
+                         h['status'] || info
+                       end
+
           list << Statuses::Entities::ServiceStatus.new(
-            host_name: host_name, description: description, status: h['current_state'] || h['status'] || info,
+            host_name: host_name, description: description, status: status_val,
             plugin_output: h['plugin_output'], perf_data: h['perf_data'],
             last_check: h['last_check'], next_check: h['next_check'],
             state_type: h['state_type'].to_i == 1 ? 'HARD' : 'SOFT',

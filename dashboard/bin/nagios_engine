@@ -168,18 +168,25 @@ module NagiosRubyEngine
 
       # Schedule Service Checks with interleaved start times
       items = @config_catalog.services
-      @event_queue.schedule_interleaved(items, type: :service_check, interval_seconds: 15, start_time: now) do |event|
-        svc_data = event.target
+      step = items.size > 0 ? (15.0 / items.size) : 1.0
+      items.each_with_index do |svc_data, idx|
         host_name = svc_data['host_name']
         svc_desc = svc_data['service_description']
+        interval = (svc_data['check_interval'] || 30).to_i
         cmd = svc_data['check_command'] || 'true'
 
-        event.payload = {
-          host_name: host_name,
-          service_description: svc_desc,
-          command: cmd,
-          svc_data: svc_data
-        }
+        @event_queue.schedule(
+          type: :service_check,
+          run_time: (now + (idx * step)).to_i,
+          interval: interval,
+          target: "#{host_name}/#{svc_desc}",
+          payload: {
+            host_name: host_name,
+            service_description: svc_desc,
+            command: cmd,
+            svc_data: svc_data
+          }
+        )
       end
 
       puts "📅 [Scheduler] Queued #{@event_queue.size} checks into Priority Queue."

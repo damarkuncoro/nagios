@@ -9,7 +9,13 @@ module Statuses
       def initialize(value, type: :service)
         @type = type
         map = type == :host ? HOST_MAP : SERVICE_MAP
-        @value = value.is_a?(Integer) ? (map[value] || 'UNKNOWN') : value.to_s.upcase
+        if value.is_a?(Integer)
+          @value = map[value] || 'UNKNOWN'
+        elsif value.to_s =~ /\A\d+\z/
+          @value = map[value.to_i] || 'UNKNOWN'
+        else
+          @value = value.to_s.upcase
+        end
       end
 
       def ok?
@@ -22,6 +28,10 @@ module Statuses
 
       def critical?
         value == 'CRITICAL' || value == 'DOWN'
+      end
+
+      def unknown?
+        value == 'UNKNOWN' || value == 'UNREACHABLE'
       end
 
       def pending?

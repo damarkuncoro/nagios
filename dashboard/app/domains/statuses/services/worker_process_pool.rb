@@ -57,7 +57,7 @@ module Statuses
 
       # Executes check or event handler job with timeout protection (base/workers.c wproc_run_job)
       def run_job(command_line, timeout: DEFAULT_TIMEOUT)
-        return timeout_result(timeout) if command_line.blank?
+        return timeout_result(timeout) if command_line.to_s.strip.empty?
 
         @mutex.synchronize do
           @active_workers += 1

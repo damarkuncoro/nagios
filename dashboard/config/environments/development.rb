@@ -14,4 +14,7 @@ Rails.application.configure do
   config.active_support.disallowed_deprecation_warnings = []
 
   config.assets.quiet = true
+  config.hosts << "web"
+  config.hosts << "localhost"
+  config.hosts << "127.0.0.1"
 end

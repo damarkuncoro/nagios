@@ -1,5 +1,6 @@
 services:
   web:
+    image: nagioscore-web:latest
     build:
       context: ./dashboard
       dockerfile: Dockerfile
@@ -26,6 +27,7 @@ services:
 
   # 100% Pure-Ruby Standalone Monitoring Engine
   ruby-engine:
+    image: nagioscore-web:latest
     build:
       context: ./dashboard
       dockerfile: Dockerfile

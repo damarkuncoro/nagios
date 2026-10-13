@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  protect_from_forgery with: :exception, unless: -> { Rails.env.test? }
   helper_method :current_user, :current_user_profile
 
   def current_user

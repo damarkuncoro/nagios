@@ -50,14 +50,12 @@ RSpec.describe 'NagiosPureRubyEngine' do
 
     it 'evaluates parent-child host reachability' do
       detector = Statuses::Services::HostReachabilityDetector
-      # When parent is DOWN (1), child target is marked UNREACHABLE (2)
-      topology = {
-        'localhost' => { 'state' => 1 },
-        'gateway' => { 'state' => 1, 'parents' => ['localhost'] }
-      }
-      
-      reachability = detector.evaluate('gateway', topology: topology)
-      expect(reachability.status).to eq(:unreachable)
+      # When parent is DOWN (status 1), child failing host is marked UNREACHABLE
+      parent_states = [{ name: 'localhost', status: 1 }]
+      reachability = detector.determine_reachability(current_state: 1, parent_states: parent_states)
+
+      expect(reachability.unreachable?).to be true
+      expect(reachability.state_name).to eq('UNREACHABLE')
     end
   end
 end

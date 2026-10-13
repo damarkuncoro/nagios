@@ -17,7 +17,5 @@ Rails.application.configure do
   config.action_controller.allow_forgery_protection = false
 
   config.active_support.deprecation = :stderr
-  config.hosts << "www.example.com"
-  config.hosts << "example.org"
-  config.hosts << "127.0.0.1"
+  config.hosts = nil
 end

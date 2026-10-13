@@ -3,8 +3,13 @@ module Engines
     def write_cmd(command)
       pipe_path = self.class::NAGIOS_CMD_PIPE
       if File.exist?(pipe_path)
-        File.open(pipe_path, 'a') { |f| f.write(command) }
-        true
+        begin
+          File.open(pipe_path, 'a') { |f| f.write(command) }
+          true
+        rescue Errno::EPIPE, Errno::ENXIO => e
+          Rails.logger.warn("Nagios FIFO pipe reader not connected: #{e.message}")
+          false
+        end
       else
         Rails.logger.error("Nagios FIFO pipe tidak ditemukan di #{pipe_path}")
         false

@@ -179,6 +179,13 @@ Fitur utama Ruby Engine:
 - **Multi-channel Alerting:** Integrasi webhook Slack/Discord/Generic JSON via `NotificationService`.
 - **State Persistence:** Penulisan snapshot berkala ke `status.dat` dan penerimaan perintah interaktif via FIFO pipe `nagios.cmd`.
 
+### 🔌 Pure-Ruby Nagios Plugins (`libexec/`)
+Tersedia plugin bawaan standar Nagios berkinerja tinggi yang ditulis 100% dalam bahasa Ruby:
+- `libexec/check_http.rb`: Mengecek status code HTTP, latensi respons, dan timeout.
+- `libexec/check_disk.rb`: Mengecek penggunaan disk, sisa kuota, dan ambang batas warning/critical.
+- `libexec/check_tcp.rb`: Mengetes konektivitas TCP socket dan durasi sambungan port.
+- `libexec/check_memory.rb`: Membaca konsumsi RAM dan persentase penggunaan memori.
+
 ---
 
 ## 🧪 Menjalankan RSpec Test Suite
